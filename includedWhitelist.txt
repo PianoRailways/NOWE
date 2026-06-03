@@ -1,0 +1,28 @@
+Bahnhof
+stazione
+gare
+gare nord
+gare sud
+gare est
+gare ouest
+Bahnhof/Post
+Post/Bahnhof
+Bahnhof/Campus
+Bahnhof/Zentrum
+Zentrum/Bahnhof
+Bahnhof Süd
+Bahnhof Nord
+Bahnhof Ost
+Bahnhof West
+Postautostation
+staziun
+Hauptstr./Bhf.
+Bahnhofplatz
+Bahnhofsplatz
+Bhf
+place de la gare
+pl. gare
+Piazza Stazione
+Stazione nord
+stazione sud
+stazione est
