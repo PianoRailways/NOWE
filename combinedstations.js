@@ -209,6 +209,7 @@ window.combinedStations = {
 	'Tirano': ['Tirano', 'Tirano, Stazione', 'Tirano FS'],
 	'Tirano, Stazione': ['Tirano', 'Tirano, Stazione', 'Tirano FS'],
 	'Tirano FS': ['Tirano', 'Tirano, Stazione', 'Tirano FS'],
+	//das isch Kommentar
 	'Baden': ['Baden', 'Baden, Bahnhof West', 'Baden, Bahnhof Ost', 'Baden, Postautostation'],
 	'Baden, Bahnhof West': ['Baden', 'Baden, Bahnhof West', 'Baden, Bahnhof Ost', 'Baden, Postautostation'],
 	'Baden, Bahnhof Ost': ['Baden', 'Baden, Bahnhof West', 'Baden, Bahnhof Ost', 'Baden, Postautostation'],
