@@ -149,6 +149,17 @@
 		Die Formationsanzeige funktioniert derzeit as it is und wird in der nächsten Zeit noch grafisch überarbeitet.
 	</div>
 </div>
+
+<div class="card" id="sjyid">
+<h2>Swiss Journey ID</h2>
+	<p>In der Ansicht der <a href="#chain" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
+	<p>Die SJYID wird beim Abfragen eines <a href="#trip" class="int">Trips</a> benötigt.</p>
+</div>
+
+<div class="card" id="trip">
+	<h2>Trip</h2>
+	<p>Die Trip-Ansicht ist erreichbar über <a href="./trip" class="oeva" style="font-family: monospace"";>nowe.stellwerksim.ch/trip</a>. Dort kann die SJYID eingegeben werden, um die Trip-Ansicht zu sehen.</p>
+</div>
 	
 	<a href="#autor" class="int">zu den Autoreninfos</a>
 	<div class="table">
@@ -212,13 +223,35 @@
     <img src="/img/ausfall-ersatzzug.png" alt="Darstellung von Ausfällen und Ersatzzügen">
     <div class="caption">Siehe Bild</div>
   </div>
+  <div id="platform-change" class="slide fade">
+    <img src="/img/platform-change.png" alt="" usemap="#image-map">
+    <div class="caption">Gleisänderungen</div>
+  </div>
+  <div id="chain-unterwegs" class="slide fade">
+    <img src="/img/chain-unterwegs.png" alt="Perlschnuransicht">
+    <div class="caption"><strong>Perlschnuransicht</strong><br>Die Fahrt befindet sich rechnerisch zum aktuellen Zeitpunkt zwischen zwei Fahrplanpunkten.</div>
+  </div>
+  <div id="diensthalt" class="slide fade">
+    <img src="/img/chain-diensthalt.png" alt="Diensthalt in der Chain">
+    <div class="caption">Sehr selten werden uns Fahrten geliefert, bei denen ein Diensthalt kommuniziert wird.</div>
+  </div>
+  <div id="kastanianbaum" class="slide fade">
+    <img src="/img/combined-stations.png" alt="">
+    <div class="caption">Ein gutes Beispiel, wie es aussieht, wenn Stationen miteinander verknüpft sind.</div>
+  </div>
 
   <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
   <a class="next" onclick="changeSlide(1)">&#10095;</a>
 </div>
 </div>
 
-
+<div class="card">
+	<div id="filter">
+		<h1>Filter</h1>
+		<p>Die Filter können angewählt oder abgewählt werden. Einzelne Kategorien auszuschliessen geht nicht mit einem Klick, sondern man muss alle anwählen, und das gewünschte wieder abwählen.</p>
+		<p>Filter: <span class="filter-demo-active">Alle</span> <span class="filter-demo"">Fernverkehr</span> <span class="filter-demo"">Regional</span> <span class="filter-demo"">S-Bahn</span> <span class="filter-demo"">Tram</span> <span class="filter-demo"">Bus</span> <span class="filter-demo"">Spezial</span> <span class="filter-demo"">Schiff</span> <span class="filter-demo"">Bergbahn</span> <span class="filter-demo"">Sonstiges</span></p>
+	</div>
+</div>
 
 
 <div class="card">
@@ -226,7 +259,7 @@
 	<h1>Demo</h1>
 	<p>Fahre mit der Maus über die Kartenbereiche, um Tooltip-Informationen anzuzeigen.<br>
 	Auf Mobilgeräten: Tippe auf einen Bereich.</p>
-	<center><img src="/img/platform-change.png" usemap="#image-map"></center>
+	<img src="/img/platform-change.png" usemap="#image-map">
 	<map name="image-map">
 		<area target="" alt="Gleisänderung" data-tooltip="Hier steht das neue Abfahrtsgleis" href="#" coords="749,379,624,232" shape="rect">
 		<area target="" alt="Verkehrsmittelgattung" data-tooltip="Verkehrsmittelgattung" href="#" coords="266,247,132,313" shape="rect">
@@ -317,4 +350,28 @@ document.querySelectorAll('area[data-tooltip]').forEach(area => {
     setTimeout(() => tooltip.classList.remove('visible'), 1500);
   });
 });
+
+// Diesen Schnipsel unter dein bestehendes Script setzen
+function rescaledMap() {
+    const images = document.querySelectorAll('img[usemap]');
+    images.forEach(img => {
+        const mapName = img.getAttribute('usemap').replace('#', '');
+        const map = document.querySelector(`map[name="${mapName}"]`);
+        if (!map) return;
+
+        const w = img.clientWidth / img.naturalWidth;
+        const h = img.clientHeight / img.naturalHeight;
+
+        map.querySelectorAll('area').forEach(area => {
+            if (!area.dataset.coords) area.dataset.coords = area.coords;
+            const newCoords = area.dataset.coords.split(',').map((c, i) => 
+                Math.round(c * (i % 2 === 0 ? w : h))
+            );
+            area.coords = newCoords.join(',');
+        });
+    });
+}
+
+window.addEventListener('resize', rescaledMap);
+window.addEventListener('load', rescaledMap);
 </script>

@@ -1,7 +1,7 @@
 :root {
     --sbb-red:    #eb0000;
     --sbb-blue:   #2d327d;
-	--sbb-orange: #E84E10;
+	  --sbb-orange: #E84E10;
     --sob-green:  #7BA55B;
     --sob-blue:   #1A527F;
     --board-bg:   #0a1a4a;
@@ -175,6 +175,26 @@ table, th, td {
 	padding: 10px;
 }
 
+.filter-demo {
+    background: rgba(255,255,255,0.07);
+    color: var(--text-via);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 4px 11px;
+    border-radius: 2px;
+    font-size: 0.78em;
+    letter-spacing: 0.02em;
+}
+
+.filter-demo-active {
+    background: rgba(255,255,255,0.22);
+    border-color: rgba(255,255,255,0.1);
+    color: white;
+    padding: 4px 11px;
+    border-radius: 2px;
+    font-size: 0.78em;
+    letter-spacing: 0.02em;
+}
+
 /* Das Bild im Normalzustand (kleine Vorschau) */
 .clickable-preview {
   width: 250px;
@@ -318,22 +338,21 @@ table, th, td {
   to { opacity: 1; }
 }
 
+/* Tooltip für Kartenbereiche */
 .map-tooltip {
-  padding: 15px 20px;
-  max-width: 350px; 
   position: fixed;
   z-index: 9999;
-  background-color: #1e1e2e;
-  color: #f0f0f5;
-  padding: 6px 10px;
+  background-color: #ffcc00; /* Gelber Hintergrund */
+  color: #000000;            /* Schwarze Schrift für besseren Kontrast auf Gelb */
+  padding: 15px 20px;        /* Grössere Fläche */
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 14px;
   font-family: system-ui, sans-serif;
   line-height: 1.4;
-  max-width: 220px;
+  max-width: 350px;          /* Mehr Platz in der Breite */
   pointer-events: none;
   white-space: normal;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
   opacity: 0;
   transition: opacity 0.15s ease;
 }
