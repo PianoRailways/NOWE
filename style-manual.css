@@ -319,6 +319,8 @@ table, th, td {
 }
 
 .map-tooltip {
+  padding: 15px 20px;
+  max-width: 350px; 
   position: fixed;
   z-index: 9999;
   background-color: #1e1e2e;
