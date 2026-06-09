@@ -36,6 +36,7 @@
 					<p>Das Zielpublikum sind vor allem das erweiterte private Umfeld des <a href="#autor" class="int">Autors</a>. Zu weit sollte das Tool nicht verbreitet werden, da die API ein Limit hat.</p>
 			</details>
 			<li>Begriffe und Definitionen</li>
+			<br>
 			<h2>Namensherkunft</h2>
 			<p>Die Urpsrungsidee war, eine Abfahrtstabelle von JETZT (engl. NOW) zu haben. Da <i>NOW</i> alleine eher nach einem Zeitserver o.ä. klingt und Namen mit zwei Silben aber nur vier Buchstaben durchaus cool klingen, habe ich mich anschliessend für <i>NOWE</i> entschieden. Dabei kann der Name, wie <a href="#ausgangslage" class="int">oben</a> erwähnt auch als NOie WErsion in der Miimsprache gedeutet werden.</p>
 		</ul>
@@ -53,6 +54,25 @@
 			<li>Filter</li>
 		</ul>
 </details>
+
+<details open class="summary" id="suche">
+	<summary class="summary-title">Suchfeld</summary>
+	<h2>Suchfeld</h2>
+	<p>Das Suchfeld ist das zentrale Element der Hauptseite. Es ermöglicht die Suche nach einer Station, um die Abfahrtstabelle dieser Station zu sehen.</p>
+	<h3>Abkürzungen</h3>
+	<p>Folgende Eingaben sind möglich:
+		<ul>
+			<li>SLOID</li>
+			<li>DiDok-ID</li>
+			<li>Haltestellennamen als normaler Text</li>
+			<li>Abkürzungen</li>
+		</ul>
+	</p>
+	<p>Es sind die meisten DiDok-Abkürzungen hinterlegt (Stand Mai 2026).</p>
+	<div class="box">
+		<span class="important">Hinweis:</span> Es ist zu beachten, dass bei der Eingabe eines Abkürzung die <a href="#combinedStations" class="int">verknüfpten Stationen</a> absichtlich nicht berücksichtigt werden.</p></div>
+		<p>Einige Abkürzungen sind auch manuell programmiert und werden als sogenanntes "Secret" (Aussprache: "Sekret" oder "Siikrett") bezeichnet.</p>
+	</details>
 	
 <details class="summary">
 	<summary class="summary-title">Abfahrtstabelle</summary>
@@ -135,15 +155,15 @@
 		<span class="important">Hinweis:</span> combinedStations überschreiben mögliche includedStations!</p>
 	</div></p>
 	<h4>Kann ich mithelfen?</h4>
-	<p><strong>JA!</strong> Mach eine Liste an den zu verknüpfenden Stationen. Das verpflichtende Format findest du im <a href="https://wiki.oev-ansagen.ch/NOWE" class="oeva">Wiki</a>
-	<br>
+	<p><strong>JA!</strong> Mach eine Liste an den zu verknüpfenden Stationen. Das verpflichtende Format findest du im <a href="https://wiki.oev-ansagen.ch/NOWE" class="oeva">Wiki</a>.
+	<h4>GitHub</h4>
 	Am besten ist es, wenn du auf GitHub ein entsprechendes Issue eröffnest oder die combinedStations gleich selbst ergänzt.<br>
 	Zu GitHub geht es hier: <a href="https://github.com/PianoRailways/NOWE" class="ext">NOWE auf GitHub</a></p>
 </div>
 
 <div class="card" id="formation">
 <h2>Formation</h2>
-<p>Die Formationsanzeige ist erreichbar über <a href="./formation" class="oeva" style="font-family: monospace"";>nowe.stellwerksim.ch/formation</a>. Die Eingabe des EVU ist nicht unbedingt nötig.</p>
+<p>Die Formationsanzeige ist erreichbar über <a href="./formation" class="oeva" style="font-family: monospace"";>nowe.stellwerksim.ch/formation</a>. Die Eingabe des EVU ist nicht unbedingt nötig. Es werden automatisch die verfügbaren EVUs durchgerechnet.</p>
 <p>Mit der Ergänzung <span style="font-family: monospace; color: var(--sbb-red)">?train=1234</span> kann auch direkt über die URL eine Zugsformation abgefragt werden.</p>
 <ul>
 <li>EVU: Eingabe des EVU-spezifischen Kürzels (optional)</li>
@@ -237,7 +257,7 @@
     <div class="caption"><strong>Perlschnuransicht</strong><br>Die Fahrt befindet sich rechnerisch zum aktuellen Zeitpunkt zwischen zwei Fahrplanpunkten.</div>
   </div>
   <div id="diensthalt" class="slide fade">
-    <img src="/img/chain-diensthalt.png" alt="Diensthalt in der Chain">
+    <img src="/img/chain-diensthalt.png" alt="Diensthalt in der Chain" usemap="#diensthalt-map-slide">
     <div class="caption">Sehr selten werden uns Fahrten geliefert, bei denen ein Diensthalt kommuniziert wird.</div>
   </div>
   <div id="kastanianbaum" class="slide fade">
@@ -293,7 +313,7 @@
 		<area target="" alt="Unterwegshalte und Abfahrtsgleise" data-tooltip="Unterwegshalte und Abfahrtsgleise" href="#" coords="264,571,494,1325" shape="rect">
 		<area target="" alt="Ankunfts- und Abfahrtszeit" data-tooltip="Ankunfts- und Abfahrtszeit" href="#" coords="" shape="rect">
 </map>
-
+<!-- Maps für die Slides (muss, warum auch immer separat aufgelistet sein) -->
 <map name="base-map-slide">
 		<area target="" alt="Gleisänderung" data-tooltip="Hier steht das neue Abfahrtsgleis" href="#" coords="749,379,624,232" shape="rect">
 		<area target="" alt="Verkehrsmittelgattung" data-tooltip="Verkehrsmittelgattung" href="#" coords="266,247,132,313" shape="rect">
@@ -313,10 +333,30 @@
 		<area target="" alt="Ankunfts- und Abfahrtszeit" data-tooltip="Ankunfts- und Abfahrtszeit" href="#" coords="" shape="rect">
 	</map>
 
+	<map name="diensthalt-map-slide">
+		<area target="" data-tooltip="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren" href="#" coords="293,78,473,11" shape="rect">
+		<area target="" data-tooltip="Kehre zur Startseite von NOWE zurück" href="#" coords="215,80,19,9" shape="rect">
+		<area target="" data-tooltip="Modus umschalten (falls vorhanden)" href="#" coords="548,82,733,9" shape="rect">
+		<area target="" data-tooltip="Fahrt befindet sich aktuell an der Station (rein rechnerisch)" href="" coords="38,746,95,816" shape="rect">
+		<area target="" data-tooltip="Die JourneyReference (Swiss Journey ID) (brauchst du für den Trip!)" href="#sjyid" coords="38,1245,379,1303" shape="rect">
+		<area target="" data-tooltip="Betreiber (derzeit nur als Code verfügbar)" href="#betreiber" coords="406,1249,584,1304" shape="rect">
+	    <area target="" data-tooltip="Home" title="Home" href="#top" coords="26,15,198,74" shape="rect">
+		<area target="" data-tooltip="Fahrt befindet sich aktuell an der Station (rein rechnerisch)" href="#" coords="38,746,95,816" shape="rect">
+		<area target="" data-tooltip="Die JourneyReference (Swiss Journey ID) (brauchst du für den Trip!)" href="#sjyid" coords="38,1245,379,1303" shape="rect">
+		<area target="" data-tooltip="Betreiber (derzeit nur als Code verfügbar)" href="#betreiber" coords="406,1249,584,1304,56,785,607,1296,660,1307,700,1296,685,1269,634,1243" shape="rect">
+		<area target="" data-tooltip="Favoritenleiste" title="Favoritenleiste" href="#schalt-fav" coords="23,93,750,154" shape="rect">
+		<area target="" data-tooltip="Verkehrsmittelgattung" title="Verkehrsmittelgattung" href="#" coords="137,252,251,311" shape="rect">
+		<area target="" data-tooltip="Endziel und ein paar Vias" title="Endziel und ein paar Vias" href="#" coords="264,232,514,359" shape="rect">
+		<area target="" data-tooltip="Markierungen eines Diensthalts" title="Markierungen eines Diensthalts" href="#" coords="7,466,750,570" shape="rect">
+		<area target="" data-tooltip="Weiterer Fahrverlauf" title="Weiterer Fahrverlauf" href="#" coords="268,570,578,1226" shape="rect">
+		<area target="" data-tooltip="Soll-Fahrplanzeiten und Verspätungsprognosen" title="Soll-Fahrplanzeiten und Verspätungsprognosen" href="#" coords="264,1212,100,572" shape="rect">
+	</map>
+
+
 </body>
 	<footer class="page-footer" id="autor">
-		<p>Autor: Gian Hofer, 2026.<br>
-		<a href="https://gianhofer.ch" class="ext">gianhofer.ch</a></p>
+		<p>Autor: Gian Hofer (<a href="https://gianhofer.ch" class="ext">gianhofer.ch</a>), Spring 2026.<br>
+		 | Code ist grösstenteils auf <a href="https://github.com/PianoRailways/NOWE" class="ext">GitHub</a></p>
 	</footer>
 </html>
 <script src="./manual-slide.js"></script>
