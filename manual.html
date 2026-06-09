@@ -298,64 +298,65 @@ function updateClock() {
     const el = document.getElementById('live-clock');
     if (!el) return;
     const now = new Date();
-    el.textContent = now.getHours().toString().padStart(2,'0') + ':'
-                   + now.getMinutes().toString().padStart(2,'0') + ':'
-                   + now.getSeconds().toString().padStart(2,'0');
+    el.textContent = now.getHours().toString().padStart(2, '0') + ':'
+                   + now.getMinutes().toString().padStart(2, '0') + ':'
+                   + now.getSeconds().toString().padStart(2, '0');
 }
 updateClock();
 setInterval(updateClock, 1000);
 
-
-
 const tooltip = document.getElementById('map-tooltip');
 
 document.querySelectorAll('area[data-tooltip]').forEach(area => {
-  let touchMoved = false;
+    let touchMoved = false;
 
-  // ── Mouse ──────────────────────────────────────────
-  area.addEventListener('mouseenter', () => {
-    tooltip.textContent = area.dataset.tooltip;
-    tooltip.classList.add('visible');
-  });
+    // ── Mouse (Desktop) ──────────────────────────────────────────
+    area.addEventListener('mouseenter', () => {
+        tooltip.innerHTML = area.dataset.tooltip; // innerHTML erlaubt <br>
+        tooltip.classList.add('visible');
+    });
 
-  area.addEventListener('mousemove', e => {
-    tooltip.style.left = (e.clientX + 14) + 'px';
-    tooltip.style.top  = (e.clientY - 28) + 'px';
-  });
+    area.addEventListener('mousemove', e => {
+        tooltip.style.left = (e.clientX + 14) + 'px';
+        tooltip.style.top  = (e.clientY - 28) + 'px';
+    });
 
-  area.addEventListener('mouseleave', () => {
-    tooltip.classList.remove('visible');
-  });
+    area.addEventListener('mouseleave', () => {
+        tooltip.classList.remove('visible');
+    });
 
-  // ── Touch ──────────────────────────────────────────
-  area.addEventListener('touchstart', e => {
-    touchMoved = false;
-    tooltip.textContent = area.dataset.tooltip;
-    tooltip.classList.add('visible');
+    // ── Touch (Mobil) ──────────────────────────────────────────
+    area.addEventListener('touchstart', e => {
+        touchMoved = false;
+        tooltip.innerHTML = area.dataset.tooltip;
+        tooltip.classList.add('visible');
 
-    const touch = e.touches[0];
-    tooltip.style.left = (touch.clientX + 14) + 'px';
-    tooltip.style.top  = (touch.clientY - 48) + 'px';
-  });
+        const touch = e.touches[0];
+        // Positioniert den Tooltip mittig über dem Finger, um ihn nicht zu verdecken
+        const leftPos = touch.clientX - (tooltip.offsetWidth / 2);
+        const topPos = touch.clientY - tooltip.offsetHeight - 20;
 
-  area.addEventListener('touchmove', () => {
-    touchMoved = true;
-    tooltip.classList.remove('visible');
-  });
+        // Verhindert das Rausrutschen aus dem Bildschirmrand
+        tooltip.style.left = Math.max(10, Math.min(window.innerWidth - tooltip.offsetWidth - 10, leftPos)) + 'px';
+        tooltip.style.top  = Math.max(10, topPos) + 'px';
+    });
 
-  area.addEventListener('touchend', e => {
-    if (!touchMoved) {
-      e.preventDefault();
-    }
-    setTimeout(() => tooltip.classList.remove('visible'), 1500);
-  });
+    area.addEventListener('touchmove', () => {
+        touchMoved = true;
+        tooltip.classList.remove('visible');
+    });
+
+    area.addEventListener('touchend', e => {
+        if (!touchMoved) {
+            e.preventDefault(); // Verhindert ungewollte Klicks beim Tippen
+        }
+        setTimeout(() => tooltip.classList.remove('visible'), 2000);
+    });
 });
-
 
 function rescaledMap() {
     const images = document.querySelectorAll('img[usemap]');
     images.forEach(img => {
-        // Falls das Bild noch nicht geladen ist, warten
         if (!img.complete || img.naturalWidth === 0) {
             img.addEventListener('load', rescaledMap, { once: true });
             return;
@@ -365,6 +366,7 @@ function rescaledMap() {
         const map = document.querySelector(`map[name="${mapName}"]`);
         if (!map) return;
 
+        // Berechnet das aktuelle Verhältnis basierend auf der tatsächlichen Anzeige
         const w = img.clientWidth / img.naturalWidth;
         const h = img.clientHeight / img.naturalHeight;
 
