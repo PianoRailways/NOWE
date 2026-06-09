@@ -224,7 +224,7 @@
     <div class="caption">Siehe Bild</div>
   </div>
   <div id="platform-change" class="slide fade">
-    <img src="/img/platform-change.png" alt="" usemap="#image-map">
+    <img src="/img/platform-change.png" alt="" usemap="#image-map-slide">
     <div class="caption">Gleisänderungen</div>
   </div>
   <div id="chain-unterwegs" class="slide fade">
@@ -286,6 +286,25 @@
 <div id="map-tooltip" class="map-tooltip" role="tooltip"></div>
 
 <button id="topButton" onClick="window.location = '#'">nach oben</button>
+
+<map name="image-map-slide">
+		<area target="" alt="Gleisänderung" data-tooltip="Hier steht das neue Abfahrtsgleis" href="#" coords="749,379,624,232" shape="rect">
+		<area target="" alt="Verkehrsmittelgattung" data-tooltip="Verkehrsmittelgattung" href="#" coords="266,247,132,313" shape="rect">
+		<area target="" alt="Fahrtnummer" data-tooltip="Fahrtnummer" href="#" coords="135,347,265,313" shape="rect">
+		<area target="" alt="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren" data-tooltip="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren" href="#" coords="293,78,473,11" shape="rect">
+		<area target="" alt="Kehre zur Startseite von NOWE zurück" data-tooltip="Kehre zur Startseite von NOWE zurück" href="#" coords="215,80,19,9" shape="rect">
+		<area target="" alt="Modus umschalten (falls vorhanden)" data-tooltip="Modus umschalten (falls vorhanden)" href="#" coords="548,82,733,9" shape="rect">
+		<area target="" alt="Ausgewählte Favoritstation" data-tooltip="Ausgewählte Favoritstation" href="#" coords="514,94,424,131" shape="rect">
+		<area target="" alt="Vordefinierte Favoriten" data-tooltip="Vordefinierte Favoriten" href="#" coords="21,92,421,133" shape="rect">
+		<area target="" alt="Gleisänderung (Fahrplangleis durchgestrichen, neues Gleis fett)" data-tooltip="Gleisänderung (Fahrplangleis durchgestrichen, neues Gleis fett)" href="#" coords="266,565,370,523" shape="rect">
+		<area target="" alt="Vias" data-tooltip="Vias" href="#" coords="284,194,549,454" shape="rect">
+		<area target="" alt="Berechnete Position der Fahrt" data-tooltip="Berechnete Position der Fahrt" href="#" coords="84,520,48,486" shape="rect">
+		<area target="" alt="Verspätung am entsprechenden Halt" data-tooltip="Verspätung am entsprechenden Halt" href="#" coords="221,584,260,1319" shape="rect">
+		<area target="" alt="Endziel der Fahrt" data-tooltip="Endziel der Fahrt" href="#" coords="281,140,434,190" shape="rect">
+		<area target="" alt="Hinweistexte (z.B. Baustellen- und Störungsinfo)" data-tooltip="Hinweistexte (z.B. Baustellen- und Störungsinfo)" href="#" coords="445,142,507,193" shape="rect">
+		<area target="" alt="Unterwegshalte und Abfahrtsgleise" data-tooltip="Unterwegshalte und Abfahrtsgleise" href="#" coords="264,571,494,1325" shape="rect">
+		<area target="" alt="Ankunfts- und Abfahrtszeit" data-tooltip="Ankunfts- und Abfahrtszeit" href="#" coords="" shape="rect">
+	</map>
 </body>
 	<footer class="page-footer" id="autor">
 		<p>Autor: Gian Hofer, 2026.<br>
@@ -357,8 +376,15 @@ document.querySelectorAll('area[data-tooltip]').forEach(area => {
 function rescaledMap() {
     const images = document.querySelectorAll('img[usemap]');
     images.forEach(img => {
+        // Falls das Bild noch nicht geladen ist, warten
         if (!img.complete || img.naturalWidth === 0) {
             img.addEventListener('load', rescaledMap, { once: true });
+            return;
+        }
+
+        // NEU: Wenn das Bild unsichtbar ist (Breite = 0), überspringen wir die Berechnung,
+        // bis es durch die Slideshow eingeblendet wird.
+        if (img.clientWidth === 0) {
             return;
         }
 
@@ -366,7 +392,6 @@ function rescaledMap() {
         const map = document.querySelector(`map[name="${mapName}"]`);
         if (!map) return;
 
-        // Berechnet das aktuelle Verhältnis basierend auf der tatsächlichen Anzeige
         const w = img.clientWidth / img.naturalWidth;
         const h = img.clientHeight / img.naturalHeight;
 
