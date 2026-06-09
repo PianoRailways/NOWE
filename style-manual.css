@@ -36,6 +36,12 @@ body {
     min-height: 100vh;
 }
 
+p {
+  text-align: justify; // Blocksatz (ginge auch left oder right)
+  hyphens: auto; // Automatischer Zeilenumbruch bei langen Wörtern
+  word-break: break-word; // Verhindert Überlaufen von langen Wörtern
+}
+
 
 .content { 
 	background: var(--board-row); 

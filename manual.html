@@ -73,16 +73,16 @@
 <details class="summary">
 	<summary class="summary-title">Verschiedenes</summary>
 		<ul>
-			<li>Versionen und History</li>
+			<h2>Versionen und History</h2>
 				<p>Da es sich eigentlich um ein Privatprojekt handelt, ist die neuste Version auch immer die PROD-Version.<br>
 				Dies hat den Nachteil, dass für externe User ggf. auch fehlerhafte Funktionen auftauchen</p>
 				<p>Ältere stabile oder instabile Versionen werden im Unterordner <span style="font-family: monospace;">/history</span> abgelegt und sind nicht weiter dokumentiert.</p>
-			<li>Fehlermeldungen</li>
-			<li>Verbindungsabbruch</li>
-			<p>Es kann vorkommen, das die Webapp aus ungeklärten Gründen die Verbindung zum Server oder zur API verliert. In diesem Fall hilft in der Regel ein kurzer Reload der Seite.<br>
-			Dass der Browser (oder WebClip etc.) Verbindung zur WebApp verliert ist auch möglich, dies ist jedoch dem Gerät verschuldet. Dies ist erkennbar daran, dass die Uhrzeit sich nicht mehr aktualisiert.</p>
-			<li>combinedStations</li>
-			<li>includedStations</li>
+			<h2>Fehlermeldungen</h2>
+				<p>Seit Anfang Juni 2026 ist der grösste Teil des Codes von NOWE auf GitHub verfügbar.<br>
+				Fehler und Wünsche können über das Issue-Tracker-System mitgeteilt werden.</p>
+			<h2>Verbindungsabbruch</h2>
+				<p>Es kann vorkommen, das die Webapp aus ungeklärten Gründen die Verbindung zum Server oder zur API verliert. In diesem Fall hilft in der Regel ein kurzer Reload der Seite.<br>
+				Dass der Browser (oder WebClip etc.) Verbindung zur WebApp verliert ist auch möglich, dies ist jedoch dem Gerät verschuldet. Dies ist erkennbar daran, dass die Uhrzeit sich nicht mehr aktualisiert.</p>
 		</ul>
 </details>
 
@@ -94,46 +94,51 @@
 	</ul>
 </div>
 
-<div class="card" id="schalt-fav">
-	<h2>Favoriten</h2>
-	<p>Favoriten (standardmässig sind ein paar wenige vordefiniert)</summary>
-	<ol>Favorit hinzufügen
-		<li>Gewünschte Station suchen</li>
-		<li>Stern/Favorit-Button drücken</li>
-	</ol>
-	<ol>Favorit löschen
-		<li>Favorit anwählen</li>
-		<li>erneut auf Favorit klicken</li>
-		<li>löschen bestätigen</li>
-		Alternativ kann auch lange auf den Favorit-Button gedrückt werden.
-	</ol></p>
-	<details><summary>Bild anzeigen</summary>
-	<figure>
-		<img src="/img/fav-del-confirm.png" alt="Bestätigung" class="clickable-preview" tabindex="0"></img>
-		<figcaption>Man sieht, dass der Button des angewählten Favorits nun "Löschen?" fragt.</figcaption>
-	</figure>
-	</details>
-</div>
+<details class="summary">
+	<summary class="summary-title" id="schalt-fav">Favoriten</summary>
+		<p>Standardmässig sind ein paar wenige Favoriten vordefiniert. Selbstverständlich kann man weitere hinzufügen oder bestehende löschen. Dies funktioniert jedoch nur auf dem jeweiligen Gerät, da die Favoriten als "ojp_favs" im Local storage des Browsers gespeichert werden.</p>
+		<hr>
+		<h2>Hinzufügen von Favoriten</h2>
+		<ol>
+			<li>Gewünschte Station suchen</li>
+			<li>Stern/Favorit-Button drücken</li>
+		</ol>
+		<hr>
+		<h2>Löschen von Favoriten</h2>
+		<ol>
+			<li>Favorit anwählen</li>
+			<li>erneut auf Favorit klicken</li>
+			<li>löschen bestätigen</li>
+			Alternativ kann auch lange auf den Favorit-Button gedrückt werden. (Langes Drücken funktioniert nur auf Desktopgeräten.)
+		</ol></p>
+		<details><summary>Bild anzeigen</summary>
+		<figure>
+			<img src="/img/fav-del-confirm.png" alt="Bestätigung" class="clickable-preview" tabindex="0"></img>
+			<figcaption>Man sieht, dass der Button des angewählten Favorits nun "Löschen?" fragt.</figcaption>
+		</figure>
+		</details>
+</details>
 
 <div class="card" id="includedStations">
 	<h2>Inkludierte Stationen</h2>
 	<h3>includedStations</h3>
-	Das ist eine Liste mit Verknüpfungen von Stationen.
-	Diese Liste beinhaltet vor allem die Verknüpfung von Bahnhöfen und der dazugehörenden Haltestelle "Bahnhof" (frz. "gare", rumantsch "staziun", it. "stazione").
-	Um die Verknüpfungen zu ändern muss die Liste neu erstellt werden.
+	<p>Das ist eine Liste mit Verknüpfungen von Stationen.<br>
+	Diese Liste beinhaltet vor allem die Verknüpfung von Bahnhöfen und der dazugehörenden Haltestelle "Bahnhof" (frz. "gare", rumantsch "staziun", it. "stazione").<br>
+	Um die Verknüpfungen zu ändern, muss die Liste neu erstellt werden. Dazu gibt es zum Glück <a href="#converters" class="int">Hilfskonverter</a>.
 </div>
 
 <div class="card" id="combinedStations">
 	<h2>Verknüpfte Stationen</h2>
 	<h3>combinedStations</h3>
-	Das ist eine Liste mit Verknüpfungen von Stationen. Gründe für Verknüpfungen können ganz unterschiedlich sein. In der Regel handelt es sich um Haltestellen in der Nähe oder Alternativhaltestellen.<br>
+	<p>Das ist eine Liste mit Verknüpfungen von Stationen. Gründe für Verknüpfungen können ganz unterschiedlich sein. In der Regel handelt es sich um Haltestellen in der Nähe oder Alternativhaltestellen.<br>
 	<div class="box">
 		<span class="important">Hinweis:</span> combinedStations überschreiben mögliche includedStations!</p>
-	</div>
+	</div></p>
 	<h4>Kann ich mithelfen?</h4>
-	JA! Mach eine Liste an den zu verknüpfenden Stationen. Das verpflichtende Format findest du im <a href="https://wiki.oev-ansagen.ch/NOWE" class="oeva">Wiki</a>
+	<p><strong>JA!</strong> Mach eine Liste an den zu verknüpfenden Stationen. Das verpflichtende Format findest du im <a href="https://wiki.oev-ansagen.ch/NOWE" class="oeva">Wiki</a>
 	<br>
-	Und hier wäre noch ein externer Link: <a href="https://google.com" class="ext">GOOGLE</a>
+	Am besten ist es, wenn du auf GitHub ein entsprechendes Issue eröffnest oder die combinedStations gleich selbst ergänzt.<br>
+	Zu GitHub geht es hier: <a href="https://github.com/PianoRailways/NOWE" class="ext">NOWE auf GitHub</a></p>
 </div>
 
 <div class="card" id="formation">
@@ -152,7 +157,7 @@
 
 <div class="card" id="sjyid">
 <h2>Swiss Journey ID</h2>
-	<p>In der Ansicht der <a href="#chain" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
+	<p>In der Ansicht der <a href="#demo" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
 	<p>Die SJYID wird beim Abfragen eines <a href="#trip" class="int">Trips</a> benötigt.</p>
 </div>
 
@@ -224,7 +229,7 @@
     <div class="caption">Siehe Bild</div>
   </div>
   <div id="platform-change" class="slide fade">
-    <img src="/img/platform-change.png" alt="" usemap="#image-map-slide">
+    <img src="/img/platform-change.png" alt="" usemap="#base-map-slide">
     <div class="caption">Gleisänderungen</div>
   </div>
   <div id="chain-unterwegs" class="slide fade">
@@ -257,27 +262,9 @@
 <div class="card">
 	<div id="demo">
 	<h1>Demo</h1>
-	<p>Fahre mit der Maus über die Kartenbereiche, um Tooltip-Informationen anzuzeigen.<br>
+	<p class="box">Fahre mit der Maus über die Kartenbereiche, um Tooltip-Informationen anzuzeigen.<br>
 	Auf Mobilgeräten: Tippe auf einen Bereich.</p>
-	<img src="/img/platform-change.png" usemap="#image-map">
-	<map name="image-map">
-		<area target="" alt="Gleisänderung" data-tooltip="Hier steht das neue Abfahrtsgleis" href="#" coords="749,379,624,232" shape="rect">
-		<area target="" alt="Verkehrsmittelgattung" data-tooltip="Verkehrsmittelgattung" href="#" coords="266,247,132,313" shape="rect">
-		<area target="" alt="Fahrtnummer" data-tooltip="Fahrtnummer" href="#" coords="135,347,265,313" shape="rect">
-		<area target="" alt="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren" data-tooltip="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren" href="#" coords="293,78,473,11" shape="rect">
-		<area target="" alt="Kehre zur Startseite von NOWE zurück" data-tooltip="Kehre zur Startseite von NOWE zurück" href="#" coords="215,80,19,9" shape="rect">
-		<area target="" alt="Modus umschalten (falls vorhanden)" data-tooltip="Modus umschalten (falls vorhanden)" href="#" coords="548,82,733,9" shape="rect">
-		<area target="" alt="Ausgewählte Favoritstation" data-tooltip="Ausgewählte Favoritstation" href="#" coords="514,94,424,131" shape="rect">
-		<area target="" alt="Vordefinierte Favoriten" data-tooltip="Vordefinierte Favoriten" href="#" coords="21,92,421,133" shape="rect">
-		<area target="" alt="Gleisänderung (Fahrplangleis durchgestrichen, neues Gleis fett)" data-tooltip="Gleisänderung (Fahrplangleis durchgestrichen, neues Gleis fett)" href="#" coords="266,565,370,523" shape="rect">
-		<area target="" alt="Vias" data-tooltip="Vias" href="#" coords="284,194,549,454" shape="rect">
-		<area target="" alt="Berechnete Position der Fahrt" data-tooltip="Berechnete Position der Fahrt" href="#" coords="84,520,48,486" shape="rect">
-		<area target="" alt="Verspätung am entsprechenden Halt" data-tooltip="Verspätung am entsprechenden Halt" href="#" coords="221,584,260,1319" shape="rect">
-		<area target="" alt="Endziel der Fahrt" data-tooltip="Endziel der Fahrt" href="#" coords="281,140,434,190" shape="rect">
-		<area target="" alt="Hinweistexte (z.B. Baustellen- und Störungsinfo)" data-tooltip="Hinweistexte (z.B. Baustellen- und Störungsinfo)" href="#" coords="445,142,507,193" shape="rect">
-		<area target="" alt="Unterwegshalte und Abfahrtsgleise" data-tooltip="Unterwegshalte und Abfahrtsgleise" href="#" coords="264,571,494,1325" shape="rect">
-		<area target="" alt="Ankunfts- und Abfahrtszeit" data-tooltip="Ankunfts- und Abfahrtszeit" href="#" coords="" shape="rect">
-	</map>
+	<img src="/img/platform-change.png" usemap="#base-map">
 	</div>
 </div>
 </div>
@@ -287,7 +274,27 @@
 
 <button id="topButton" onClick="window.location = '#'">nach oben</button>
 
-<map name="image-map-slide">
+<!-- Maps -->
+<map name="base-map">
+		<area target="" alt="Gleisänderung" data-tooltip="Hier steht das neue Abfahrtsgleis" href="#" coords="749,379,624,232" shape="rect">
+		<area target="" alt="Verkehrsmittelgattung" data-tooltip="Verkehrsmittelgattung" href="#" coords="266,247,132,313" shape="rect">
+		<area target="" alt="Fahrtnummer" data-tooltip="Fahrtnummer" href="#" coords="135,347,265,313" shape="rect">
+		<area target="" alt="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren" data-tooltip="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren" href="#" coords="293,78,473,11" shape="rect">
+		<area target="" alt="Kehre zur Startseite von NOWE zurück" data-tooltip="Kehre zur Startseite von NOWE zurück" href="#" coords="215,80,19,9" shape="rect">
+		<area target="" alt="Modus umschalten (falls vorhanden)" data-tooltip="Modus umschalten (falls vorhanden)" href="#" coords="548,82,733,9" shape="rect">
+		<area target="" alt="Ausgewählte Favoritstation" data-tooltip="Ausgewählte Favoritstation" href="#" coords="514,94,424,131" shape="rect">
+		<area target="" alt="Vordefinierte Favoriten" data-tooltip="Vordefinierte Favoriten" href="#" coords="21,92,421,133" shape="rect">
+		<area target="" alt="Gleisänderung (Fahrplangleis durchgestrichen, neues Gleis fett)" data-tooltip="Gleisänderung (Fahrplangleis durchgestrichen, neues Gleis fett)" href="#" coords="266,565,370,523" shape="rect">
+		<area target="" alt="Vias" data-tooltip="Vias" href="#" coords="284,194,549,454" shape="rect">
+		<area target="" alt="Berechnete Position der Fahrt" data-tooltip="Berechnete Position der Fahrt" href="#" coords="84,520,48,486" shape="rect">
+		<area target="" alt="Verspätung am entsprechenden Halt" data-tooltip="Verspätung am entsprechenden Halt" href="#" coords="221,584,260,1319" shape="rect">
+		<area target="" alt="Endziel der Fahrt" data-tooltip="Endziel der Fahrt" href="#" coords="281,140,434,190" shape="rect">
+		<area target="" alt="Hinweistexte (z.B. Baustellen- und Störungsinfo)" data-tooltip="Hinweistexte (z.B. Baustellen- und Störungsinfo)" href="#" coords="445,142,507,193" shape="rect">
+		<area target="" alt="Unterwegshalte und Abfahrtsgleise" data-tooltip="Unterwegshalte und Abfahrtsgleise" href="#" coords="264,571,494,1325" shape="rect">
+		<area target="" alt="Ankunfts- und Abfahrtszeit" data-tooltip="Ankunfts- und Abfahrtszeit" href="#" coords="" shape="rect">
+</map>
+
+<map name="base-map-slide">
 		<area target="" alt="Gleisänderung" data-tooltip="Hier steht das neue Abfahrtsgleis" href="#" coords="749,379,624,232" shape="rect">
 		<area target="" alt="Verkehrsmittelgattung" data-tooltip="Verkehrsmittelgattung" href="#" coords="266,247,132,313" shape="rect">
 		<area target="" alt="Fahrtnummer" data-tooltip="Fahrtnummer" href="#" coords="135,347,265,313" shape="rect">
@@ -305,6 +312,7 @@
 		<area target="" alt="Unterwegshalte und Abfahrtsgleise" data-tooltip="Unterwegshalte und Abfahrtsgleise" href="#" coords="264,571,494,1325" shape="rect">
 		<area target="" alt="Ankunfts- und Abfahrtszeit" data-tooltip="Ankunfts- und Abfahrtszeit" href="#" coords="" shape="rect">
 	</map>
+
 </body>
 	<footer class="page-footer" id="autor">
 		<p>Autor: Gian Hofer, 2026.<br>
