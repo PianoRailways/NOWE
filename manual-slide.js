@@ -48,4 +48,10 @@ let slideIndex = 0;
       if (slides[slideIndex]) {
         slides[slideIndex].style.display = "block";
       }
+      
+      // Am Ende der Umschalt-Logik in manual-slide.js einfügen:
+      if (typeof rescaledMap === 'function') {
+          // Kurzer Timeout, damit der Browser das Element gerendert hat
+          setTimeout(rescaledMap, 50); 
+      }
     }
