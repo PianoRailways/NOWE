@@ -22,6 +22,8 @@ let slideIndex = 0;
     // Funktion für die Vor-/Zurück-Buttons der Slideshow
     function changeSlide(n) {
       showSlides(slideIndex += n);
+      window.addEventListener('resize', rescaledMap);
+      window.addEventListener('load', rescaledMap);
     }
 
     // Funktion für die Direktlinks im Text

@@ -293,6 +293,12 @@ table, th, td {
   margin: 0 auto;
 }
 
+img[usemap] {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
 /* Bildunterschrift */
 .caption {
   background-color: rgba(0, 0, 0, 0.85);

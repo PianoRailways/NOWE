@@ -351,10 +351,16 @@ document.querySelectorAll('area[data-tooltip]').forEach(area => {
   });
 });
 
-// Diesen Schnipsel unter dein bestehendes Script setzen
+
 function rescaledMap() {
     const images = document.querySelectorAll('img[usemap]');
     images.forEach(img => {
+        // Falls das Bild noch nicht geladen ist, warten
+        if (!img.complete || img.naturalWidth === 0) {
+            img.addEventListener('load', rescaledMap, { once: true });
+            return;
+        }
+
         const mapName = img.getAttribute('usemap').replace('#', '');
         const map = document.querySelector(`map[name="${mapName}"]`);
         if (!map) return;
