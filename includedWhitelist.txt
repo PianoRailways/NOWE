@@ -1,4 +1,7 @@
 Bahnhof
+Hauptbahnhof
+Hauptbahnhof Süd
+Hauptstrasse/Bhf
 stazione
 gare
 gare nord
