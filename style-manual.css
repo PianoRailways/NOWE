@@ -77,6 +77,7 @@ a.oeva{
 }
 a.ext{
 	color: var(--sob-green);
+  font-weight: bold;
 }
 
 .summary-title {
@@ -175,6 +176,7 @@ table, th, td {
 }
 
 .box {
+  margin: 10px 0;
 	border-radius: 10px;
 	border: 2px solid var(--plat-change);
 	background: var(--board-alt);
