@@ -1,5 +1,5 @@
 // ─── Es beginnt mit INCLUDED_STATIONS... ─────────────────────────────────────
-window.combinedStations = {
+window.includedStations = {
     'ch:1:sloid:9157': ['ch:1:sloid:9157', 'ch:1:sloid:94670'],
     'ch:1:sloid:94670': ['ch:1:sloid:9157', 'ch:1:sloid:94670'],
     'ch:1:sloid:7076': ['ch:1:sloid:7076', 'ch:1:sloid:71632'],
