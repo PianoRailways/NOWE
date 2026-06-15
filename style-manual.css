@@ -196,6 +196,10 @@ caption, th {
 	padding: 10px;
 }
 
+.box p {
+  text-align: left;
+}
+
 .filter-demo {
     background: rgba(255,255,255,0.07);
     color: var(--text-via);
