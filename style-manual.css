@@ -51,11 +51,17 @@ p {
 	margin-bottom: 1.5rem; 
 }
 
+@media screen and (max-width: 440px) {
+  .content {
+    padding: 0.5rem;
+  }
+}
+
 .summary, .card { 
 	background: var(--board-alt); 
 	border: 0.5px solid rgba(255,255,255,0.1); 
 	border-radius: 8px; 
-	padding: 1.5rem; 
+	padding: 1.2rem; 
 	margin-bottom: 1.5rem;
 	position: inside;
 }
@@ -101,6 +107,13 @@ table, th, td {
   background: --var(--board-row);
   border-collapse: collapse;
   text-align: left;
+  font-family: monospace;
+  font-size: medium;
+}
+
+caption, th {
+  font-weight: bold;
+  font-size: large;
 }
 
 .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem; }
