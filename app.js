@@ -1107,9 +1107,37 @@ document.addEventListener('DOMContentLoaded', () => {
         stopAutoRefresh(); // Auto-Refresh stoppen, da wir jetzt ein fixes Datum haben
     });
 
-    DOM.refreshBtn()?.addEventListener('click', () => {
-        if (STOP_ID) loadBoard();
-    });
+// ─── Neue refreshBtn-Logik (ersetzt alte Zeile 1110-1112) ───────────────────
+ 
+DOM.refreshBtn()?.addEventListener('click', () => {
+    const inputValue = DOM.stopInput()?.value?.trim();
+    
+    if (!inputValue) {
+        showStatus('Bitte Station eingeben', 'warn');
+        return;
+    }
+ 
+    // Schritt 1: Abkürzung → Name (falls im didokMapping)
+    let stationName = inputValue;
+    if (window.didokMapping && window.didokMapping[inputValue]) {
+        const mapped = window.didokMapping[inputValue];
+        stationName = Array.isArray(mapped) ? mapped[0] : mapped;
+    }
+ 
+    // Schritt 2: Name → {sloid, sloids} aus combinedStations
+    const stationInfo = window.combinedStations?.[stationName];
+    
+    if (stationInfo && stationInfo.sloid) {
+        STOP_ID = stationInfo.sloid;
+        DOM.stopInput().value = stationName;
+        updateUrlParams();
+        loadBoard();
+        updateFavHighlight();
+        startAutoRefresh();
+    } else {
+        showStatus(`Keine Station gefunden: ${stationName}`, 'error');
+    }
+});
 
     if (STOP_ID) {
         loadBoard();
