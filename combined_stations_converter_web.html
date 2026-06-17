@@ -158,13 +158,13 @@ a {
 			<button id="btn-home" onClick="window.location = 'https://nowe.stellwerksim.ch'">⌂ Home</button>
         </div>
 		<div id="header-right">
-			<span id="app-title">öV NOWE combinedStations (Name-based)</span>
+			<span id="app-title">öV NOWE</span>
 		</div>
 		    </header>
     <div class="container">
         <div class="card" style="padding: 20px;">
-            <h1>Combined Stations Converter (v2)</h1>
-            <p class="subtitle">Konvertiere deine Stationsnamen zu SLOID-Gruppen (Name-basiert)</p>
+            <h1>Combined Stations Converter</h1>
+            <p class="subtitle">Konvertiere deine Stationsnamen zu DIDOK-IDs</p>
 
             <div class="upload-section">
                 <label class="upload-label">DIDOK-CSV Datei</label>
@@ -276,28 +276,22 @@ a {
                 const converted = {};
                 const notFound = new Set();
 
-                // csData hat Format: { 'Stationsname': ['Sub1', 'Sub2', ...] }
-                for (const [stationName, stationList] of Object.entries(csData)) {
-                    const sloids = [];
+                for (const [groupKey, stationList] of Object.entries(csData)) {
+                    const newKey = didokData[groupKey] || groupKey;
+                    const newStations = [];
 
                     for (const station of stationList) {
                         if (didokData[station]) {
-                            sloids.push(didokData[station]);
+                            newStations.push(didokData[station]);
                         } else {
-                            sloids.push(station);
-                            if (station in didokData === false && !/^ch:1:sloid:/.test(station)) {
+                            newStations.push(station);
+                            if (station in didokData === false && !/^\d+$/.test(station)) {
                                 notFound.add(station);
                             }
                         }
                     }
 
-                    // Hauptstation (erste in der Liste) wird die primäre SLOID
-                    const primarySloid = sloids[0];
-
-                    converted[stationName] = {
-                        sloid: primarySloid,
-                        sloids: sloids
-                    };
+                    converted[newKey] = newStations;
                 }
 
                 convertedResult = converted;
@@ -306,12 +300,9 @@ a {
                 jsOutput += 'window.combinedStations = {\n';
 
                 const entries = Object.entries(converted);
-                entries.forEach(([stationName, data], i) => {
-                    const sloidsStr = data.sloids.map(s => `'${s}'`).join(', ');
-                    jsOutput += `    '${stationName}': {\n`;
-                    jsOutput += `        sloid: '${data.sloid}',\n`;
-                    jsOutput += `        sloids: [${sloidsStr}]\n`;
-                    jsOutput += `    }`;
+                entries.forEach(([key, stations], i) => {
+                    const stationsStr = stations.map(s => `'${s}'`).join(', ');
+                    jsOutput += `    '${key}': [${stationsStr}]`;
                     if (i < entries.length - 1) jsOutput += ',';
                     jsOutput += '\n';
                 });
@@ -339,12 +330,9 @@ a {
             jsOutput += 'window.combinedStations = {\n';
 
             const entries = Object.entries(convertedResult);
-            entries.forEach(([stationName, data], i) => {
-                const sloidsStr = data.sloids.map(s => `'${s}'`).join(', ');
-                jsOutput += `    '${stationName}': {\n`;
-                jsOutput += `        sloid: '${data.sloid}',\n`;
-                jsOutput += `        sloids: [${sloidsStr}]\n`;
-                jsOutput += `    }`;
+            entries.forEach(([key, stations], i) => {
+                const stationsStr = stations.map(s => `'${s}'`).join(', ');
+                jsOutput += `    '${key}': [${stationsStr}]`;
                 if (i < entries.length - 1) jsOutput += ',';
                 jsOutput += '\n';
             });

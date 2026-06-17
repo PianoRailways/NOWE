@@ -200,7 +200,7 @@
                 const designationIdx = header.indexOf('designationOfficial');
 
                 if (numberIdx === -1 || designationIdx === -1) {
-                    didokInfo.innerHTML = `<div class="file-info error">✗ CSV Spalten 'sloid' und 'designationOfficial' nicht gefunden!</div>`;
+                    didokInfo.innerHTML = `<div class="file-info error">✗ CSV Spalten 'number' und 'designationOfficial' nicht gefunden!</div>`;
                     analyzeBtn.disabled = true;
                     return;
                 }
@@ -223,6 +223,7 @@
             }
         });
 
+        // STUFE 1: Ortsbasierte Gruppierung & Text-Vorschau
         analyzeBtn.addEventListener('click', () => {
             if (!didokRawData) return;
 
@@ -245,15 +246,18 @@
 					let cityPart = sName;
 					let suffixPart = "";
 
+					// Variante 1: Trennung durch Komma (z.B. "Baden, Bahnhof")
 					if (sName.includes(',')) {
 						const parts = sName.split(',');
 						cityPart = parts[0].trim();
 						suffixPart = parts[1] ? parts[1].trim() : "";
 					} 
+					// Variante 2: Trennung durch Klammern am Ende (z.B. "Baden (See)")
 					else if (sName.endsWith(')')) {
 						const openBracketIdx = sName.lastIndexOf('(');
 						if (openBracketIdx !== -1) {
 							cityPart = sName.substring(0, openBracketIdx).trim();
+							// Extrahiert den Inhalt zwischen den Klammern
 							suffixPart = sName.substring(openBracketIdx + 1, sName.length - 1).trim();
 						}
 					}
@@ -264,6 +268,7 @@
 						cityGroups[cityPart] = { mains: [], subs: [] };
 					}
 
+					// Abgleich mit der Whitelist (enthält pure Begriffe wie "see" oder "bahnhof west")
 					const isWhitelistedSub = whitelistLines.length > 0 && whitelistLines.includes(suffixPart);
 
 					if (isWhitelistedSub) {
@@ -308,6 +313,12 @@
                         data.mains.forEach(m => textPreviewString += `  • [${m.id}] ${m.name}\n`);
                         textPreviewString += `Whitelist-Haltestellen (Exakter Suffix Match):\n`;
                         data.subs.forEach(s => textPreviewString += `  • [${s.id}] ${s.name}\n`);
+                        
+                        textPreviewString += `\nMAP FÜR DIESEN ORT:\n`;
+                        const allNames = [...data.mains.map(m => m.name), ...data.subs.map(s => s.name)];
+                        allNames.forEach(name => {
+                            textPreviewString += `"${name}" => [\n  ` + allNames.map(n => `"${n}"`).join(',\n  ') + `\n]\n`;
+                        });
                         textPreviewString += `\n`;
                     }
                 }
@@ -329,6 +340,7 @@
             }, 100);
         });
 
+        // STUFE 2: Umwandlung in Javascript DIDOK-ID Format & Downloadbereitstellung
         confirmBtn.addEventListener('click', () => {
             if (!finalIdResult || Object.keys(finalIdResult).length === 0) return;
 
@@ -349,6 +361,7 @@
 
                 statusDiv.innerHTML = `<div class="status success">✅ IDs erfolgreich generiert! Klicke unten auf den grünen Button, um die Datei zu speichern.</div>`;
                 
+                // Neue ID-Box aufbauen inklusive des direkten Download-Buttons darunter
                 const idBox = document.createElement('div');
                 idBox.className = 'preview-box';
                 idBox.innerHTML = `
@@ -363,6 +376,7 @@
 
                 confirmBtn.style.display = 'none';
 
+                // Event-Listener für den frisch generierten Download-Button aktivieren
                 document.getElementById('finalDownloadBtn').addEventListener('click', () => {
                     const blob = new Blob([jsOutput], { type: 'text/javascript' });
                     const url = URL.createObjectURL(blob);
