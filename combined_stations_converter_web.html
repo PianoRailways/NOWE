@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<title>öV NOWE combinedStations</title>
+	<link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <style>
+:root {
+    --sbb-red:    #eb0000;
+    --sbb-blue:   #2d327d;
+	--sbb-orange: #E84E10;
+    --sob-green:  #7BA55B;
+    --sob-blue:   #1A527F;
+    --board-bg:   #0a1a4a;
+    --board-row:  #0d2060;
+    --board-alt:  #0a1a4a;
+    --board-head: #0d2060;
+    --text-main:  #ffffff;
+    --text-via:   #a0b8d8;
+    --text-dim:   #6080a0;
+    --night-gold: #d4af37;
+    --border:     rgba(200,200,200,0.09);
+    --header-bg:  #061030;
+    --pifas-bg:   #ED702D;
+    --pifas-searchbar: #d7d7d7;
+    --pifas-timenav: #eef;
+    --live-red:   #ff3b30;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
+    background: var(--board-bg);
+    color: var(--text-main);
+    min-height: 100vh;
+}
+        .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem; }
+        .card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; }
+        /* h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.5rem; color: var(--color-text-primary); }
+        .subtitle { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 1.5rem; }
+        .upload-section { margin-bottom: 1.5rem; }
+        .upload-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 0.5rem; color: var(--color-text-primary); }
+        .upload-hint { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 0.75rem; }*/
+        input[type="file"] { display: block; width: 100%; margin-bottom: 0.75rem; }
+        .file-info { font-size: 12px; padding: 0.5rem 0.75rem; background: var(--color-background-secondary); border-radius: var(--border-radius-md); margin-top: 0.5rem; }
+        .file-info.success { background: var(--color-background-success); color: var(--color-text-success); }
+        .file-info.error { background: var(--color-background-danger); color: var(--color-text-danger); }
+        .button-group { display: flex; gap: 8px; margin-top: 1.5rem; }
+        button { padding: 0.5rem 1rem; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); border-radius: var(--border-radius-md); cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+        button:hover { background: var(--color-background-secondary); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        /*button.primary { background: var(--color-background-info); color: var(--color-text-info); border-color: var(--color-border-info); }
+        button.primary:hover { background: var(--color-background-info); filter: brightness(0.95); }
+        */
+        .status { font-size: 13px; padding: 0.75rem; border-radius: var(--border-radius-md); margin-top: 1rem; }
+        .status.loading { background: var(--color-background-info); color: var(--color-text-info); }
+        .status.success { background: var(--color-background-success); color: var(--color-text-success); }
+        .status.error { background: var(--color-background-danger); color: var(--color-text-danger); }
+        .output-preview { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1rem; margin-top: 1rem; max-height: 300px; overflow-y: auto; font-family: var(--font-mono); font-size: 12px; }
+        .icon { display: inline-block; margin-right: 0.5rem; }
+		
+#app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    background: var(--header-bg);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+#btn-home,
+#convertBtn,
+#downloadBtn,
+#file-upload-button,
+#convertBtn,
+csFile
+ {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 1.1em;
+    line-height: 1;
+    transition: background 0.15s;
+}
+#btn-home:hover,
+#button.primary:hover,
+#file-upload-button:hover,
+#convertBtn:hover,
+#downloadBtn:hover,
+csFile:hover { background: rgba(255,255,255,0.22); }
+
+a {
+	color: var(--sbb-red);
+}
+
+
+#app-title {
+    color: white;
+    font-size: 1.05em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+#header-center {
+    flex: 1;
+    text-align: center;
+}
+#live-clock {
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--text-main);
+}
+
+
+#header-right {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.page-footer {
+	position: absolute;
+	text-decoration: none;
+	bottom: 0;
+}
+
+.page-footer a, a:hover, a:visited, a:active {
+	color: inherit;
+	text-decoration: none;
+ }
+    </style>
+</head>
+<body>
+    <header id="app-header">
+        <div id="header-left">
+			<button id="btn-home" onClick="window.location = 'https://nowe.stellwerksim.ch'">⌂ Home</button>
+        </div>
+		<div id="header-right">
+			<span id="app-title">öV NOWE</span>
+		</div>
+		    </header>
+    <div class="container">
+        <div class="card" style="padding: 20px;">
+            <h1>Combined Stations Converter</h1>
+            <p class="subtitle">Konvertiere deine Stationsnamen zu DIDOK-IDs</p>
+
+            <div class="upload-section">
+                <label class="upload-label">DIDOK-CSV Datei</label>
+                <p class="upload-hint">Importiere die DiDok-Datei</p>
+                <input type="file" id="didokFile" accept=".csv" />
+                <div id="didokInfo"></div>
+            </div>
+
+            <div class="upload-section">
+                <label class="upload-label">combinedStations.js Datei</label>
+                <p class="upload-hint">Lade deine combinedStations.js mit Stationsnamen</p>
+                <input type="file" id="csFile" accept=".js" />
+                <div id="csInfo"></div>
+            </div>
+
+            <div class="button-group">
+                <button class="primary" id="convertBtn">Konvertieren</button>
+                <button id="downloadBtn" disabled>Datei herunterladen</button>
+            </div>
+
+            <div id="status"></div>
+            <div id="preview"></div>
+			<p>Entnehme bitte dem <a href="https://wiki.oev-ansagen.ch/NOWE" style="text-decoration: none; font-weight: 700;">Wiki</a>, wie die Datei nun auf der Produktionsumgebung landet.</p>
+        </div>
+    
+	</div>
+	
+    <script>
+        let didokData = null;
+        let csData = null;
+        let convertedResult = null;
+
+        const didokFile = document.getElementById('didokFile');
+        const csFile = document.getElementById('csFile');
+        const convertBtn = document.getElementById('convertBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const didokInfo = document.getElementById('didokInfo');
+        const csInfo = document.getElementById('csInfo');
+        const statusDiv = document.getElementById('status');
+        const previewDiv = document.getElementById('preview');
+
+        didokFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const lines = text.split('\n');
+                const nameToId = {};
+
+                // Parse CSV
+                const header = lines[0].split(';');
+                const numberIdx = header.indexOf('sloid');
+                const designationIdx = header.indexOf('designationOfficial');
+
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    const row = lines[i].split(';');
+                    const id = row[numberIdx]?.trim();
+                    const name = row[designationIdx]?.trim();
+                    if (id && name) {
+                        nameToId[name] = id;
+                    }
+                }
+
+                didokData = nameToId;
+                didokInfo.innerHTML = `<div class="file-info success">✓ ${Object.keys(nameToId).length} Stationen geladen</div>`;
+            } catch (err) {
+                didokInfo.innerHTML = `<div class="file-info error">✗ Fehler beim Lesen der Datei</div>`;
+            }
+        });
+
+        csFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const match = text.match(/window\.combinedStations\s*=\s*(\{.*?\});/s);
+                if (!match) {
+                    csInfo.innerHTML = `<div class="file-info error">✗ combinedStations nicht gefunden</div>`;
+                    return;
+                }
+
+                let jsObj = match[1];
+                jsObj = jsObj.replace(/\/\/.*?$/gm, '');
+                jsObj = jsObj.replace(/'/g, '"');
+                jsObj = jsObj.replace(/,(\s*[\]\}])/g, '$1');
+
+                const parsed = JSON.parse(jsObj);
+                csData = parsed;
+                csInfo.innerHTML = `<div class="file-info success">✓ ${Object.keys(parsed).length} Gruppen geladen</div>`;
+            } catch (err) {
+                csInfo.innerHTML = `<div class="file-info error">✗ Fehler beim Parsen: ${err.message}</div>`;
+                csData = null;
+            }
+        });
+
+        convertBtn.addEventListener('click', () => {
+            if (!didokData || !csData) {
+                statusDiv.innerHTML = '<div class="status error">✗ Bitte beide Dateien laden</div>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<div class="status loading">⏳ Konvertiere...</div>';
+            previewDiv.innerHTML = '';
+
+            setTimeout(() => {
+                const converted = {};
+                const notFound = new Set();
+
+                for (const [groupKey, stationList] of Object.entries(csData)) {
+                    const newKey = didokData[groupKey] || groupKey;
+                    const newStations = [];
+
+                    for (const station of stationList) {
+                        if (didokData[station]) {
+                            newStations.push(didokData[station]);
+                        } else {
+                            newStations.push(station);
+                            if (station in didokData === false && !/^\d+$/.test(station)) {
+                                notFound.add(station);
+                            }
+                        }
+                    }
+
+                    converted[newKey] = newStations;
+                }
+
+                convertedResult = converted;
+
+                let jsOutput = '// ─── Es beginnt mit COMBINED_STATIONS... ─────────────────────────────────────\n';
+                jsOutput += 'window.combinedStations = {\n';
+
+                const entries = Object.entries(converted);
+                entries.forEach(([key, stations], i) => {
+                    const stationsStr = stations.map(s => `'${s}'`).join(', ');
+                    jsOutput += `    '${key}': [${stationsStr}]`;
+                    if (i < entries.length - 1) jsOutput += ',';
+                    jsOutput += '\n';
+                });
+
+                jsOutput += '};\n';
+
+                let message = `<div class="status success">✅ ${entries.length} Gruppen konvertiert`;
+                if (notFound.size > 0) {
+                    message += ` (${notFound.size} nicht gefunden)`;
+                }
+                message += '</div>';
+
+                statusDiv.innerHTML = message;
+
+                previewDiv.innerHTML = `<div><strong>Vorschau:</strong><div class="output-preview">${jsOutput.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div></div>`;
+
+                downloadBtn.disabled = false;
+            }, 500);
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if (!convertedResult) return;
+
+            let jsOutput = '// ─── Es beginnt mit COMBINED_STATIONS... ─────────────────────────────────────\n';
+            jsOutput += 'window.combinedStations = {\n';
+
+            const entries = Object.entries(convertedResult);
+            entries.forEach(([key, stations], i) => {
+                const stationsStr = stations.map(s => `'${s}'`).join(', ');
+                jsOutput += `    '${key}': [${stationsStr}]`;
+                if (i < entries.length - 1) jsOutput += ',';
+                jsOutput += '\n';
+            });
+
+            jsOutput += '};\n';
+
+            const blob = new Blob([jsOutput], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'combinedStationsNOWE.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+<footer class="page-footer">Zum Manual: <a href="/manual.html">manual.html</a></footer>
+</html>
