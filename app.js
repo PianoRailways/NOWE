@@ -77,11 +77,9 @@ function updateFavHighlight() {
 // ─── Es beginnt mit COMBINED_STATIONS... -────────────────────────────────────
 
 const COMBINED_STATIONS = {
-    // Beispiel: Bahnhof X mit IDs für verschiedene Bereiche
-    '8508100': ['8508100', '8576937'],
-	//'8507000': ['8576937'],
-    //'8576937': ['8508100', '8576937'], 
-    // Du kannst hier beliebig viele Gruppen hinzufügen
+    // Beispiel: Bahnhof X mit IDs für verschiedene Bereiche (SLOID-Format)
+    'ch:1:sloid:8508100': ['ch:1:sloid:8508100', 'ch:1:sloid:8576937'],
+	// Du kannst hier beliebig viele Gruppen hinzufügen
 };
 
 // Hilfsfunktion, um die Gruppe zu finden
@@ -285,8 +283,9 @@ async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME)
     }
     
 
-    // 3. Falls stopId ein Name ist (nicht numerisch), versuche zu mappen
-    else if (!/^\d{7,8}$/.test(stopId) && window.combinedStations) {
+    // 3. Falls stopId ein Name ist (nicht numerisch und nicht SLOID und nicht externe ID), versuche zu mappen
+    // Regex erklärt: ch:1:sloid:XXXXX, 7-8-stellige IDs, und externe IDs mit _ oder : sind keine Namen
+    else if (!/^(ch:1:sloid:\d+|\d{7,8}|[A-Z0-9]+[_:].+)$/.test(stopId) && window.combinedStations) {
         const group = getStationGroupByName(stopId);
         if (group) {
             console.log(`✓ Gefunden als Gruppenschlüssel: ${stopId}`, group);
@@ -821,7 +820,8 @@ function initFilterBar() {
 
 /**
  * Prüft, ob ein Query in didokmapping vorhanden ist.
- * Gibt ein Objekt { id, name } zurück oder null.
+ * Gibt ein Objekt { id (SLOID), name } zurück oder null.
+ * ✅ Löst DiDok-ID immer zu SLOID auf
  */
 function checkDidokMapping(query) {
     if (!window.didokMapping) return null;
@@ -845,7 +845,11 @@ function checkDidokMapping(query) {
     if (/^\d{7,8}$/.test(q)) {
         if (window.didokMapping[q]) {
             const name = window.didokMapping[q];
-            return { id: q, name, isDidokMatch: true };
+            // ✅ DiDok-ID zu SLOID konvertieren: 85XXXXX → ch:1:sloid:XXXXX
+            const sloidId = /^85\d{5}$/.test(q) 
+                ? `ch:1:sloid:${q.substring(2)}`
+                : q;
+            return { id: sloidId, name, isDidokMatch: true };
         }
     }
     
@@ -941,10 +945,15 @@ function initStopSearch() {
                 // Erst didokmapping prüfen
                 const didokResult = checkDidokMapping(v);
                 if (didokResult) {
-                    STOP_ID = didokResult.id;
+                    STOP_ID = didokResult.id; // Bereits SLOID
                     input.value = didokResult.name;
                 } else if (/^\d{7,8}$/.test(v)) {
-                    STOP_ID = v;
+                    // ✅ Falls es eine DiDok-ID ist (85XXXXX), konvertiere zu SLOID
+                    if (/^85\d{5}$/.test(v)) {
+                        STOP_ID = `ch:1:sloid:${v.substring(2)}`;
+                    } else {
+                        STOP_ID = v;
+                    }
                 }
             }
 
@@ -1107,37 +1116,9 @@ document.addEventListener('DOMContentLoaded', () => {
         stopAutoRefresh(); // Auto-Refresh stoppen, da wir jetzt ein fixes Datum haben
     });
 
-// ─── Neue refreshBtn-Logik (ersetzt alte Zeile 1110-1112) ───────────────────
- 
-DOM.refreshBtn()?.addEventListener('click', () => {
-    const inputValue = DOM.stopInput()?.value?.trim();
-    
-    if (!inputValue) {
-        showStatus('Bitte Station eingeben', 'warn');
-        return;
-    }
- 
-    // Schritt 1: Abkürzung → Name (falls im didokMapping)
-    let stationName = inputValue;
-    if (window.didokMapping && window.didokMapping[inputValue]) {
-        const mapped = window.didokMapping[inputValue];
-        stationName = Array.isArray(mapped) ? mapped[0] : mapped;
-    }
- 
-    // Schritt 2: Name → {sloid, sloids} aus combinedStations
-    const stationInfo = window.combinedStations?.[stationName];
-    
-    if (stationInfo && stationInfo.sloid) {
-        STOP_ID = stationInfo.sloid;
-        DOM.stopInput().value = stationName;
-        updateUrlParams();
-        loadBoard();
-        updateFavHighlight();
-        startAutoRefresh();
-    } else {
-        showStatus(`Keine Station gefunden: ${stationName}`, 'error');
-    }
-});
+    DOM.refreshBtn()?.addEventListener('click', () => {
+        if (STOP_ID) loadBoard();
+    });
 
     if (STOP_ID) {
         loadBoard();
@@ -1164,4 +1145,3 @@ DOM.refreshBtn()?.addEventListener('click', () => {
 			});
 		}
 });
-

@@ -58,19 +58,28 @@ export async function fetchDepartures(stopId, queryTime = null) {
     try {
         let actualStopId = stopId;
         
+        // ✅ Legacy-Fallback: Falls stopId eine alte DiDok-ID ist, resolve zu SLOID
         if (window.didokMapping && window.didokMapping[stopId]) {
             const stationName = window.didokMapping[stopId];
-            console.log(`🔄 DIDOK-Mapping: "${stopId}" → "${stationName}"`);
+            console.log(`🔄 DIDOK-Fallback: "${stopId}" → "${stationName}"`);
             
             const results = await searchStops(stationName);
             if (results && results.length > 0) {
-                // ✅ Stelle sicher, dass .ref ein String ist
-                actualStopId = String(results[0].ref || results[0].id || stationName);
-                console.log(`✓ Aufgelöst zu ID: "${actualStopId}"`);
+                actualStopId = String(results[0].ref);
+                console.log(`✓ Aufgelöst zu SLOID: "${actualStopId}"`);
             } else {
                 console.warn(`⚠️ DIDOK-Code konnte nicht aufgelöst werden: ${stopId}`);
+                // Fallback: Nutze stopId direkt (wird wahrscheinlich fehlschlag)
                 actualStopId = String(stopId);
             }
+        }
+        
+        // ✅ Validierung: actualStopId muss entweder SLOID oder externe ID sein
+        // SLOID: ch:1:sloid:XXXXX
+        // Extern: beliebiges Format (z.B. 8014440_gen:missingSLOID_pf:1, 8718462)
+        if (!/(^ch:1:sloid:\d+$|^\d{3,})/.test(actualStopId)) {
+            console.warn(`⚠️ WARNUNG: Stop-ID ist nicht im erwarteten Format: "${actualStopId}". Versuche trotzdem.`);
+            // Nicht werfen, aber loggen — externe IDs können ungewöhnliche Formate haben
         }
 
         const xmlBody = createOJPRequest(actualStopId, queryTime);
@@ -343,22 +352,17 @@ function parseOJPResponse(xmlString) {
         
         if (!spRef) return null;
         
-        // Wenn es bereits eine 7-stellige Nummer ist, gib sie direkt zurück
-        if (/^\d{7}$/.test(spRef)) {
-            return spRef;
+        // ✅ Swiss SLOID: Extrahiere Parent-SLOID ohne Perron/Quay
+        // Format: ch:1:sloid:79897:0:1 → ch:1:sloid:79897
+        //         ch:1:sloid:90015 → ch:1:sloid:90015
+        const swissMatch = spRef.match(/^(ch:1:sloid:\d+)(?::|$)/);
+        if (swissMatch) {
+            return swissMatch[1];
         }
         
-        // Wenn das Format "ch:1:sloid:XXXXX::YYYYY" ist, extrahiere die erste Nummer (Parent-SLOID)
-        // Das Format ist: ch:1:sloid:<parent>::<quay>
-        const match = spRef.match(/ch:1:sloid:(\d+)/);
-        if (match) {
-            const parentSloid = match[1];
-            // Rekonstruiere zu 7-stelliger SLOID: "85" + 5-stellige Nummer
-            const fullSloid = '85' + parentSloid.padStart(5, '0');
-            return fullSloid;
-        }
-        
-        // Fallback: Gib das Original zurück
+        // ✅ External IDs: Behalte sie als-is
+        // Deutschland: 8014440_gen:missingSLOID_pf:1
+        // Frankreich: 8718462
         return spRef;
     }
 
