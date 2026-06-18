@@ -59,6 +59,12 @@ p {
     display: none; !important
   }
 }
+@media screen and (min-width: 600px) {
+  .mobilebox {
+    display: none; !important
+  }
+}
+  
 
 .summary, .card { 
 	background: var(--board-alt); 
