@@ -24,7 +24,7 @@
 		</div>
 	</header>
 <div class="content" id="top">
-<details class="summary">
+<details open class="card">
 	<summary class="summary-title">Allgemeines</summary>
 		<ul>
 			<details>
@@ -50,7 +50,7 @@
 		</ul>
 </details>
 <details class="summary">
-	<summary>Zielpublikum</summary>
+	<summary class="summary-title">Zielpublikum</summary>
 		<p>Das Zielpublikum sind vor allem das erweiterte private Umfeld des <a href="#autor" class="int">Autors</a>.<br>
 			Diese wiederum dürfen <strong>NOWE</strong> natürlich auch an ihr näheres privates Umfeld weitergeben.<br>
 			Zu weit sollte das Tool nicht verbreitet werden, da die API ein Limit hat. Dieses Limit liegt derzeit bei 50 Abfragen pro Minute und 20'000 Anfragen am Tag. Dabei löst eine vermeidlich simple Abfrage eines Bahnhofs mehrere Anfragen aus. Hintergrund:
@@ -61,8 +61,8 @@
 		</ul></p>
 </details>
 <hr>
-<details class="summary">
-	<summary class="summary-title">Hauptseite NOWE</summary>
+<details class="card">
+	<summary class="summary-title" id="start">Hauptseite NOWE</summary>
 		<ul>
 			<li>Schaltflächen</li>
 				<ol type="1">
@@ -70,7 +70,7 @@
 					<li>Home-Button mit leerem Eingabefeld</li>
 					<li><a href="#schalt-fav" class="int">Favoriten</a></li>
 			<li>Suche</li>
-			<li>Filter</li>
+			<li><a href="#filter" class="int">Filter</li>
 		</ul>
 		<p>Weiter unten gibt es Screenshots: Siehe <a href="#demo" class="int">Demo</a></p>
 </details>
@@ -337,8 +337,8 @@
 <div class="card">
 	<div id="demo">
 	<h1>Demo</h1>
-	<p class="box">Fahre mit der Maus über die Kartenbereiche, um Tooltip-Informationen anzuzeigen.<br>
-	Auf Mobilgeräten: Tippe auf einen Bereich.</p>
+	<p class="box desktopbox">Fahre mit der Maus über die Kartenbereiche, um Tooltip-Informationen anzuzeigen.</p>
+	<p class="box mobilebox">Tippe auf einen Bereich, um Tooltip-Informationen anzuzeigen.</p>
 	<center><img src="/img/platform-change.png" usemap="#base-map"></center>
 	</div>
 </div>
