@@ -1,0 +1,400 @@
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   NOWE Trip Info â€“ trip.css
+   Chain-Ã¤hnliches Layout wie die Abfahrtstabelle
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+
+/* â”€â”€â”€ Eingabe-Bereich â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+#trip-input-wrapper {
+    padding: 12px 14px;
+    background: var(--board-head);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.trip-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+#trip-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.88em;
+    color: var(--text-main);
+    background: rgba(255,255,255,0.05);
+    transition: background .15s, border-color .15s;
+}
+
+#trip-input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.7;
+}
+
+#trip-input:focus {
+    outline: none;
+    border-color: var(--sbb-orange);
+    background: rgba(255,255,255,0.08);
+}
+
+.trip-date-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.trip-date-row label {
+    font-weight: 700;
+    font-size: 0.85em;
+    white-space: nowrap;
+    color: var(--text-via);
+}
+
+#trip-date {
+    flex: 1;
+    padding: 7px 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 3px;
+    font-size: 0.9em;
+    color: var(--text-main);
+    background: rgba(255,255,255,0.05);
+    transition: background .15s, border-color .15s;
+}
+
+#trip-date:focus {
+    outline: none;
+    border-color: var(--sbb-orange);
+    background: rgba(255,255,255,0.08);
+}
+
+#btn-trip-fetch {
+    padding: 8px 20px;
+    background: var(--sbb-red);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-weight: 700;
+    font-size: 0.95em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s, transform .1s;
+}
+
+#btn-trip-fetch:hover  { background: #d5561f; }
+#btn-trip-fetch:active { transform: scale(0.98); }
+
+/* â”€â”€â”€ Status â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.trip-status {
+    padding: 10px 14px;
+    font-size: 0.88em;
+    text-align: center;
+    border-radius: 0;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trip-status--info    { 
+    background: rgba(100, 160, 255, 0.15);
+    color: #7fb3ff;
+    border-bottom: 1px solid rgba(100, 160, 255, 0.2);
+}
+.trip-status--success { 
+    background: rgba(123, 165, 91, 0.15);
+    color: #a8d17a;
+    border-bottom: 1px solid rgba(123, 165, 91, 0.2);
+}
+.trip-status--error   { 
+    background: rgba(255, 59, 48, 0.15);
+    color: #ff9999;
+    border-bottom: 1px solid rgba(255, 59, 48, 0.2);
+}
+
+/* â”€â”€â”€ Trip-Header (Line-Badge links + Destination + Zugnummer) â”€â”€â”€â”€ */
+
+.trip-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--board-head);
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border);
+}
+
+.trip-header .line-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    min-width: 50px;
+    flex-shrink: 0;
+}
+
+.trip-header .line-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-weight: 500;
+    font-size: 0.88em;
+    letter-spacing: 0.01em;
+    background: #445;
+    color: white;
+    min-width: 44px;
+    text-align: center;
+    border: 1px solid #000;
+}
+
+/* Line-Badge Farben (wie in style.css) */
+.trip-header .line-badge[data-type="ICE"], 
+.trip-header .line-badge[data-type="EXT"] { background: var(--sbb-red); font-style: italic; font-weight: 400;}
+.trip-header .line-badge[data-type="IC"],
+.trip-header .line-badge[data-type="IR"],
+.trip-header .line-badge[data-type="NJ"],
+.trip-header .line-badge[data-type="EN"]  { background: var(--sbb-red); }
+.trip-header .line-badge[data-type="EC"]  { background: var(--sbb-red); font-style: italic; }
+.trip-header .line-badge[data-type="TGV"] { background: var(--sbb-red); font-style: italic; }
+.trip-header .line-badge[data-type="RJ"]  { background: var(--sbb-red); }
+.trip-header .line-badge[data-type="RJX"] { background: var(--sbb-red); }
+.trip-header .line-badge[data-type="VAE"] { background: var(--sob-blue); color: var(--sob-green); }
+.trip-header .line-badge[data-type="PE"] { background: var(--sbb-red); font-style: italic; }
+.trip-header .line-badge[data-type="LIX"],
+.trip-header .line-badge[data-type="IRLEX"],
+.trip-header .line-badge[data-type="IRLIX"],
+.trip-header .line-badge[data-type="GPX"] { background: var(--sbb-red); font-style: italic; }
+.trip-header .line-badge[data-type="RE"],
+.trip-header .line-badge[data-type="IRE"] { background: white; color: var(--sbb-red); }
+.trip-header .line-badge[data-type="S"],
+.trip-header .line-badge[data-type="R"],
+.trip-header .line-badge[data-type="RB"],
+.trip-header .line-badge[data-type="TER"],
+.trip-header .line-badge[data-type="CC"] { background: white; color: black; }
+.trip-header .line-badge[data-type="T"],
+.trip-header .line-badge[data-type="BP"],
+.trip-header .line-badge[data-type="EXB"],
+.trip-header .line-badge[data-type="B"] { background-color: var(--sbb-blue); color: white }
+.trip-header .line-badge[data-type="EV"] { background-color: var(--sbb-orange); color: #000; }
+.trip-header .line-badge[data-type="M"] { background-color: #005198; color: #fff }
+.trip-header .line-badge[data-type="SN"]  { border: 1px solid #000; background-color: #000; color: #fcbb00; }
+.trip-header .line-badge[data-type="BN"] { border: 1px solid #fcbb00; background-color: #000; color: #fff; }
+.trip-header .line-badge[data-type="N"]   { background: #000; color: var(--night-gold); border: 1px solid var(--night-gold); }
+.trip-header .line-badge[data-type="BAT"],
+.trip-header .line-badge[data-type="FAE"] { background: #1a6ea8; }
+.trip-header .line-badge[data-type="FUN"],
+.trip-header .line-badge[data-type="ASC"],
+.trip-header .line-badge[data-type="GB"]  { background: #7f7d32; }
+.trip-header .line-badge[data-type="PB"]  { background: #2e7d32; }
+
+.trip-header__dest {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.95em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.02em;
+}
+
+.trip-header__num {
+    font-size: 0.78em;
+    color: var(--text-dim);
+    font-family: monospace;
+    text-align: center;
+    letter-spacing: 0.04em;
+	text-decoration: none;
+}
+
+/* â”€â”€â”€ Chain (wie in Abfahrtstabelle) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.chain {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.chain-stop {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    padding: 4px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--board-bg);
+}
+
+.chain-stop:nth-child(odd) { background: var(--board-row); }
+.chain-stop:nth-child(even) { background: var(--board-alt); }
+
+.chain-stop.this-call {
+    background: rgba(232, 78, 16, 0.15) !important;
+    border-left: 3px solid var(--sbb-orange);
+    padding-left: 11px;
+}
+
+/* â”€â”€ Zeit-Spalte â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.chain-times {
+    width: 70px;
+    flex-shrink: 0;
+    font-size: 0.95em;
+    padding-top: 2px;
+    line-height: 1.6;
+}
+
+.time-row {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    white-space: nowrap;
+    font-size: 0.9em;
+}
+
+.ps-time {
+    font-family: 'Courier New', monospace;
+    font-size: 0.95em;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.ps-time--arr { color: var(--text-via); opacity: 0.85; font-weight: 400; }
+.ps-time--dep { color: var(--text-main); font-weight: 600; }
+
+.delay-badge {
+    font-size: 0.8em;
+    color: var(--sbb-red);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.delay-badge--early {
+	background: rgba(79, 195, 247, 0.9);
+	color: #fff; }
+.delay-badge--late  {
+	color: var(--sbb-red);
+	}
+
+
+/* â”€â”€ Dot-Spalte (Perlschnur-Linie) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.chain-dot-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 18px;
+    flex-shrink: 0;
+}
+
+.ps-line-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 48px;
+    gap: 0;
+}
+
+.ps-line {
+    flex: 1;
+    width: 2px;
+    background: #FFFFFF47;
+    min-height: 12px;
+}
+
+.ps-line--top { min-height: 0; }
+.ps-line--bot { min-height: 0; }
+
+.ps-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #FFFFFF47;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.ps-dot--first,
+.ps-dot--last {
+    width: 16px;
+    height: 16px;
+    background: #FFFFFF47;
+    box-shadow: 0 0 0 2px #FFFFFF47;
+}
+
+/* â”€â”€ Info-Spalte (Name + Quay) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+.chain-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding-bottom: 0;
+}
+
+.chain-name {
+	padding-top: 4px;
+    font-size: 1em;
+    font-weight: 300;
+    color: var(--text-main);
+    letter-spacing: 0.01em;
+}
+.chain-name a {
+    color: inherit;
+    text-decoration: none;
+}
+.chain-name a:hover {
+    color: var(--sob-green);
+}
+
+.ps-quay-line {
+    font-size: 0.7em;
+    color: var(--text-dim);
+    margin-top: 2px;
+    font-weight: 400;
+}
+
+.access-icon {
+    margin-top: 3px;
+    font-size: 0.95em;
+    vertical-align: middle;
+    opacity: .8;
+}
+
+.access-icon--ok  { opacity: 1; }
+.access-icon--alt { opacity: .75; filter: saturate(0.8); }
+
+/* â”€â”€â”€ Board-Container â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+#trip-board {
+    padding: 0 0 20px 0;
+    flex: 1;
+}
+
+/* â”€â”€â”€ Responsive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+
+@media (max-width: 480px) {
+    .chain-stop {
+        padding: 3px 10px;
+        gap: 8px;
+    }
+    .chain-times {
+        width: 70px;
+    }
+    .ps-time {
+        font-size: 0.85em;
+    }
+    .chain-name {
+        font-size: 1em;
+    }
+    .trip-header .line-badge {
+        min-width: 40px;
+        padding: 1px 6px;
+        font-size: 1em; 
+    }
+}
