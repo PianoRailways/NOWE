@@ -209,6 +209,12 @@
 	</p>
 </div>
 
+<div class="card" id="sjyid">
+<h2>Swiss Journey ID</h2>
+	<p>In der Ansicht der <a href="#demo" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
+	<p>Die SJYID wird beim Abfragen eines <a href="#trip" class="int">Trips</a> benötigt.</p>
+</div>
+
 <div class="card" id="formation">
 <h2>Formation</h2>
 <p>Die Formationsanzeige ist erreichbar über <a href="./formation" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/formation</a>. Die Eingabe des EVU ist nicht unbedingt nötig. Es werden automatisch die verfügbaren EVUs durchgerechnet.</p>
@@ -223,15 +229,10 @@
 	</div>
 </div>
 
-<div class="card" id="sjyid">
-<h2>Swiss Journey ID</h2>
-	<p>In der Ansicht der <a href="#demo" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
-	<p>Die SJYID wird beim Abfragen eines <a href="#trip" class="int">Trips</a> benötigt.</p>
-</div>
-
 <div class="card" id="trip">
 	<h2>Trip</h2>
 	<p>Die Trip-Ansicht ist erreichbar über <a href="./trip" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/trip</a>. Dort kann die SJYID eingegeben werden, um die Trip-Ansicht zu sehen.</p>
+	<center><img src="/img/trip.png" usemap="#trip-map"></center>
 </div>
 	
 <div class="card" id="table">
@@ -407,6 +408,16 @@
 		<area target="" data-tooltip="Soll-Fahrplanzeiten und Verspätungsprognosen" title="Soll-Fahrplanzeiten und Verspätungsprognosen"   coords="264,1212,100,572" shape="rect">
 	</map>
 
+	<map name="trip-map">
+		<area target="" data-tooltip="Swiss Journey ID" title="Swiss Journey ID" coords="31,109,580,172" shape="rect">
+		<area target="" data-tooltip="Datum" title="Datum" coords="145,193,719,256" shape="rect">
+		<area target="" data-tooltip="Kategorie und Liniennummer" title="Kategorie und Liniennummer" coords="145,355,643,285" shape="rect">
+		<area target="" data-tooltip="Anklickbare Zwischenhalte und Gleis" title="Anklickbare Zwischenhalte und Gleis" coords="214,482,571,1330" shape="rect">
+		<area target="" data-tooltip="Nur Fahrplanzeit (keine Live-Daten oder pünktlich)" title="Nur Fahrplanzeit (keine Live-Daten oder pünktlich)" coords="5,699,179,488" shape="rect">
+		<area target="" data-tooltip="Verspätung" title="Verspätung" coords="88,705,183,1239" shape="rect">
+		<area target="" data-tooltip="Verfrühung" title="Verfrühung" coords="" shape="rect">
+		<area target="" data-tooltip="Linien-Badge und Fahrtnummer im gewohnten Design" title="Linien-Badge und Fahrtnummer im gewohnten Design" coords="29,370,140,469" shape="rect">
+	</map>
 
 </body>
 	<footer class="page-footer" id="autor">
