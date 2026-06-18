@@ -31,7 +31,7 @@ function fmtTime(iso) {
     return m ? `${m[1]}:${m[2]}` : null;
 }
 
-// Delay-Label für inline-Anzeige (z.B. "+1'23" oder "+45s")
+// Delay-Label für inline-Anzeige (z.B. "+1:23" oder "−0:45")
 function delayLabel(sec) {
     if (sec === null || sec === undefined || sec === 0) return '';
     
@@ -97,7 +97,7 @@ function renderHeader(trip) {
     `;
 }
 
-// ─── Chain-ähnliche Perlschnur (wie Abfahrtstabelle) ─────────────────────────
+// ─── Chain-ähnliche Perlschnur (wie Abfahrtstabelle) mit Ausfällen ──────────
 function renderPerlschnur(trip) {
     let html = '<div class="chain">';
     
@@ -180,6 +180,28 @@ function renderPerlschnur(trip) {
                 ${chainInfo}
             </div>
         `;
+
+        // ── Ausfälle für diesen Stop ──────────────────────────────────────
+        if (trip.situations) {
+            for (const [sitId, sit] of Object.entries(trip.situations)) {
+                // Prüfe, ob dieser Stop betroffen ist
+                const isAffected = sit.affectedStops.includes(stop.stopPointRef) 
+                                || sit.affectedStops.includes(stop.name);
+                
+                if (isAffected && sit.summary) {
+                    const severityClass = sit.severity.toLowerCase() === 'störung' 
+                                        ? 'situation-alert--disruption'
+                                        : 'situation-alert--warning';
+                    
+                    html += `
+                        <div class="situation-alert ${severityClass}">
+                            <span class="situation-icon">⚠</span>
+                            <span class="situation-text">${sit.summary}</span>
+                        </div>
+                    `;
+                }
+            }
+        }
     });
 
     html += '</div>';

@@ -66,9 +66,6 @@ function calcDelaySeconds(timetabled, estimated) {
 }
 
 // ─── Rollstuhl-Status aus NameSuffix ─────────────────────────────────────────
-// ALTERNATIVE_TRANSPORT          → Bus/EV, kein normaler Bahnsteig
-// PLATFORM_ACCESS_WITHOUT_ASSISTANCE → Einstieg ohne Hilfe möglich
-// leer                           → keine Angabe
 
 function parseAccessibility(nameSuffix) {
     if (!nameSuffix) return null;
@@ -78,11 +75,63 @@ function parseAccessibility(nameSuffix) {
     return null;
 }
 
+// ─── Situation-Parser (Ausfälle, Fahrplanänderungen) ──────────────────────────
+
+function parseSituations(xmlDoc) {
+    const situations = {};
+    const sitElements = xmlDoc.getElementsByTagName('PtSituation');
+
+    for (let i = 0; i < sitElements.length; i++) {
+        const sit = sitElements[i];
+        const sitId = sit.getAttribute('siri:id') || sit.getAttribute('id') || `sit-${i}`;
+
+        // Summary und Description extrahieren
+        const summaryText = sit.getElementsByTagName('Summary')[0]
+                              ?.getElementsByTagName('Text')[0]?.textContent?.trim() || '';
+        const descText = sit.getElementsByTagName('Description')[0]
+                           ?.getElementsByTagName('Text')[0]?.textContent?.trim() || '';
+
+        // Severity: 'Normale', 'Warnung', 'Störung'
+        const severity = sit.getElementsByTagName('Severity')[0]?.textContent?.trim() || 'Normale';
+
+        // Affected StopPoints
+        const affectedStops = [];
+        const stopRefs = sit.getElementsByTagName('siri:StopPointRef');
+        for (let j = 0; j < stopRefs.length; j++) {
+            const stopRef = stopRefs[j].textContent?.trim();
+            if (stopRef) affectedStops.push(stopRef);
+        }
+
+        // Fallback: auch non-namespaced StopPointRef versuchen
+        if (affectedStops.length === 0) {
+            const stopRefsNoNS = sit.getElementsByTagName('StopPointRef');
+            for (let j = 0; j < stopRefsNoNS.length; j++) {
+                const stopRef = stopRefsNoNS[j].textContent?.trim();
+                if (stopRef) affectedStops.push(stopRef);
+            }
+        }
+
+        if (summaryText) {
+            situations[sitId] = {
+                summary: summaryText,
+                description: descText,
+                severity,
+                affectedStops
+            };
+        }
+    }
+
+    return situations;
+}
+
 // ─── Parser ───────────────────────────────────────────────────────────────────
 
 function parseTripInfoResponse(xmlString) {
     const parser  = new DOMParser();
     const xmlDoc  = parser.parseFromString(xmlString, 'text/xml');
+
+    // ── Situations zuerst extrahieren ────────────────────────────────────────
+    const situations = parseSituations(xmlDoc);
 
     const results = xmlDoc.getElementsByTagName('TripInfoResult');
     if (results.length === 0) {
@@ -217,7 +266,16 @@ function parseTripInfoResponse(xmlString) {
         });
     });
 
-    const trip = { trainNumber, line: publicCode, category, destination, operatorRef, stops };
+    const trip = { 
+        trainNumber, 
+        line: publicCode, 
+        category, 
+        destination, 
+        operatorRef, 
+        stops,
+        situations    // ← Situations hinzufügen
+    };
+    
     console.log(`✅ Trip: ${category} ${publicCode} Nr. ${trainNumber} → ${destination}`);
     console.log(`📊 Stop-Details: ${stops.length} Halte`);
     if (stops.length > 0) {
@@ -225,6 +283,10 @@ function parseTripInfoResponse(xmlString) {
         console.log(`   - Last:  ${stops[stops.length-1]?.name} (Ank: ${stops[stops.length-1]?.arrival.timetabled}) Gl. ${stops[stops.length-1]?.quay || 'N/A'}`);
         console.log(`   - Alle Stops:`, stops.map((s, i) => `[${i}] ${s.name} (${s.quay || '-'})`).join(' → '));
     }
+    if (Object.keys(situations).length > 0) {
+        console.log(`⚠️  Situationen gefunden:`, situations);
+    }
+    
     return trip;
 }
 
