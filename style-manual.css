@@ -51,9 +51,12 @@ p {
 	margin-bottom: 1.5rem; 
 }
 
-@media screen and (max-width: 440px) {
+@media screen and (max-width: 600px) {
   .content {
     padding: 0.5rem;
+  }
+  .desktopbox {
+    display: none; !important
   }
 }
 
