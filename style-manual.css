@@ -18,7 +18,7 @@
     --pifas-searchbar: #d7d7d7;
     --pifas-timenav: #eef;
     --live-red:   #ff3b30;
-	--plat-change:#fcbb00;
+	  --plat-change:#fcbb00;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -37,9 +37,9 @@ body {
 }
 
 p {
-  text-align: justify; // Blocksatz (ginge auch left oder right)
-  hyphens: auto; // Automatischer Zeilenumbruch bei langen Wörtern
-  word-break: break-word; // Verhindert Überlaufen von langen Wörtern
+  text-align: justify; /* Blocksatz (ginge auch left oder right) */
+  hyphens: auto; /* Automatischer Zeilenumbruch bei langen Wörtern */
+  word-break: break-word; /* Verhindert Überlaufen von langen Wörtern */
 }
 
 
@@ -50,12 +50,25 @@ p {
 	padding: 1.5rem; 
 	margin-bottom: 1.5rem; 
 }
-
-@media screen and (max-width: 440px) {
+/* MOBILE */
+@media screen and (max-width: 600px) {
   .content {
     padding: 0.5rem;
   }
+  .desktopbox {
+    display: none important;
+  }
 }
+/* DESKTOP */
+@media screen and (min-width: 600px) {
+  .mobilebox {
+    display: none !important;
+  }
+  img[usemap], img {
+      height: 80vh !important;
+  }
+}
+  
 
 .summary, .card { 
 	background: var(--board-alt); 
@@ -109,6 +122,9 @@ table, th, td {
   text-align: left;
   font-family: monospace;
   font-size: medium;
+}
+td {
+  padding-left: 5px;
 }
 
 caption, th {

@@ -37,3 +37,4 @@ stazione sud
 stazione est
 (lago)
 staziun
+stazione est
