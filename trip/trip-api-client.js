@@ -243,19 +243,23 @@ function parseTripInfoResponse(xmlString) {
         const depDelaySec = calcDelaySeconds(depTT, depEst);
 
 		// Sucht das ID-Tag im aktuellen Call (unter Berücksichtigung des Namespaces)
-		const stopPointRef = c.getElementsByTagName('siri:StopPointRef')[0]?.textContent?.trim()
+		let stopPointRef = c.getElementsByTagName('siri:StopPointRef')[0]?.textContent?.trim()
                   || c.getElementsByTagName('StopPointRef')[0]?.textContent?.trim()
                   || '';
-
-        // Request Stop (Halt auf Verlangen)
-        const isRequestStop = c.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
+		
+		// ✅ Kürze auf Parent-SLOID: ch:1:sloid:71772::717720 → ch:1:sloid:71772
+		if (stopPointRef.includes('ch:1:sloid:')) {
+			const match = stopPointRef.match(/^(ch:1:sloid:\d+)(?::|$)/);
+			if (match) {
+				stopPointRef = match[1];
+			}
+		}
 
         stops.push({
             name,
 			stopPointRef,
             quay,
             accessibility,  // 'ACCESSIBLE' | 'ALT_TRANSPORT' | null
-            requestStop:    isRequestStop,  // Halt auf Verlangen
             isThisCall: callData.isThisCall,  // Markiert den aktuellen Stop
             arrival: {
                 timetabled: arrTT  ? utcToLocalISO(arrTT)  : null,
