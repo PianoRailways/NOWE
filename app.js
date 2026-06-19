@@ -1004,15 +1004,16 @@ function offsetTime(minutes) {
     const baseDate = QUERY_DATE || todayISO();
     const baseTime = QUERY_TIME || now.toTimeString().substring(0, 5);
     
-    // Erzeuge ein Date-Objekt für die Berechnung
+    // Erzeuge ein Date-Objekt für die Berechnung (Parsing als lokale Zeit)
     let dateObj = new Date(`${baseDate}T${baseTime}:00`);
     
     // Minuten addieren oder subtrahieren
     dateObj.setMinutes(dateObj.getMinutes() + minutes);
     
-    // Neue Werte für den State formatieren
+    // ✅ Konvertiere zurück zu lokaler ISO-Zeit (ohne UTC-Versatz)
+    const offset = dateObj.getTimezoneOffset() * 60000;
     QUERY_TIME = dateObj.toTimeString().substring(0, 5);
-    QUERY_DATE = dateObj.toISOString().split('T')[0];
+    QUERY_DATE = (new Date(dateObj - offset)).toISOString().slice(0, 10);
     
     // Nur Date/Time Inputs aktualisieren, nicht das Stop-Feld
     const di = DOM.dateInput();
