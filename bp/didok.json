@@ -1,0 +1,6976 @@
+{
+    "betriebspunkte": [
+        {
+            "abk": "AD",
+            "bezOff": "Aadorf",
+            "bpUic": 8506013,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AA",
+            "bezOff": "Aarau",
+            "bpUic": 8502113,
+            "qosBitfeld": 9184249
+        },
+        {
+            "abk": "AAGB",
+            "bezOff": "Aarau GB",
+            "bpUic": 8502136,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "ABE",
+            "bezOff": "Aarberg",
+            "bpUic": 8504404,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ABO",
+            "bezOff": "Aarburg-Oftringen",
+            "bpUic": 8502000,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ATOS",
+            "bezOff": "Aareschlucht Ost (Bahn)",
+            "bpUic": 8530801,
+            "qosBitfeld": 525920
+        },
+        {
+            "abk": "MRSS",
+            "bezOff": "Aareschlucht West",
+            "bpUic": 8530760,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "AAT",
+            "bezOff": "Aathal",
+            "bpUic": 8503124,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "AEF",
+            "bezOff": "Aefligen",
+            "bpUic": 8508085,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "AE",
+            "bezOff": "Aesch BL",
+            "bpUic": 8500117,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AF",
+            "bezOff": "Affoltern am Albis",
+            "bpUic": 8502224,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AIG",
+            "bezOff": "Aigle",
+            "bpUic": 8501400,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "AI",
+            "bezOff": "Airolo",
+            "bpUic": 8505201,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "ALBE",
+            "bezOff": "Albeuve",
+            "bpUic": 8504072,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ALL",
+            "bezOff": "Allaman",
+            "bpUic": 8501035,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ALLE",
+            "bezOff": "Alle",
+            "bpUic": 8500186,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "ALGR",
+            "bezOff": "Alp Grüm",
+            "bpUic": 8509357,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "ADF",
+            "bezOff": "Alpnach Dorf",
+            "bpUic": 8508316,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "AST",
+            "bezOff": "Alpnachstad",
+            "bpUic": 8508317,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "AL",
+            "bezOff": "Altdorf UR",
+            "bpUic": 8505113,
+            "qosBitfeld": 9183861
+        },
+        {
+            "abk": "ALTD",
+            "bezOff": "Altendorf",
+            "bpUic": 8503211,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AT",
+            "bezOff": "Altmatt",
+            "bpUic": 8503292,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "ALN",
+            "bezOff": "Altnau",
+            "bpUic": 8506125,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ALT",
+            "bezOff": "Altstätten SG",
+            "bpUic": 8506319,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "AP",
+            "bezOff": "Ambrì-Piotta",
+            "bpUic": 8505202,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AW",
+            "bezOff": "Amriswil",
+            "bpUic": 8506109,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "AN",
+            "bezOff": "Andelfingen",
+            "bpUic": 8506047,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AND",
+            "bezOff": "Andermatt",
+            "bpUic": 8505165,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "ARB",
+            "bezOff": "Arbon",
+            "bpUic": 8506308,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ARBS",
+            "bezOff": "Arbon Seemoosriet",
+            "bpUic": 8516270,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "ADZ",
+            "bezOff": "Ardez",
+            "bpUic": 8509266,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ARD",
+            "bezOff": "Ardon",
+            "bpUic": 8501505,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ARN",
+            "bezOff": "Arnegg",
+            "bpUic": 8506211,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AX",
+            "bezOff": "Arnex",
+            "bpUic": 8501107,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AROS",
+            "bezOff": "Arosa",
+            "bpUic": 8509157,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GD",
+            "bezOff": "Arth-Goldau",
+            "bpUic": 8505004,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "AUSG",
+            "bezOff": "Au SG",
+            "bpUic": 8506316,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AU",
+            "bezOff": "Au ZH",
+            "bpUic": 8503205,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AB",
+            "bezOff": "Ausserberg",
+            "bpUic": 8507472,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "AUV",
+            "bezOff": "Auvernier",
+            "bpUic": 8504219,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AV",
+            "bezOff": "Avenches",
+            "bpUic": 8504126,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "AVRY",
+            "bezOff": "Avry-Matran",
+            "bpUic": 8501632,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BAA",
+            "bezOff": "Baar",
+            "bpUic": 8502206,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "BAAL",
+            "bezOff": "Baar Lindenpark",
+            "bpUic": 8515993,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BAAN",
+            "bezOff": "Baar Neufeld",
+            "bpUic": 8515992,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BRAG",
+            "bezOff": "Bad Ragaz",
+            "bpUic": 8509004,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "ZZ",
+            "bezOff": "Bad Zurzach",
+            "bpUic": 8503409,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BD",
+            "bezOff": "Baden",
+            "bpUic": 8503504,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "BLG",
+            "bezOff": "Baldegg",
+            "bpUic": 8502025,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BLGK",
+            "bezOff": "Baldegg Kloster",
+            "bpUic": 8516353,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BAL",
+            "bezOff": "Balerna",
+            "bpUic": 8505306,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "BLL",
+            "bezOff": "Ballwil",
+            "bpUic": 8502023,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BAN",
+            "bezOff": "Bannwil",
+            "bpUic": 8508155,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "BRG",
+            "bezOff": "Bargen BE",
+            "bpUic": 8504403,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BSDH",
+            "bezOff": "Basel Dreispitz",
+            "bpUic": 8500136,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BS",
+            "bezOff": "Basel SBB",
+            "bpUic": 8500010,
+            "qosBitfeld": 533497
+        },
+        {
+            "abk": "BSGB",
+            "bezOff": "Basel SBB GB",
+            "bpUic": 8500040,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "BSRB",
+            "bezOff": "Basel SBB RB",
+            "bpUic": 8500013,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "BSJA",
+            "bezOff": "Basel St. Jakob",
+            "bpUic": 8500038,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BSSJ",
+            "bezOff": "Basel St. Johann",
+            "bpUic": 8500016,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BSC",
+            "bezOff": "Bassecourt",
+            "bpUic": 8500122,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BSD",
+            "bezOff": "Bassersdorf",
+            "bpUic": 8503307,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BMA",
+            "bezOff": "Bauma",
+            "bpUic": 8503134,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BAV",
+            "bezOff": "Bavois",
+            "bpUic": 8501113,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BAZ",
+            "bezOff": "Bazenheid",
+            "bpUic": 8506205,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BW",
+            "bezOff": "Beinwil am See",
+            "bpUic": 8502034,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BF",
+            "bezOff": "Belfaux CFF",
+            "bpUic": 8504139,
+            "qosBitfeld": 9970288
+        },
+        {
+            "abk": "BFV",
+            "bezOff": "Belfaux-Village",
+            "bpUic": 8504182,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BELL",
+            "bezOff": "Bellach",
+            "bpUic": 8500205,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BEL",
+            "bezOff": "Bellinzona",
+            "bpUic": 8505213,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "SPAO",
+            "bezOff": "Bellinzona S. Paolo",
+            "bpUic": 8505239,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "BP",
+            "bezOff": "Belp",
+            "bpUic": 8507076,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "BPST",
+            "bezOff": "Belp Steinbach",
+            "bpUic": 8507092,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "BNK",
+            "bezOff": "Benken SG",
+            "bpUic": 8503118,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BNZ",
+            "bezOff": "Benzenschwil",
+            "bpUic": 8502216,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BERG",
+            "bezOff": "Berg",
+            "bpUic": 8506194,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BEBR",
+            "bezOff": "Bergün/Bravuogn",
+            "bpUic": 8509197,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BEWI",
+            "bezOff": "Berikon-Widen",
+            "bpUic": 8502276,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "BER",
+            "bezOff": "Berlingen",
+            "bpUic": 8506135,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BN",
+            "bezOff": "Bern",
+            "bpUic": 8507000,
+            "qosBitfeld": 9184249
+        },
+        {
+            "abk": "BNB",
+            "bezOff": "Bern Brünnen Westside",
+            "bpUic": 8516154,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BNBZ",
+            "bezOff": "Bern Bümpliz Nord",
+            "bpUic": 8504489,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BNBS",
+            "bezOff": "Bern Bümpliz Süd",
+            "bpUic": 8504106,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BBSA",
+            "bezOff": "Bern Bümpliz Süd Abstellanlage",
+            "bpUic": 8510146,
+            "qosBitfeld": 8704
+        },
+        {
+            "abk": "BNAS",
+            "bezOff": "Bern Europaplatz",
+            "bpUic": 8504108,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BNFI",
+            "bezOff": "Bern Fischermätteli",
+            "bpUic": 8507081,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "HOL",
+            "bezOff": "Bern Holligen",
+            "bpUic": 8507080,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "JKLM",
+            "bezOff": "Bern JKLM",
+            "bpUic": 8507012,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "RCH",
+            "bezOff": "Bern Riedbach",
+            "bpUic": 8504488,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BNWD",
+            "bezOff": "Bern Wankdorf",
+            "bpUic": 8516161,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BNWE",
+            "bezOff": "Bern Weissenbühl",
+            "bpUic": 8507079,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "BNWM",
+            "bezOff": "Bern Weyermannshaus",
+            "bpUic": 8507010,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "BNWF",
+            "bezOff": "Bern Wylerfeld",
+            "bpUic": 8507001,
+            "qosBitfeld": 524832
+        },
+        {
+            "abk": "BEDI",
+            "bezOff": "Bernina Diavolezza",
+            "bpUic": 8519370,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "BELA",
+            "bezOff": "Bernina Lagalb",
+            "bpUic": 8509373,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "BESU",
+            "bezOff": "Bernina Suot",
+            "bpUic": 8509354,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "BET",
+            "bezOff": "Bettlach",
+            "bpUic": 8500203,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BEMG",
+            "bezOff": "Bettmeralp Talstation",
+            "bpUic": 8501675,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "BTW",
+            "bezOff": "Bettwiesen",
+            "bpUic": 8506182,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BV",
+            "bezOff": "Bevaix",
+            "bpUic": 8504206,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BEV",
+            "bezOff": "Bever",
+            "bpUic": 8509250,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BEX",
+            "bezOff": "Bex",
+            "bpUic": 8501402,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "BIA",
+            "bezOff": "Biasca",
+            "bpUic": 8505209,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BIB",
+            "bezOff": "Biberbrugg",
+            "bpUic": 8503284,
+            "qosBitfeld": 534137
+        },
+        {
+            "abk": "BIGG",
+            "bezOff": "Biberegg",
+            "bpUic": 8503290,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "BIST",
+            "bezOff": "Biberist Ost",
+            "bpUic": 8508089,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BIM",
+            "bezOff": "Biel Mett",
+            "bpUic": 8504419,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BIPO",
+            "bezOff": "Biel Produktionsanlage Ost",
+            "bpUic": 8519667,
+            "qosBitfeld": 532992
+        },
+        {
+            "abk": "BI",
+            "bezOff": "Biel/Bienne",
+            "bpUic": 8504300,
+            "qosBitfeld": 9184249
+        },
+        {
+            "abk": "BIBD",
+            "bezOff": "Biel/Bienne Bözingenfeld/Champs-de-Boujean",
+            "bpUic": 8518771,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BIGE",
+            "bezOff": "Bigenthal",
+            "bpUic": 8508263,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BIG",
+            "bezOff": "Biglen",
+            "bpUic": 8508261,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BIL",
+            "bezOff": "Bilten",
+            "bpUic": 8503224,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BIR",
+            "bezOff": "Birmensdorf ZH",
+            "bpUic": 8502221,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BIRR",
+            "bezOff": "Birr",
+            "bpUic": 8502247,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BWL",
+            "bezOff": "Birrwil",
+            "bpUic": 8502033,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BZN",
+            "bezOff": "Bischofszell Nord",
+            "bpUic": 8506215,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BZS",
+            "bezOff": "Bischofszell Stadt",
+            "bpUic": 8506213,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BLU",
+            "bezOff": "Blumenau",
+            "bpUic": 8503113,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BO",
+            "bezOff": "Bodio TI",
+            "bpUic": 8505207,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BOLL",
+            "bezOff": "Bollement",
+            "bpUic": 8500196,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "BOLT",
+            "bezOff": "Boltigen",
+            "bpUic": 8507292,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "BONA",
+            "bezOff": "Bonaduz",
+            "bpUic": 8509184,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BCT",
+            "bezOff": "Boncourt",
+            "bpUic": 8500128,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BONF",
+            "bezOff": "Bonfol",
+            "bpUic": 8500188,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "BONI",
+            "bezOff": "Boniswil",
+            "bpUic": 8502032,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "BON",
+            "bezOff": "Bonstetten-Wettswil",
+            "bpUic": 8502222,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BOSS",
+            "bezOff": "Bossière",
+            "bpUic": 8504003,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BENS",
+            "bezOff": "Bossonnens",
+            "bpUic": 8504060,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BOS",
+            "bezOff": "Boswil-Bünzen",
+            "bpUic": 8502214,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BOT",
+            "bezOff": "Bottighofen",
+            "bpUic": 8506127,
+            "qosBitfeld": 533091
+        },
+        {
+            "abk": "BDR",
+            "bezOff": "Boudry",
+            "bpUic": 8504208,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BOU",
+            "bezOff": "Bouveret",
+            "bpUic": 8501426,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BOW",
+            "bezOff": "Bowil",
+            "bpUic": 8508204,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BREG",
+            "bezOff": "Bremgarten",
+            "bpUic": 8502273,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "BGW",
+            "bezOff": "Bremgarten West",
+            "bpUic": 8502272,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "BK",
+            "bezOff": "Brenzikofen",
+            "bpUic": 8508254,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BRT",
+            "bezOff": "Bretonnières",
+            "bpUic": 8501105,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BRZ",
+            "bezOff": "Brienz",
+            "bpUic": 8508305,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "BRZW",
+            "bezOff": "Brienz West",
+            "bpUic": 8508329,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "BRW",
+            "bezOff": "Brienzwiler",
+            "bpUic": 8508306,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "BR",
+            "bezOff": "Brig",
+            "bpUic": 8501609,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "BRIT",
+            "bezOff": "Brittnau-Wikon",
+            "bpUic": 8502002,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BROF",
+            "bezOff": "Broc-Chocolaterie",
+            "bpUic": 8504089,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BROV",
+            "bezOff": "Broc-Village",
+            "bpUic": 8504088,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BRO",
+            "bezOff": "Bronschhofen",
+            "bpUic": 8506181,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BROA",
+            "bezOff": "Bronschhofen AMP",
+            "bpUic": 8506188,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BG",
+            "bezOff": "Brugg AG",
+            "bpUic": 8500309,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "BRN",
+            "bezOff": "Brunnadern-Neckertal",
+            "bpUic": 8506294,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "BRU",
+            "bezOff": "Brunnen",
+            "bpUic": 8505007,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "BRIO",
+            "bezOff": "Brusio",
+            "bpUic": 8509366,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "BGG",
+            "bezOff": "Brügg BE",
+            "bpUic": 8504416,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BRUE",
+            "bezOff": "Brünig-Hasliberg",
+            "bpUic": 8508309,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "BUB",
+            "bezOff": "Bubikon",
+            "bpUic": 8503122,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BURN",
+            "bezOff": "Buchrain",
+            "bpUic": 8516350,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BU",
+            "bezOff": "Buchs SG",
+            "bpUic": 8509404,
+            "qosBitfeld": 8921969
+        },
+        {
+            "abk": "BUD",
+            "bezOff": "Buchs-Dällikon",
+            "bpUic": 8503527,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BUC",
+            "bezOff": "Buckten",
+            "bpUic": 8500034,
+            "qosBitfeld": 533107
+        },
+        {
+            "abk": "BX",
+            "bezOff": "Buix",
+            "bpUic": 8500144,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "BUL",
+            "bezOff": "Bulle",
+            "bpUic": 8504086,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BDF",
+            "bezOff": "Burgdorf",
+            "bpUic": 8508005,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "BDFB",
+            "bezOff": "Burgdorf Buchmatt",
+            "bpUic": 8508083,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BDFS",
+            "bezOff": "Burgdorf Steinhof",
+            "bpUic": 8508081,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "BGH",
+            "bezOff": "Burghalden",
+            "bpUic": 8503287,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "BH",
+            "bezOff": "Burgholz",
+            "bpUic": 8507287,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "BWA",
+            "bezOff": "Burgistein",
+            "bpUic": 8507072,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "BURI",
+            "bezOff": "Burier",
+            "bpUic": 8501202,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "BY",
+            "bezOff": "Bussigny",
+            "bpUic": 8501117,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BNG",
+            "bezOff": "Bussnang",
+            "bpUic": 8506190,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "BUS",
+            "bezOff": "Busswil BE",
+            "bpUic": 8504415,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BAE",
+            "bezOff": "Bäch SZ",
+            "bpUic": 8503208,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BOLE",
+            "bezOff": "Bôle",
+            "bpUic": 8504218,
+            "qosBitfeld": 533107
+        },
+        {
+            "abk": "BUE",
+            "bezOff": "Bülach",
+            "bpUic": 8503400,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "BUER",
+            "bezOff": "Büren an der Aare",
+            "bpUic": 8500221,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BGL",
+            "bezOff": "Bürglen TG",
+            "bpUic": 8506106,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "BUET",
+            "bezOff": "Bütschwil",
+            "bpUic": 8506203,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CD",
+            "bezOff": "Cadenazzo",
+            "bpUic": 8505404,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CADE",
+            "bezOff": "Cadera",
+            "bpUic": 8509359,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "CAIO",
+            "bezOff": "Campascio",
+            "bpUic": 8509367,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "CAMP",
+            "bezOff": "Campocologno",
+            "bpUic": 8509368,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CAP",
+            "bezOff": "Capolago-Riva S. Vitale",
+            "bpUic": 8505304,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CASI",
+            "bezOff": "Castione Impianto d'inversione",
+            "bpUic": 8518259,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "CAST",
+            "bezOff": "Castione-Arbedo",
+            "bpUic": 8505212,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CASR",
+            "bezOff": "Castrisch",
+            "bpUic": 8509170,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CDUE",
+            "bezOff": "Cavadürli",
+            "bpUic": 8509069,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CAVA",
+            "bezOff": "Cavaglia",
+            "bpUic": 8509358,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "CAZI",
+            "bezOff": "Cazis",
+            "bpUic": 8509188,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CELE",
+            "bezOff": "Celerina",
+            "bpUic": 8509252,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CELS",
+            "bezOff": "Celerina Staz",
+            "bpUic": 8509350,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "CHAM",
+            "bezOff": "Cham",
+            "bpUic": 8502203,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CHAA",
+            "bezOff": "Cham Alpenblick",
+            "bpUic": 8515995,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "CHN",
+            "bezOff": "Chambrelien",
+            "bpUic": 8504234,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CHY",
+            "bezOff": "Chambésy",
+            "bpUic": 8501020,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CHA",
+            "bezOff": "Chamoson-St-Pierre-de-Clages",
+            "bpUic": 8501504,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CDM",
+            "bezOff": "Champ-du-Moulin",
+            "bpUic": 8504217,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "CHAR",
+            "bezOff": "Charrat-Fully",
+            "bpUic": 8501501,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CHV",
+            "bezOff": "Chavornay",
+            "bpUic": 8501112,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CHX",
+            "bezOff": "Chexbres-Village",
+            "bpUic": 8504013,
+            "qosBitfeld": 9970288
+        },
+        {
+            "abk": "CHS",
+            "bezOff": "Cheyres",
+            "bpUic": 8504131,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "CHI",
+            "bezOff": "Chiasso",
+            "bpUic": 8505307,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CH",
+            "bezOff": "Chur",
+            "bpUic": 8509000,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "CHSA",
+            "bezOff": "Chur Altstadt",
+            "bpUic": 8509150,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CHWE",
+            "bezOff": "Chur West",
+            "bpUic": 8509050,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CHWI",
+            "bezOff": "Chur Wiesental",
+            "bpUic": 8509006,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CHOE",
+            "bezOff": "Château-d'Oex",
+            "bpUic": 8501394,
+            "qosBitfeld": 1581680
+        },
+        {
+            "abk": "CHF",
+            "bezOff": "Châteauneuf-Conthey",
+            "bpUic": 8501510,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CHSD",
+            "bezOff": "Châtel-St-Denis",
+            "bpUic": 8504062,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CHAT",
+            "bezOff": "Châtillens",
+            "bpUic": 8504017,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CHE",
+            "bezOff": "Chénens",
+            "bpUic": 8504025,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CHEB",
+            "bezOff": "Chêne-Bourg",
+            "bpUic": 8516274,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CIN",
+            "bezOff": "Cinuos-chel-Brail",
+            "bpUic": 8509260,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "CL",
+            "bezOff": "Clarens",
+            "bpUic": 8501203,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "CBY",
+            "bezOff": "Collombey",
+            "bpUic": 8501422,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "CMA",
+            "bezOff": "Colmegna",
+            "bpUic": 8505874,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "CLB",
+            "bezOff": "Colombier NE",
+            "bpUic": 8504209,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "COTA",
+            "bezOff": "Combe-Tabeillon",
+            "bpUic": 8500199,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "CC",
+            "bezOff": "Concise",
+            "bpUic": 8504203,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "COP",
+            "bezOff": "Coppet",
+            "bpUic": 8501023,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CORC",
+            "bezOff": "Corcelles BE",
+            "bpUic": 8500266,
+            "qosBitfeld": 533091
+        },
+        {
+            "abk": "CN",
+            "bezOff": "Corcelles-Nord",
+            "bpUic": 8504123,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "CP",
+            "bezOff": "Corcelles-Peseux",
+            "bpUic": 8504232,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CS",
+            "bezOff": "Corcelles-Sud",
+            "bpUic": 8504135,
+            "qosBitfeld": 8921696
+        },
+        {
+            "abk": "COG",
+            "bezOff": "Corgémont",
+            "bpUic": 8504305,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "CORM",
+            "bezOff": "Cormoret",
+            "bpUic": 8504308,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "CORN",
+            "bezOff": "Cornaux NE",
+            "bpUic": 8504223,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "CORS",
+            "bezOff": "Corseaux-Cornalles",
+            "bpUic": 8504040,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CO",
+            "bezOff": "Cortébert",
+            "bpUic": 8504306,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "COS",
+            "bezOff": "Cossonay-Penthalaz",
+            "bpUic": 8501115,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "COT",
+            "bezOff": "Cottens FR",
+            "bpUic": 8504026,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CCH",
+            "bezOff": "Courchavon",
+            "bpUic": 8500141,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CFV",
+            "bezOff": "Courfaivre",
+            "bpUic": 8500121,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CG",
+            "bezOff": "Courgenay",
+            "bpUic": 8500125,
+            "qosBitfeld": 8922737
+        },
+        {
+            "abk": "CT",
+            "bezOff": "Court",
+            "bpUic": 8500104,
+            "qosBitfeld": 9970288
+        },
+        {
+            "abk": "CTY",
+            "bezOff": "Courtelary",
+            "bpUic": 8504307,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CTM",
+            "bezOff": "Courtemaîche",
+            "bpUic": 8500127,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "COUR",
+            "bezOff": "Courtepin",
+            "bpUic": 8504184,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "CTT",
+            "bezOff": "Courtételle",
+            "bpUic": 8500120,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "COUS",
+            "bezOff": "Cousset",
+            "bpUic": 8504136,
+            "qosBitfeld": 8921712
+        },
+        {
+            "abk": "CRFR",
+            "bezOff": "Cressier FR",
+            "bpUic": 8504185,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CRNE",
+            "bezOff": "Cressier NE",
+            "bpUic": 8504224,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "CRGD",
+            "bezOff": "Creux-de-Genthod",
+            "bpUic": 8501012,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "CR",
+            "bezOff": "Croy-Romainmôtier",
+            "bpUic": 8501106,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CREM",
+            "bezOff": "Crémines",
+            "bpUic": 8500267,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ZOO",
+            "bezOff": "Crémines-Zoo",
+            "bpUic": 8500260,
+            "qosBitfeld": 533091
+        },
+        {
+            "abk": "CGY",
+            "bezOff": "Cugy FR",
+            "bpUic": 8504133,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CU",
+            "bezOff": "Cully",
+            "bpUic": 8501124,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "DA",
+            "bezOff": "Dachsen",
+            "bpUic": 8506049,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DAG",
+            "bezOff": "Dagmersellen",
+            "bpUic": 8502004,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DAL",
+            "bezOff": "Dallenwil",
+            "bpUic": 8508392,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "DAD",
+            "bezOff": "Davos Dorf",
+            "bpUic": 8509072,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "DAF",
+            "bezOff": "Davos Frauenkirch",
+            "bpUic": 8509075,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "DAGL",
+            "bezOff": "Davos Glaris",
+            "bpUic": 8509076,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "DAKO",
+            "bezOff": "Davos Kongress/Eisstadion",
+            "bpUic": 8511308,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "DALT",
+            "bezOff": "Davos Laret",
+            "bpUic": 8509070,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "DAM",
+            "bezOff": "Davos Monstein",
+            "bpUic": 8509077,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "DAV",
+            "bezOff": "Davos Platz",
+            "bpUic": 8509073,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "WIES",
+            "bezOff": "Davos Wiesen",
+            "bpUic": 8509078,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "DAW",
+            "bezOff": "Davos Wolfgang",
+            "bpUic": 8509071,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "DG",
+            "bezOff": "Degersheim",
+            "bpUic": 8506292,
+            "qosBitfeld": 534133
+        },
+        {
+            "abk": "DN",
+            "bezOff": "Deitingen",
+            "bpUic": 8500209,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DMT",
+            "bezOff": "Delémont",
+            "bpUic": 8500109,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "DEN",
+            "bezOff": "Denges-Echandens",
+            "bpUic": 8501045,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DI",
+            "bezOff": "Dielsdorf",
+            "bpUic": 8503315,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DIE",
+            "bezOff": "Diepflingen",
+            "bpUic": 8500031,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "DSB",
+            "bezOff": "Diesbach-Betschwanden",
+            "bpUic": 8503237,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "DSH",
+            "bezOff": "Diessenhofen",
+            "bpUic": 8503428,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DTF",
+            "bezOff": "Dietfurt",
+            "bpUic": 8506202,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DT",
+            "bezOff": "Dietikon",
+            "bpUic": 8503508,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "DTL",
+            "bezOff": "Dietlikon",
+            "bpUic": 8503306,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DIH",
+            "bezOff": "Dinhard",
+            "bpUic": 8506021,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "DIS",
+            "bezOff": "Disentis/Mustér",
+            "bpUic": 8509179,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "DE",
+            "bezOff": "Domat/Ems",
+            "bpUic": 8509181,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "EMSW",
+            "bezOff": "Domat/Ems Werk",
+            "bpUic": 8509182,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "DOM",
+            "bezOff": "Domdidier",
+            "bpUic": 8504125,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DOP",
+            "bezOff": "Dompierre FR",
+            "bpUic": 8504124,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "DOR",
+            "bezOff": "Dornach-Arlesheim",
+            "bpUic": 8500118,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "DOT",
+            "bezOff": "Dottikon-Dintikon",
+            "bpUic": 8502212,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DON",
+            "bezOff": "Dotzigen",
+            "bpUic": 8500220,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "DUG",
+            "bezOff": "Duggingen",
+            "bpUic": 8500116,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "DU",
+            "bezOff": "Dulliken",
+            "bpUic": 8502110,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "DKRB",
+            "bezOff": "Däniken RB",
+            "bpUic": 8516159,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "DK",
+            "bezOff": "Däniken SO",
+            "bpUic": 8502111,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "DR",
+            "bezOff": "Därstetten",
+            "bpUic": 8507295,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "DOE",
+            "bezOff": "Döttingen",
+            "bpUic": 8503501,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DUE",
+            "bezOff": "Dübendorf",
+            "bpUic": 8503128,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "DUED",
+            "bezOff": "Düdingen",
+            "bpUic": 8504101,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EBI",
+            "bezOff": "Ebikon",
+            "bpUic": 8502200,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EBLI",
+            "bezOff": "Ebligen",
+            "bpUic": 8508304,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "EK",
+            "bezOff": "Ebnat-Kappel",
+            "bpUic": 8506297,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "ECL",
+            "bezOff": "Eclépens",
+            "bpUic": 8501114,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ECU",
+            "bezOff": "Ecublens-Rue",
+            "bpUic": 8504018,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EF",
+            "bezOff": "Effretikon",
+            "bpUic": 8503305,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "EG",
+            "bezOff": "Egerkingen",
+            "bpUic": 8500214,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EB",
+            "bezOff": "Eggerberg",
+            "bpUic": 8507471,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "EGL",
+            "bezOff": "Eglisau",
+            "bpUic": 8503402,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EGN",
+            "bezOff": "Egnach",
+            "bpUic": 8506309,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EIF",
+            "bezOff": "Eifeld",
+            "bpUic": 8507288,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "EI",
+            "bezOff": "Eiken",
+            "bpUic": 8500304,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "EIS",
+            "bezOff": "Einsiedeln",
+            "bpUic": 8503283,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "EL",
+            "bezOff": "Elgg",
+            "bpUic": 8506014,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EMB",
+            "bezOff": "Embrach-Rorbas",
+            "bpUic": 8506041,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EBR",
+            "bezOff": "Emmenbrücke",
+            "bpUic": 8502021,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GSAG",
+            "bezOff": "Emmenbrücke Gersag",
+            "bpUic": 8502028,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "RBGD",
+            "bezOff": "Emmenbrücke Kapf",
+            "bpUic": 8502012,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EMM",
+            "bezOff": "Emmenmatt",
+            "bpUic": 8508206,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "ENGE",
+            "bezOff": "Enge im Simmental",
+            "bpUic": 8507284,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "EBG",
+            "bezOff": "Engelberg",
+            "bpUic": 8508399,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "EDA",
+            "bezOff": "Ennenda",
+            "bpUic": 8503231,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "ENN",
+            "bezOff": "Enney",
+            "bpUic": 8504075,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ENT",
+            "bezOff": "Entlebuch",
+            "bpUic": 8508213,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EP",
+            "bezOff": "Ependes VD",
+            "bpUic": 8501110,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EPS",
+            "bezOff": "Epesses",
+            "bpUic": 8501125,
+            "qosBitfeld": 8921701
+        },
+        {
+            "abk": "ERL",
+            "bezOff": "Erlen",
+            "bpUic": 8506107,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ERLB",
+            "bezOff": "Erlenbach ZH",
+            "bpUic": 8503102,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EBIS",
+            "bezOff": "Erlenbach im Simmental",
+            "bpUic": 8507296,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "ERM",
+            "bezOff": "Ermatingen",
+            "bpUic": 8506133,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ESEE",
+            "bezOff": "Ermensee",
+            "bpUic": 8502019,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "ER",
+            "bezOff": "Erstfeld",
+            "bpUic": 8505114,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "ESB",
+            "bezOff": "Eschenbach LU",
+            "bpUic": 8502022,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "EZ",
+            "bezOff": "Eschenz",
+            "bpUic": 8506138,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ESL",
+            "bezOff": "Eschlikon TG",
+            "bpUic": 8506011,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ESCH",
+            "bezOff": "Escholzmatt",
+            "bpUic": 8508210,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ESP",
+            "bezOff": "Essert-Pittet",
+            "bpUic": 8501111,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "EST",
+            "bezOff": "Estavayer-le-Lac",
+            "bpUic": 8504132,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ETOY",
+            "bezOff": "Etoy",
+            "bpUic": 8501042,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EW",
+            "bezOff": "Etzwilen",
+            "bpUic": 8506025,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EV",
+            "bezOff": "Evionnaz",
+            "bpUic": 8501404,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "EWMA",
+            "bezOff": "Ewil Maxon",
+            "bpUic": 8508327,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "FA",
+            "bezOff": "Faido",
+            "bpUic": 8505204,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "FG",
+            "bezOff": "Faoug",
+            "bpUic": 8504127,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "FET",
+            "bezOff": "Fehraltorf",
+            "bpUic": 8503302,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "FEL",
+            "bezOff": "Felben-Wellhausen",
+            "bpUic": 8506101,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "FB",
+            "bezOff": "Feldbach",
+            "bpUic": 8503109,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "FEWA",
+            "bezOff": "Feldmeilen Wendeanlage",
+            "bpUic": 8518251,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "FBG",
+            "bezOff": "Felsberg",
+            "bpUic": 8509180,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "FT",
+            "bezOff": "Feuerthalen",
+            "bpUic": 8503425,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "FID",
+            "bezOff": "Fideris",
+            "bpUic": 8509063,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "FIE",
+            "bezOff": "Fiesch",
+            "bpUic": 8501672,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "FILI",
+            "bezOff": "Filisur",
+            "bpUic": 8509195,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "FI",
+            "bezOff": "Fischenthal",
+            "bpUic": 8503136,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "FLM",
+            "bezOff": "Flamatt",
+            "bpUic": 8504103,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "FLMD",
+            "bezOff": "Flamatt Dorf",
+            "bpUic": 8504191,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "FLA",
+            "bezOff": "Flawil",
+            "bpUic": 8506209,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "FMS",
+            "bezOff": "Flums",
+            "bpUic": 8509413,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "FL",
+            "bezOff": "Flüelen",
+            "bpUic": 8505112,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "FF",
+            "bezOff": "Frauenfeld",
+            "bpUic": 8506100,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "FRB",
+            "bezOff": "Freienbach SBB",
+            "bpUic": 8503210,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "FRBS",
+            "bezOff": "Freienbach SOB",
+            "bpUic": 8503289,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "FRE",
+            "bezOff": "Frenkendorf-Füllinsdorf",
+            "bpUic": 8500022,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "FRI",
+            "bezOff": "Fribourg/Freiburg",
+            "bpUic": 8504100,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "FRPO",
+            "bezOff": "Fribourg/Freiburg Poya",
+            "bpUic": 8519133,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "FCK",
+            "bezOff": "Frick",
+            "bpUic": 8500305,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "FRIN",
+            "bezOff": "Frinvillier-Taubenloch",
+            "bpUic": 8504301,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "FR",
+            "bezOff": "Frutigen",
+            "bpUic": 8507478,
+            "qosBitfeld": 795249
+        },
+        {
+            "abk": "FRAE",
+            "bezOff": "Fräschels",
+            "bpUic": 8504401,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "FTAN",
+            "bezOff": "Ftan Baraigla",
+            "bpUic": 8509267,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "FURN",
+            "bezOff": "Furna",
+            "bpUic": 8509061,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GZ",
+            "bezOff": "Galmiz",
+            "bpUic": 8504129,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "GA",
+            "bezOff": "Gampel-Steg",
+            "bpUic": 8501603,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "GP",
+            "bezOff": "Gampelen",
+            "bpUic": 8504482,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GAS",
+            "bezOff": "Gasel",
+            "bpUic": 8507085,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GELF",
+            "bezOff": "Gelfingen",
+            "bpUic": 8502026,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "GKD",
+            "bezOff": "Gelterkinden",
+            "bpUic": 8500027,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "GEN",
+            "bezOff": "Genolier",
+            "bpUic": 8501066,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "GDBE",
+            "bezOff": "Genthod-Bellevue",
+            "bpUic": 8501021,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GE",
+            "bezOff": "Genève",
+            "bpUic": 8501008,
+            "qosBitfeld": 8922105
+        },
+        {
+            "abk": "GEVO",
+            "bezOff": "Genève Voie-Creuse",
+            "bpUic": 8519692,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "GEAP",
+            "bezOff": "Genève-Aéroport",
+            "bpUic": 8501026,
+            "qosBitfeld": 9185137
+        },
+        {
+            "abk": "CHHO",
+            "bezOff": "Genève-Champel",
+            "bpUic": 8516272,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GEV",
+            "bezOff": "Genève-Eaux-Vives",
+            "bpUic": 8516273,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GEPR",
+            "bezOff": "Genève-La-Praille",
+            "bpUic": 8501009,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "GEST",
+            "bezOff": "Genève-Stade",
+            "bpUic": 8516174,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "GESE",
+            "bezOff": "Genève-Sécheron",
+            "bpUic": 8516283,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "GLF",
+            "bezOff": "Gerlafingen",
+            "bpUic": 8508088,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "GER",
+            "bezOff": "Gerra (Gambarogno)",
+            "bpUic": 8505410,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GET",
+            "bezOff": "Gettnau",
+            "bpUic": 8508294,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GIB",
+            "bezOff": "Gibswil",
+            "bpUic": 8503137,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GSK",
+            "bezOff": "Gisikon-Root",
+            "bpUic": 8502201,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GI",
+            "bezOff": "Giswil",
+            "bpUic": 8508312,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "GIU",
+            "bezOff": "Giubiasco",
+            "bpUic": 8505214,
+            "qosBitfeld": 9183869
+        },
+        {
+            "abk": "GIV",
+            "bezOff": "Givisiez",
+            "bpUic": 8504181,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GIVD",
+            "bezOff": "Givisiez dépôt",
+            "bpUic": 8519649,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "GLA",
+            "bezOff": "Gland",
+            "bpUic": 8501031,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "GLZB",
+            "bezOff": "Glanzenberg",
+            "bpUic": 8503512,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GL",
+            "bezOff": "Glarus",
+            "bpUic": 8503230,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GLB",
+            "bezOff": "Glattbrugg",
+            "bpUic": 8503310,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GF",
+            "bezOff": "Glattfelden",
+            "bpUic": 8503401,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GLO",
+            "bezOff": "Glovelier",
+            "bpUic": 8500123,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GOL",
+            "bezOff": "Goldach",
+            "bpUic": 8506305,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GO",
+            "bezOff": "Goppenstein",
+            "bpUic": 8507474,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "GDA",
+            "bezOff": "Gordola",
+            "bpUic": 8505402,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "GOR",
+            "bezOff": "Gorgier-St-Aubin",
+            "bpUic": 8504205,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GSS",
+            "bezOff": "Gossau SG",
+            "bpUic": 8506210,
+            "qosBitfeld": 9184881
+        },
+        {
+            "abk": "GRAF",
+            "bezOff": "Grafenort",
+            "bpUic": 8508396,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "GRS",
+            "bezOff": "Grandson",
+            "bpUic": 8504201,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GVAL",
+            "bezOff": "Grandval",
+            "bpUic": 8500268,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GRV",
+            "bezOff": "Grandvaux",
+            "bpUic": 8504011,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GM",
+            "bezOff": "Granges-Marnand",
+            "bpUic": 8504122,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GREL",
+            "bezOff": "Grellingen",
+            "bpUic": 8500115,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GN",
+            "bezOff": "Grenchen Nord",
+            "bpUic": 8500159,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GS",
+            "bezOff": "Grenchen Süd",
+            "bpUic": 8500202,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "GRO",
+            "bezOff": "Grolley",
+            "bpUic": 8504138,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GH",
+            "bezOff": "Grosshöchstetten",
+            "bpUic": 8508260,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "GRU",
+            "bezOff": "Grubenwald",
+            "bpUic": 8507281,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "GRY",
+            "bezOff": "Gruyères",
+            "bpUic": 8504077,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GRF",
+            "bezOff": "Grüenfeld",
+            "bpUic": 8503293,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "GRMA",
+            "bezOff": "Grünenmatt",
+            "bpUic": 8508271,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "GRUS",
+            "bezOff": "Grüsch",
+            "bpUic": 8509059,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GST",
+            "bezOff": "Gstaad",
+            "bpUic": 8501399,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "GUA",
+            "bezOff": "Guarda",
+            "bpUic": 8509265,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GUN",
+            "bezOff": "Guntershausen",
+            "bpUic": 8506012,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GUBU",
+            "bezOff": "Gutenburg",
+            "bpUic": 8508174,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "GAE",
+            "bezOff": "Gänsbrunnen",
+            "bpUic": 8500265,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "GOE",
+            "bezOff": "Göschenen",
+            "bpUic": 8505119,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "GUE",
+            "bezOff": "Gümligen",
+            "bpUic": 8507003,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "GMM",
+            "bezOff": "Gümmenen",
+            "bpUic": 8504486,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "GUET",
+            "bezOff": "Güttingen",
+            "bpUic": 8506124,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HALD",
+            "bezOff": "Haldenstein",
+            "bpUic": 8509051,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "HD",
+            "bezOff": "Hallwil",
+            "bpUic": 8502031,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "HAS",
+            "bezOff": "Hasle LU",
+            "bpUic": 8508212,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HA",
+            "bezOff": "Hasle-Rüegsau",
+            "bpUic": 8508265,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "HPT",
+            "bezOff": "Hauptwil",
+            "bpUic": 8506212,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "HED",
+            "bezOff": "Hedingen",
+            "bpUic": 8502223,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HEBG",
+            "bezOff": "Heerbrugg",
+            "bpUic": 8506317,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HMB",
+            "bezOff": "Heimberg",
+            "bpUic": 8508253,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "HDK",
+            "bezOff": "Hendschiken",
+            "bpUic": 8502211,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HGT",
+            "bezOff": "Henggart",
+            "bpUic": 8506046,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HEN",
+            "bezOff": "Henniez",
+            "bpUic": 8504141,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "MATT",
+            "bezOff": "Hergiswil Matt",
+            "bpUic": 8508320,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "HGW",
+            "bezOff": "Hergiswil NW",
+            "bpUic": 8508318,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "HE",
+            "bezOff": "Herisau",
+            "bpUic": 8506290,
+            "qosBitfeld": 534141
+        },
+        {
+            "abk": "HERL",
+            "bezOff": "Herrliberg-Feldmeilen",
+            "bpUic": 8503103,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HB",
+            "bezOff": "Herzogenbuchsee",
+            "bpUic": 8508008,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "HET",
+            "bezOff": "Hettlingen",
+            "bpUic": 8506045,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HBK",
+            "bezOff": "Hindelbank",
+            "bpUic": 8508003,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HI",
+            "bezOff": "Hinwil",
+            "bpUic": 8503130,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HIK",
+            "bezOff": "Hitzkirch",
+            "bpUic": 8502027,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HO",
+            "bezOff": "Hochdorf",
+            "bpUic": 8502024,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HOSA",
+            "bezOff": "Hochdorf Schönau",
+            "bpUic": 8502042,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HT",
+            "bezOff": "Hohtenn",
+            "bpUic": 8507473,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "HOBK",
+            "bezOff": "Holderbank AG",
+            "bpUic": 8502128,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "HG",
+            "bezOff": "Horgen",
+            "bpUic": 8503204,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HGO",
+            "bezOff": "Horgen Oberdorf",
+            "bpUic": 8502208,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HN",
+            "bezOff": "Horn",
+            "bpUic": 8506307,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HW",
+            "bezOff": "Horw",
+            "bpUic": 8508319,
+            "qosBitfeld": 8922737
+        },
+        {
+            "abk": "HU",
+            "bezOff": "Hunzenschwil",
+            "bpUic": 8502104,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HUR",
+            "bezOff": "Hurden",
+            "bpUic": 8503299,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "HWIL",
+            "bezOff": "Huttwil",
+            "bpUic": 8508187,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "HAE",
+            "bezOff": "Hägendorf",
+            "bpUic": 8500215,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HAEW",
+            "bezOff": "Häggenschwil-Winden",
+            "bpUic": 8506395,
+            "qosBitfeld": 534133
+        },
+        {
+            "abk": "HUCH",
+            "bezOff": "Hünenberg Chämleten",
+            "bpUic": 8502306,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "HUZY",
+            "bezOff": "Hünenberg Zythus",
+            "bpUic": 8515996,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "HUEW",
+            "bezOff": "Hüntwangen-Wil",
+            "bpUic": 8503403,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HUE",
+            "bezOff": "Hüswil",
+            "bpUic": 8508292,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "HM",
+            "bezOff": "Hüttlingen-Mettendorf",
+            "bpUic": 8506102,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "IGIS",
+            "bezOff": "Igis",
+            "bpUic": 8509055,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ILZ",
+            "bezOff": "Ilanz",
+            "bpUic": 8509171,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "IL",
+            "bezOff": "Illnau",
+            "bpUic": 8503303,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "IMHO",
+            "bezOff": "Im Holz",
+            "bpUic": 8500263,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "IM",
+            "bezOff": "Immensee",
+            "bpUic": 8505003,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "INNP",
+            "bezOff": "Innertkirchen Grimseltor",
+            "bpUic": 8508395,
+            "qosBitfeld": 525920
+        },
+        {
+            "abk": "INN",
+            "bezOff": "Innertkirchen Kraftwerk (Bahn)",
+            "bpUic": 8508359,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "INS",
+            "bezOff": "Ins",
+            "bpUic": 8504483,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "IO",
+            "bezOff": "Interlaken Ost",
+            "bpUic": 8507492,
+            "qosBitfeld": 795261
+        },
+        {
+            "abk": "IW",
+            "bezOff": "Interlaken West",
+            "bpUic": 8507493,
+            "qosBitfeld": 795253
+        },
+        {
+            "abk": "ISL",
+            "bezOff": "Islikon",
+            "bpUic": 8506019,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "IT",
+            "bezOff": "Itingen",
+            "bpUic": 8500025,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "JAZ",
+            "bezOff": "Jenaz",
+            "bpUic": 8509062,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "JE",
+            "bezOff": "Jestetten",
+            "bpUic": 8503421,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "JO",
+            "bezOff": "Jona",
+            "bpUic": 8503120,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KAU",
+            "bezOff": "Kaiseraugst",
+            "bpUic": 8500300,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KAAG",
+            "bezOff": "Kaiserstuhl AG",
+            "bpUic": 8503413,
+            "qosBitfeld": 533107
+        },
+        {
+            "abk": "KAI",
+            "bezOff": "Kaiserstuhl OW",
+            "bpUic": 8508311,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "KAL",
+            "bezOff": "Kallnach",
+            "bpUic": 8504402,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "KAB",
+            "bezOff": "Kaltbrunn",
+            "bpUic": 8503117,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "KA",
+            "bezOff": "Kandersteg",
+            "bpUic": 8507475,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "KD",
+            "bezOff": "Kaufdorf",
+            "bpUic": 8507074,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "KHF",
+            "bezOff": "Kehlhof",
+            "bpUic": 8506193,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "KS",
+            "bezOff": "Kehrsatz",
+            "bpUic": 8507077,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "KSN",
+            "bezOff": "Kehrsatz Nord",
+            "bpUic": 8507093,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "KPT",
+            "bezOff": "Kempraten",
+            "bpUic": 8503112,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KN",
+            "bezOff": "Kempten",
+            "bpUic": 8503300,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KE",
+            "bezOff": "Kemptthal",
+            "bpUic": 8503304,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KZ",
+            "bezOff": "Kerzers",
+            "bpUic": 8504400,
+            "qosBitfeld": 533113
+        },
+        {
+            "abk": "KZPP",
+            "bezOff": "Kerzers Papiliorama",
+            "bpUic": 8516444,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "KWL",
+            "bezOff": "Kesswil",
+            "bpUic": 8506123,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "KI",
+            "bezOff": "Kiesen",
+            "bpUic": 8507008,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "KIL",
+            "bezOff": "Kilchberg ZH",
+            "bpUic": 8503200,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KLW",
+            "bezOff": "Killwangen-Spreitenbach",
+            "bpUic": 8503506,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KIAL",
+            "bezOff": "Kirchberg-Alchenflüh",
+            "bpUic": 8508084,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "KDI",
+            "bezOff": "Kleindietwil",
+            "bpUic": 8508185,
+            "qosBitfeld": 533091
+        },
+        {
+            "abk": "KLI",
+            "bezOff": "Klingnau",
+            "bpUic": 8516176,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "KLOD",
+            "bezOff": "Klosters Dorf",
+            "bpUic": 8509067,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "KLO",
+            "bezOff": "Klosters Platz",
+            "bpUic": 8509068,
+            "qosBitfeld": 8769
+        },
+        {
+            "abk": "KL",
+            "bezOff": "Kloten",
+            "bpUic": 8503308,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KLB",
+            "bezOff": "Kloten Balsberg",
+            "bpUic": 8503309,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KNO",
+            "bezOff": "Knonau",
+            "bpUic": 8502226,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KB",
+            "bezOff": "Koblenz",
+            "bpUic": 8500329,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "KBD",
+            "bezOff": "Koblenz Dorf",
+            "bpUic": 8503411,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "KBS",
+            "bezOff": "Koblenz Süd",
+            "bpUic": 8518899,
+            "qosBitfeld": 512
+        },
+        {
+            "abk": "KOL",
+            "bezOff": "Kollbrunn",
+            "bpUic": 8506004,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KF",
+            "bezOff": "Konolfingen",
+            "bpUic": 8508202,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "KRA",
+            "bezOff": "Kradolf",
+            "bpUic": 8506216,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KR",
+            "bezOff": "Kreuzlingen",
+            "bpUic": 8506131,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "KRB",
+            "bezOff": "Kreuzlingen Bernrain",
+            "bpUic": 8506197,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KRH",
+            "bezOff": "Kreuzlingen Hafen",
+            "bpUic": 8506128,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KRM",
+            "bezOff": "Kriens Mattenhof",
+            "bpUic": 8516351,
+            "qosBitfeld": 8922737
+        },
+        {
+            "abk": "KRU",
+            "bezOff": "Krummenau",
+            "bpUic": 8506298,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "KURZ",
+            "bezOff": "Kurzrickenbach Seepark",
+            "bpUic": 8506119,
+            "qosBitfeld": 533091
+        },
+        {
+            "abk": "KK",
+            "bezOff": "Kölliken",
+            "bpUic": 8502101,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KKO",
+            "bezOff": "Kölliken Oberdorf",
+            "bpUic": 8502122,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "KOE",
+            "bezOff": "Köniz",
+            "bpUic": 8507083,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "KUEB",
+            "bezOff": "Küblis",
+            "bpUic": 8509064,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "KGD",
+            "bezOff": "Küngoldingen",
+            "bpUic": 8502120,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "KGO",
+            "bezOff": "Küsnacht Goldbach",
+            "bpUic": 8503141,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "KUES",
+            "bezOff": "Küsnacht ZH",
+            "bpUic": 8503101,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "KUE",
+            "bezOff": "Küssnacht am Rigi",
+            "bpUic": 8505002,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CF",
+            "bezOff": "La Chaux-de-Fonds",
+            "bpUic": 8504314,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "CFO",
+            "bezOff": "La Chaux-de-Fonds Les Forges",
+            "bpUic": 8504321,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "CFES",
+            "bezOff": "La Chaux-de-Fonds-Est",
+            "bpUic": 8500184,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "CIB",
+            "bezOff": "La Cibourg",
+            "bpUic": 8500179,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "COMB",
+            "bezOff": "La Combe",
+            "bpUic": 8500195,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "CVN",
+            "bezOff": "La Conversion",
+            "bpUic": 8504010,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CURE",
+            "bezOff": "La Cure",
+            "bpUic": 8501060,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "FER",
+            "bezOff": "La Ferrière",
+            "bpUic": 8500178,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "LHE",
+            "bezOff": "La Heutte",
+            "bpUic": 8504303,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "NV",
+            "bezOff": "La Neuveville",
+            "bpUic": 8504226,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "LP",
+            "bezOff": "La Plaine",
+            "bpUic": 8501001,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LAPU",
+            "bezOff": "La Punt Chamues-ch",
+            "bpUic": 8509256,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LSA",
+            "bezOff": "La Sarraz",
+            "bpUic": 8501108,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TOUR",
+            "bezOff": "La Tour-de-Peilz",
+            "bpUic": 8501201,
+            "qosBitfeld": 8921701
+        },
+        {
+            "abk": "TOUV",
+            "bezOff": "La Tour-de-Trême",
+            "bpUic": 8504067,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "TDT",
+            "bezOff": "La Tour-de-Trême Ronclina",
+            "bpUic": 8504079,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "VERI",
+            "bezOff": "La Verrerie",
+            "bpUic": 8504064,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "LA",
+            "bezOff": "Lachen SZ",
+            "bpUic": 8503220,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LL",
+            "bezOff": "Lalden",
+            "bpUic": 8507470,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "LAM",
+            "bezOff": "Lamone-Cadempino",
+            "bpUic": 8505219,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "CABA",
+            "bezOff": "Lancy-Bachet",
+            "bpUic": 8517142,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LAPR",
+            "bezOff": "Lancy-Pont-Rouge",
+            "bpUic": 8516155,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "LQ",
+            "bezOff": "Landquart",
+            "bpUic": 8509002,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "LQRI",
+            "bezOff": "Landquart Ried",
+            "bpUic": 8509056,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LDS",
+            "bezOff": "Landschlacht",
+            "bpUic": 8588122,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "LADO",
+            "bezOff": "Langendorf",
+            "bpUic": 8500261,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LTH",
+            "bezOff": "Langenthal",
+            "bpUic": 8508100,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "LTHS",
+            "bezOff": "Langenthal Süd",
+            "bpUic": 8508181,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "LN",
+            "bezOff": "Langnau i.E.",
+            "bpUic": 8508207,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LAWI",
+            "bezOff": "Langwies GR",
+            "bpUic": 8509155,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LAN",
+            "bezOff": "Langwiesen",
+            "bpUic": 8503426,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "LH",
+            "bezOff": "Lanzenhäusern",
+            "bpUic": 8507088,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LAT",
+            "bezOff": "Lattigen bei Spiez",
+            "bpUic": 8507299,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "LFN",
+            "bezOff": "Laufen",
+            "bpUic": 8500113,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "LFG",
+            "bezOff": "Laufenburg",
+            "bpUic": 8500322,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LPN",
+            "bezOff": "Laupen BE",
+            "bpUic": 8504194,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LPNO",
+            "bezOff": "Laupen Ost (Ausw)",
+            "bpUic": 8509308,
+            "qosBitfeld": 512
+        },
+        {
+            "abk": "LS",
+            "bezOff": "Lausanne",
+            "bpUic": 8501120,
+            "qosBitfeld": 8922105
+        },
+        {
+            "abk": "LSPA",
+            "bezOff": "Lausanne Paleyres",
+            "bpUic": 8519447,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "LSSB",
+            "bezOff": "Lausanne-Sébeillon",
+            "bpUic": 8501128,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "LT",
+            "bezOff": "Lausanne-Triage",
+            "bpUic": 8501049,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "LSN",
+            "bezOff": "Lausen",
+            "bpUic": 8500024,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LAVI",
+            "bezOff": "Lavin",
+            "bpUic": 8509264,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LAV",
+            "bezOff": "Lavorgo",
+            "bpUic": 8505205,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LAX",
+            "bezOff": "Lax",
+            "bpUic": 8501673,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "CRET",
+            "bezOff": "Le Crêt-du-Locle",
+            "bpUic": 8504315,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "DAY",
+            "bezOff": "Le Day",
+            "bpUic": 8501104,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "LD",
+            "bezOff": "Le Landeron",
+            "bpUic": 8504225,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "LOC",
+            "bezOff": "Le Locle",
+            "bpUic": 8504316,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "COL",
+            "bezOff": "Le Locle-Col-des-Roches",
+            "bpUic": 8504317,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NOMO",
+            "bezOff": "Le Noirmont",
+            "bpUic": 8500174,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "PT",
+            "bezOff": "Le Pont",
+            "bpUic": 8501100,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PRES",
+            "bezOff": "Le Prese",
+            "bpUic": 8509364,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "PAQ",
+            "bezOff": "Le Pâquier-Montbarry",
+            "bpUic": 8504078,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LEN",
+            "bezOff": "Lengnau BE",
+            "bpUic": 8500201,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LENG",
+            "bezOff": "Lengwil",
+            "bpUic": 8506196,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LB",
+            "bezOff": "Lenzburg",
+            "bpUic": 8502119,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "BOIS",
+            "bezOff": "Les Bois",
+            "bpUic": 8500177,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "BREU",
+            "bezOff": "Les Breuleux",
+            "bpUic": 8500173,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "DEU",
+            "bezOff": "Les Deurres",
+            "bpUic": 8504231,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "EVOU",
+            "bezOff": "Les Evouettes",
+            "bpUic": 8501425,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "GEC",
+            "bezOff": "Les Geneveys-sur-Coffrane",
+            "bpUic": 8504236,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "HGV",
+            "bezOff": "Les Hauts-Geneveys",
+            "bpUic": 8504237,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "REUS",
+            "bezOff": "Les Reussilles",
+            "bpUic": 8500171,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "TUI",
+            "bezOff": "Les Tuileries",
+            "bpUic": 8501011,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LES",
+            "bezOff": "Lessoc",
+            "bpUic": 8504071,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LGB",
+            "bezOff": "Leuggelbach",
+            "bpUic": 8503235,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "LK",
+            "bezOff": "Leuk",
+            "bpUic": 8501601,
+            "qosBitfeld": 795249
+        },
+        {
+            "abk": "CURT",
+            "bezOff": "Li Curt",
+            "bpUic": 8509363,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "LSG",
+            "bezOff": "Lichtensteig",
+            "bpUic": 8506201,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "LBF",
+            "bezOff": "Liebefeld",
+            "bpUic": 8507091,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "LST",
+            "bezOff": "Liestal",
+            "bpUic": 8500023,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "LHO",
+            "bezOff": "Lindenholz",
+            "bpUic": 8508184,
+            "qosBitfeld": 533091
+        },
+        {
+            "abk": "LIN",
+            "bezOff": "Linthal",
+            "bpUic": 8503239,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LINB",
+            "bezOff": "Linthal Braunwaldbahn",
+            "bpUic": 8503240,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "LITZ",
+            "bezOff": "Litzirüti",
+            "bpUic": 8509156,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LO",
+            "bezOff": "Locarno",
+            "bpUic": 8505400,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "LOM",
+            "bezOff": "Lommiswil",
+            "bpUic": 8500262,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LON",
+            "bezOff": "Lonay-Préverenges",
+            "bpUic": 8501048,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LOT",
+            "bezOff": "Lottstetten",
+            "bpUic": 8503420,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "LOTZ",
+            "bezOff": "Lotzwil",
+            "bpUic": 8508182,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LUC",
+            "bezOff": "Lucens",
+            "bpUic": 8504121,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LU",
+            "bezOff": "Luchsingen-Hätzingen",
+            "bpUic": 8503236,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LG",
+            "bezOff": "Lugano",
+            "bpUic": 8505300,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "LUN",
+            "bezOff": "Lungern",
+            "bpUic": 8508310,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "LUPF",
+            "bezOff": "Lupfig",
+            "bpUic": 8502237,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LUT",
+            "bezOff": "Luterbach-Attisholz",
+            "bpUic": 8500208,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LTY",
+            "bezOff": "Lutry",
+            "bpUic": 8501122,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "LZ",
+            "bezOff": "Luzern",
+            "bpUic": 8505000,
+            "qosBitfeld": 8922105
+        },
+        {
+            "abk": "ALD",
+            "bezOff": "Luzern Allmend/Messe",
+            "bpUic": 8508321,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "LIT",
+            "bezOff": "Luzern Littau",
+            "bpUic": 8508219,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LZVH",
+            "bezOff": "Luzern Verkehrshaus",
+            "bpUic": 8517336,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LY",
+            "bezOff": "Lyss",
+            "bpUic": 8504414,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "LYGR",
+            "bezOff": "Lyss Grien",
+            "bpUic": 8518749,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "LYS",
+            "bezOff": "Lyssach",
+            "bpUic": 8508004,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LAED",
+            "bezOff": "Lädeli",
+            "bpUic": 8508252,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "LF",
+            "bezOff": "Läufelfingen",
+            "bpUic": 8500035,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LECH",
+            "bezOff": "Léchelles",
+            "bpUic": 8504137,
+            "qosBitfeld": 9970288
+        },
+        {
+            "abk": "LUCA",
+            "bezOff": "Lüen-Castiel",
+            "bpUic": 8509152,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "LUET",
+            "bezOff": "Lütisburg",
+            "bpUic": 8506204,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "LUGO",
+            "bezOff": "Lützelflüh-Goldbach",
+            "bpUic": 8508266,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "MADI",
+            "bezOff": "Madiswil",
+            "bpUic": 8508183,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "MADU",
+            "bezOff": "Madulain",
+            "bpUic": 8509257,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "MAG",
+            "bezOff": "Magadino-Vira",
+            "bpUic": 8505406,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MF",
+            "bezOff": "Maienfeld",
+            "bpUic": 8509003,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "MALA",
+            "bezOff": "Malans GR",
+            "bpUic": 8509057,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "MB",
+            "bezOff": "Malleray-Bévilard",
+            "bpUic": 8500102,
+            "qosBitfeld": 8921696
+        },
+        {
+            "abk": "MAL",
+            "bezOff": "Malters",
+            "bpUic": 8508218,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MAM",
+            "bezOff": "Mammern",
+            "bpUic": 8506137,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "MANN",
+            "bezOff": "Mannenbach-Salenstein",
+            "bpUic": 8506134,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "MEP",
+            "bezOff": "Marin-Epagnier",
+            "bpUic": 8504481,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "MAR",
+            "bezOff": "Maroggia-Melano",
+            "bpUic": 8505303,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MTL",
+            "bezOff": "Marthalen",
+            "bpUic": 8506048,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MTLN",
+            "bezOff": "Marthalen Nord",
+            "bpUic": 8519036,
+            "qosBitfeld": 8389120
+        },
+        {
+            "abk": "MA",
+            "bezOff": "Martigny",
+            "bpUic": 8501500,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "MAS",
+            "bezOff": "Massongex",
+            "bpUic": 8501420,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MEG",
+            "bezOff": "Meggen",
+            "bpUic": 8505001,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "MEGZ",
+            "bezOff": "Meggen Zentrum",
+            "bpUic": 8505018,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ML",
+            "bezOff": "Meilen",
+            "bpUic": 8503104,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MR",
+            "bezOff": "Meiringen",
+            "bpUic": 8508308,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "MDE",
+            "bezOff": "Melide",
+            "bpUic": 8505302,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MELN",
+            "bezOff": "Mellikon",
+            "bpUic": 8503414,
+            "qosBitfeld": 533091
+        },
+        {
+            "abk": "MELH",
+            "bezOff": "Mellingen Heitersberg",
+            "bpUic": 8516219,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MELS",
+            "bezOff": "Mels",
+            "bpUic": 8509412,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MEN",
+            "bezOff": "Mendrisio",
+            "bpUic": 8505305,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "MOSM",
+            "bezOff": "Mendrisio S. Martino",
+            "bpUic": 8518475,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ME",
+            "bezOff": "Menziken",
+            "bpUic": 8502169,
+            "qosBitfeld": 8922720
+        },
+        {
+            "abk": "MAU",
+            "bezOff": "Menznau",
+            "bpUic": 8508297,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "MERL",
+            "bezOff": "Merlischachen",
+            "bpUic": 8505011,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "MTM",
+            "bezOff": "Mettmenstetten",
+            "bpUic": 8502225,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "VM",
+            "bezOff": "Meyrin",
+            "bpUic": 8501006,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MEZ",
+            "bezOff": "Mezzovico",
+            "bpUic": 8505217,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MIES",
+            "bezOff": "Mies",
+            "bpUic": 8501014,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MINU",
+            "bezOff": "Minusio",
+            "bpUic": 8505417,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "MIRA",
+            "bezOff": "Miralago",
+            "bpUic": 8509365,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "MIT",
+            "bezOff": "Mitlödi",
+            "bpUic": 8503232,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "MHN",
+            "bezOff": "Mittelhäusern",
+            "bpUic": 8507087,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "MOG",
+            "bezOff": "Mogelsberg",
+            "bpUic": 8506293,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "MTB",
+            "bezOff": "Montbovon",
+            "bpUic": 8504070,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "MTH",
+            "bezOff": "Monthey",
+            "bpUic": 8501421,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MX",
+            "bezOff": "Montreux",
+            "bpUic": 8501300,
+            "qosBitfeld": 9183869
+        },
+        {
+            "abk": "MOOS",
+            "bezOff": "Moos",
+            "bpUic": 8507084,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "MRL",
+            "bezOff": "Moreillon",
+            "bpUic": 8504007,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MOR",
+            "bezOff": "Morges",
+            "bpUic": 8501037,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "STJ",
+            "bezOff": "Morges-St-Jean",
+            "bpUic": 8501047,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MOTA",
+            "bezOff": "Morteratsch",
+            "bpUic": 8509353,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "MO",
+            "bezOff": "Mosen",
+            "bpUic": 8502029,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "MD",
+            "bezOff": "Moudon",
+            "bpUic": 8504120,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MOU",
+            "bezOff": "Moutier",
+            "bpUic": 8500105,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "MPF",
+            "bezOff": "Mumpf",
+            "bpUic": 8500303,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "LOEW",
+            "bezOff": "Muntelier-Löwenberg",
+            "bpUic": 8504140,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MUO",
+            "bezOff": "Muolen",
+            "bpUic": 8506396,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "MG",
+            "bezOff": "Murg",
+            "bpUic": 8509417,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MGT",
+            "bezOff": "Murgenthal",
+            "bpUic": 8508102,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MI",
+            "bezOff": "Muri AG",
+            "bpUic": 8502215,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MRT",
+            "bezOff": "Murten/Morat",
+            "bpUic": 8504128,
+            "qosBitfeld": 8922737
+        },
+        {
+            "abk": "MU",
+            "bezOff": "Muttenz",
+            "bpUic": 8500020,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MAEG",
+            "bezOff": "Mägenwil",
+            "bpUic": 8502106,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MAEN",
+            "bezOff": "Männedorf",
+            "bpUic": 8503106,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MAER",
+            "bezOff": "Märstetten",
+            "bpUic": 8506104,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MAE",
+            "bezOff": "Märwil",
+            "bpUic": 8506184,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "MOE",
+            "bezOff": "Möhlin",
+            "bpUic": 8500302,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MOEL",
+            "bezOff": "Mörel",
+            "bpUic": 8501676,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "MOER",
+            "bezOff": "Mörschwil",
+            "bpUic": 8506304,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "MUEH",
+            "bezOff": "Mühlau",
+            "bpUic": 8502217,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "MH",
+            "bezOff": "Mühlehorn",
+            "bpUic": 8509418,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MUE",
+            "bezOff": "Mülenen",
+            "bpUic": 8507481,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "MUEL",
+            "bezOff": "Müllheim-Wigoltingen",
+            "bpUic": 8506103,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MUEB",
+            "bezOff": "Münchenbuchsee",
+            "bpUic": 8504411,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MST",
+            "bezOff": "Münchenstein",
+            "bpUic": 8500119,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MUCO",
+            "bezOff": "Münchenwiler-Courgevaux",
+            "bpUic": 8504186,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "MS",
+            "bezOff": "Münsingen",
+            "bpUic": 8507006,
+            "qosBitfeld": 795249
+        },
+        {
+            "abk": "MSPI",
+            "bezOff": "Münsterlingen Spital",
+            "bpUic": 8506143,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "MSCH",
+            "bezOff": "Münsterlingen-Scherzingen",
+            "bpUic": 8506126,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "MM",
+            "bezOff": "Müntschemier",
+            "bpUic": 8504484,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "NEB",
+            "bezOff": "Nebikon",
+            "bpUic": 8502005,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "NEIR",
+            "bezOff": "Neirivue",
+            "bpUic": 8504073,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "NL",
+            "bezOff": "Nesslau-Neu St. Johann",
+            "bpUic": 8506299,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "NET",
+            "bezOff": "Netstal",
+            "bpUic": 8503228,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NE",
+            "bezOff": "Neuchâtel",
+            "bpUic": 8504221,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "NEFD",
+            "bezOff": "Neuchâtel Cargo",
+            "bpUic": 8516077,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "NESE",
+            "bezOff": "Neuchâtel-Serrières",
+            "bpUic": 8504220,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "NGG",
+            "bezOff": "Neuenegg",
+            "bpUic": 8504192,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NHOF",
+            "bezOff": "Neuenhof",
+            "bpUic": 8503511,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NH",
+            "bezOff": "Neuhausen",
+            "bpUic": 8503423,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NHRH",
+            "bezOff": "Neuhausen Rheinfall",
+            "bpUic": 8518924,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "NK",
+            "bezOff": "Neukirch-Egnach",
+            "bpUic": 8506398,
+            "qosBitfeld": 534133
+        },
+        {
+            "abk": "NM",
+            "bezOff": "Neumühle",
+            "bpUic": 8508269,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "NEY",
+            "bezOff": "Neyruz FR",
+            "bpUic": 8504027,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "NID",
+            "bezOff": "Nidfurn-Haslen",
+            "bpUic": 8503234,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "NOU",
+            "bezOff": "Nieder- und Oberurnen",
+            "bpUic": 8503226,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NB",
+            "bezOff": "Niederbipp",
+            "bpUic": 8500211,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NG",
+            "bezOff": "Niederglatt ZH",
+            "bpUic": 8503313,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NIE",
+            "bezOff": "Niederhasli",
+            "bpUic": 8503314,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NRRB",
+            "bezOff": "Niederrickenbach Station",
+            "bpUic": 8508384,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "NR",
+            "bezOff": "Niederried",
+            "bpUic": 8508302,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "NS",
+            "bezOff": "Niederscherli",
+            "bpUic": 8507086,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "NWA",
+            "bezOff": "Niederwangen",
+            "bpUic": 8504105,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NW",
+            "bezOff": "Niederweningen",
+            "bpUic": 8503319,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NWD",
+            "bezOff": "Niederweningen Dorf",
+            "bpUic": 8503318,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "NOI",
+            "bezOff": "Noiraigue",
+            "bpUic": 8504216,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NO",
+            "bezOff": "Nottwil",
+            "bpUic": 8502008,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "NY",
+            "bezOff": "Nyon",
+            "bpUic": 8501030,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "NAEF",
+            "bezOff": "Näfels-Mollis",
+            "bpUic": 8503227,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "NAEN",
+            "bezOff": "Nänikon-Greifensee",
+            "bpUic": 8503126,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "OA",
+            "bezOff": "Oberaach",
+            "bpUic": 8506108,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OB",
+            "bezOff": "Oberbuchsiten",
+            "bpUic": 8500213,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OBB",
+            "bezOff": "Oberburg",
+            "bpUic": 8508080,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "OD",
+            "bezOff": "Oberdiessbach",
+            "bpUic": 8508255,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "ODF",
+            "bezOff": "Oberdorf SO",
+            "bpUic": 8500264,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "OEF",
+            "bezOff": "Oberentfelden",
+            "bpUic": 8502102,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OGL",
+            "bezOff": "Oberglatt ZH",
+            "bpUic": 8503312,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OBK",
+            "bezOff": "Oberkirch LU",
+            "bpUic": 8502011,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OAB",
+            "bezOff": "Oberried am Brienzersee",
+            "bpUic": 8508303,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "ORD",
+            "bezOff": "Oberrieden",
+            "bpUic": 8503203,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ORDD",
+            "bezOff": "Oberrieden Dorf",
+            "bpUic": 8502209,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ORT",
+            "bezOff": "Oberriet SG",
+            "bpUic": 8509400,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OI",
+            "bezOff": "Oberrüti",
+            "bpUic": 8502219,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OBW",
+            "bezOff": "Oberwald",
+            "bpUic": 8501661,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "OWA",
+            "bezOff": "Oberwangen",
+            "bpUic": 8504117,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "OIS",
+            "bezOff": "Oberwil im Simmental",
+            "bpUic": 8507293,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "OWT",
+            "bezOff": "Oberwinterthur",
+            "bpUic": 8506016,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OWTP",
+            "bezOff": "Oberwinterthur SA Pünten",
+            "bpUic": 8518875,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "OWTU",
+            "bezOff": "Oberwinterthur Unterhaltanlage",
+            "bpUic": 8506037,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "OEN",
+            "bezOff": "Oensingen",
+            "bpUic": 8500212,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "OE",
+            "bezOff": "Oey-Diemtigen",
+            "bpUic": 8507297,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "OL",
+            "bezOff": "Olten",
+            "bpUic": 8500218,
+            "qosBitfeld": 8922105
+        },
+        {
+            "abk": "OLH",
+            "bezOff": "Olten Hammer",
+            "bpUic": 8500217,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "OLNO",
+            "bezOff": "Olten Nord-Ost (Abzw)",
+            "bpUic": 8515772,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "OLRB",
+            "bezOff": "Olten RB",
+            "bpUic": 8500240,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "OP",
+            "bezOff": "Opfikon",
+            "bpUic": 8503340,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OPP",
+            "bezOff": "Oppikon",
+            "bpUic": 8506185,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "OR",
+            "bezOff": "Oron",
+            "bpUic": 8504020,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OS",
+            "bezOff": "Osogna-Cresciano",
+            "bpUic": 8505210,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "OSBE",
+            "bezOff": "Ospizio Bernina",
+            "bpUic": 8509356,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "OSS",
+            "bezOff": "Ossingen",
+            "bpUic": 8506023,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OST",
+            "bezOff": "Ostermundigen",
+            "bpUic": 8507002,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OF",
+            "bezOff": "Otelfingen",
+            "bpUic": 8503528,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "OFR",
+            "bezOff": "Otelfingen Golfpark",
+            "bpUic": 8503525,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "OTH",
+            "bezOff": "Othmarsingen",
+            "bpUic": 8502105,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "PAL",
+            "bezOff": "Palézieux",
+            "bpUic": 8504014,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "PALV",
+            "bezOff": "Palézieux-Village",
+            "bpUic": 8504016,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "LGP",
+            "bezOff": "Paradiso",
+            "bpUic": 8505301,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PAY",
+            "bezOff": "Payerne",
+            "bpUic": 8504134,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PEI",
+            "bezOff": "Peist",
+            "bpUic": 8509154,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "PEN",
+            "bezOff": "Pensier",
+            "bpUic": 8504183,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "PFU",
+            "bezOff": "Pfungen",
+            "bpUic": 8506042,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PF",
+            "bezOff": "Pfäffikon SZ",
+            "bpUic": 8503209,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "PFZ",
+            "bezOff": "Pfäffikon ZH",
+            "bpUic": 8503301,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PIE",
+            "bezOff": "Pieterlen",
+            "bpUic": 8500200,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PTC",
+            "bezOff": "Pont-Céard",
+            "bpUic": 8501013,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PON",
+            "bezOff": "Pontenet",
+            "bpUic": 8500135,
+            "qosBitfeld": 8921696
+        },
+        {
+            "abk": "PORE",
+            "bezOff": "Pontresina",
+            "bpUic": 8509255,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "POR",
+            "bezOff": "Porrentruy",
+            "bpUic": 8500126,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "POS",
+            "bezOff": "Poschiavo",
+            "bpUic": 8509361,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "PR",
+            "bezOff": "Pratteln",
+            "bpUic": 8500021,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PRSR",
+            "bezOff": "Pratteln Salina Raurica",
+            "bpUic": 8517131,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "PRED",
+            "bezOff": "Preda",
+            "bpUic": 8509198,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "PRMA",
+            "bezOff": "Prilly-Malley",
+            "bpUic": 8518452,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PREP",
+            "bezOff": "Pré-Petitjean",
+            "bpUic": 8500194,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "PUI",
+            "bezOff": "Puidoux",
+            "bpUic": 8504012,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PU",
+            "bezOff": "Pully",
+            "bpUic": 8501121,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "PUN",
+            "bezOff": "Pully-Nord",
+            "bpUic": 8504000,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "PTM",
+            "bezOff": "Punt Muragl",
+            "bpUic": 8509254,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "PTMS",
+            "bezOff": "Punt Muragl Staz",
+            "bpUic": 8509351,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "QUA",
+            "bezOff": "Quartino",
+            "bpUic": 8505405,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RBL",
+            "bezOff": "RB Limmattal",
+            "bpUic": 8503507,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "RASU",
+            "bezOff": "Rabius-Surrein",
+            "bpUic": 8509177,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "RZ",
+            "bezOff": "Rafz",
+            "bpUic": 8503404,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RAM",
+            "bezOff": "Ramsei",
+            "bpUic": 8508267,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "RZO",
+            "bezOff": "Ranzo-S. Abbondio",
+            "bpUic": 8505408,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RW",
+            "bezOff": "Rapperswil SG",
+            "bpUic": 8503110,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "RAR",
+            "bezOff": "Raron",
+            "bpUic": 8501604,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "REB",
+            "bezOff": "Rebstein-Marbach",
+            "bpUic": 8506318,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "REC",
+            "bezOff": "Reconvilier",
+            "bpUic": 8500101,
+            "qosBitfeld": 9970288
+        },
+        {
+            "abk": "REG",
+            "bezOff": "Regensdorf-Watt",
+            "bpUic": 8503526,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "REIT",
+            "bezOff": "Reichenau-Tamins",
+            "bpUic": 8509183,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "REIK",
+            "bezOff": "Reichenbach im Kandertal",
+            "bpUic": 8507480,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "RG",
+            "bezOff": "Reichenburg",
+            "bpUic": 8503223,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "REID",
+            "bezOff": "Reiden",
+            "bpUic": 8502003,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "REK",
+            "bezOff": "Rekingen AG",
+            "bpUic": 8503408,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "REMA",
+            "bezOff": "Remaufens",
+            "bpUic": 8504061,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "RE",
+            "bezOff": "Renan BE",
+            "bpUic": 8504312,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "REN",
+            "bezOff": "Renens VD",
+            "bpUic": 8501118,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "REU",
+            "bezOff": "Reuchenette-Péry",
+            "bpUic": 8504302,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "REUT",
+            "bezOff": "Reutlingen",
+            "bpUic": 8506036,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "RCK",
+            "bezOff": "Rheineck",
+            "bpUic": 8506313,
+            "qosBitfeld": 8922737
+        },
+        {
+            "abk": "RF",
+            "bezOff": "Rheinfelden",
+            "bpUic": 8500301,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "RFAU",
+            "bezOff": "Rheinfelden Augarten",
+            "bpUic": 8500313,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "RHAE",
+            "bezOff": "Rhäzüns",
+            "bpUic": 8509185,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "RIAZ",
+            "bezOff": "Riazzino",
+            "bpUic": 8505412,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "RI",
+            "bezOff": "Richterswil",
+            "bpUic": 8503207,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RIK",
+            "bezOff": "Rickenbach-Attikon",
+            "bpUic": 8506018,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RID",
+            "bezOff": "Riddes",
+            "bpUic": 8501503,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RDM",
+            "bezOff": "Riedmatt SZ",
+            "bpUic": 8503294,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "RIEB",
+            "bezOff": "Riehen",
+            "bpUic": 8516764,
+            "qosBitfeld": 664160
+        },
+        {
+            "abk": "RIET",
+            "bezOff": "Rietheim",
+            "bpUic": 8503410,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RN",
+            "bezOff": "Rikon",
+            "bpUic": 8506005,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RIN",
+            "bezOff": "Ringgenberg",
+            "bpUic": 8508301,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "RGD",
+            "bezOff": "Ringoldingen",
+            "bpUic": 8507286,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "RIV",
+            "bezOff": "Rivaz",
+            "bpUic": 8501126,
+            "qosBitfeld": 8921701
+        },
+        {
+            "abk": "RIB",
+            "bezOff": "Rivera-Bironico",
+            "bpUic": 8505216,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ROC",
+            "bezOff": "Roche VD",
+            "bpUic": 8501304,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "RORE",
+            "bezOff": "Rodels-Realta",
+            "bpUic": 8509187,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ROBG",
+            "bezOff": "Roggwil-Berg",
+            "bpUic": 8506394,
+            "qosBitfeld": 534117
+        },
+        {
+            "abk": "ROG",
+            "bezOff": "Roggwil-Wynau",
+            "bpUic": 8508101,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RBA",
+            "bezOff": "Rohrbach",
+            "bpUic": 8508186,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ROL",
+            "bezOff": "Rolle",
+            "bpUic": 8501033,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RH",
+            "bezOff": "Romanshorn",
+            "bpUic": 8506121,
+            "qosBitfeld": 8921977
+        },
+        {
+            "abk": "RHGB",
+            "bezOff": "Romanshorn GB",
+            "bpUic": 8506120,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "RHSE",
+            "bezOff": "Romanshorn Seewiesen",
+            "bpUic": 8519624,
+            "qosBitfeld": 8736
+        },
+        {
+            "abk": "RHVL",
+            "bezOff": "Romanshorn VL",
+            "bpUic": 8506146,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "ROM",
+            "bezOff": "Romont FR",
+            "bpUic": 8504023,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "LBD",
+            "bezOff": "Root D4",
+            "bpUic": 8515997,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RS",
+            "bezOff": "Rorschach",
+            "bpUic": 8506311,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "RSGB",
+            "bezOff": "Rorschach GB",
+            "bpUic": 8519027,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "RSHF",
+            "bezOff": "Rorschach Hafen",
+            "bpUic": 8506306,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RSST",
+            "bezOff": "Rorschach Stadt",
+            "bpUic": 8506322,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ROSS",
+            "bezOff": "Rosshäusern",
+            "bpUic": 8504487,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "ROTH",
+            "bezOff": "Rothenbrunnen",
+            "bpUic": 8509186,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "RBG",
+            "bezOff": "Rothenburg Station",
+            "bpUic": 8502020,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RTT",
+            "bezOff": "Rothenthurm",
+            "bpUic": 8503282,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "RTR",
+            "bezOff": "Rothrist",
+            "bpUic": 8508103,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RTRH",
+            "bezOff": "Rothrist GB",
+            "bpUic": 8516698,
+            "qosBitfeld": 524832
+        },
+        {
+            "abk": "RK",
+            "bezOff": "Rotkreuz",
+            "bpUic": 8502202,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "RUB",
+            "bezOff": "Rubigen",
+            "bpUic": 8507005,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "RUEU",
+            "bezOff": "Rueun",
+            "bpUic": 8509173,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "RU",
+            "bezOff": "Rupperswil",
+            "bpUic": 8502114,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RUS",
+            "bezOff": "Russin",
+            "bpUic": 8501002,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "RMZ",
+            "bezOff": "Rämismühle-Zell",
+            "bpUic": 8506006,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "RAET",
+            "bezOff": "Räterschen",
+            "bpUic": 8506015,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "RUEN",
+            "bezOff": "Rümikon AG",
+            "bpUic": 8503415,
+            "qosBitfeld": 533107
+        },
+        {
+            "abk": "RUEM",
+            "bezOff": "Rümlang",
+            "bpUic": 8503311,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RLG",
+            "bezOff": "Rümlingen",
+            "bpUic": 8500033,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "RUES",
+            "bezOff": "Rüschlikon",
+            "bpUic": 8503201,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "RTH",
+            "bezOff": "Rüthi SG",
+            "bpUic": 8509401,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "RUET",
+            "bezOff": "Rüti GL",
+            "bpUic": 8503238,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "RUE",
+            "bezOff": "Rüti ZH",
+            "bpUic": 8503121,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SCAN",
+            "bezOff": "S-chanf",
+            "bpUic": 8509259,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SAN",
+            "bezOff": "S. Antonino",
+            "bpUic": 8505415,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "SN",
+            "bezOff": "S. Nazzaro",
+            "bpUic": 8505407,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SAAS",
+            "bezOff": "Saas im Prättigau",
+            "bpUic": 8509065,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SACH",
+            "bezOff": "Sachseln",
+            "bpUic": 8508313,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "SAF",
+            "bezOff": "Safenwil",
+            "bpUic": 8502100,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SAGL",
+            "bezOff": "Sagliains",
+            "bpUic": 8509269,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SAIG",
+            "bezOff": "Saignelégier",
+            "bpUic": 8500191,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "SD",
+            "bezOff": "Saland",
+            "bpUic": 8506009,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SAS",
+            "bezOff": "Salez-Sennwald",
+            "bpUic": 8509402,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SAL",
+            "bezOff": "Salgesch",
+            "bpUic": 8501600,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "SAME",
+            "bezOff": "Samedan",
+            "bpUic": 8509251,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SAM",
+            "bezOff": "Samstagern",
+            "bpUic": 8503286,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "SA",
+            "bezOff": "Sargans",
+            "bpUic": 8509411,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "SASL",
+            "bezOff": "Sargans Schleife (Verzw)",
+            "bpUic": 8509421,
+            "qosBitfeld": 524832
+        },
+        {
+            "abk": "SAR",
+            "bezOff": "Sarnen",
+            "bpUic": 8508314,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "SRND",
+            "bezOff": "Sarnen Nord",
+            "bpUic": 8508323,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SY",
+            "bezOff": "Satigny",
+            "bpUic": 8501003,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SATT",
+            "bezOff": "Sattel",
+            "bpUic": 8505350,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "SAX",
+            "bezOff": "Saxon",
+            "bpUic": 8501502,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SCH",
+            "bezOff": "Schachen (Herisau)",
+            "bpUic": 8506291,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "SCHA",
+            "bezOff": "Schachen LU",
+            "bpUic": 8508217,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SH",
+            "bezOff": "Schaffhausen",
+            "bpUic": 8503424,
+            "qosBitfeld": 8921977
+        },
+        {
+            "abk": "SHRB",
+            "bezOff": "Schaffhausen GB",
+            "bpUic": 8503440,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "SHIE",
+            "bezOff": "Schafhausen i.E.",
+            "bpUic": 8508264,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SCRS",
+            "bezOff": "Schiers",
+            "bpUic": 8509060,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SCHI",
+            "bezOff": "Schindellegi-Feusisberg",
+            "bpUic": 8503285,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "SBAD",
+            "bezOff": "Schinznach Bad",
+            "bpUic": 8502116,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SCHT",
+            "bezOff": "Schlatt TG",
+            "bpUic": 8503427,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SCHN",
+            "bezOff": "Schlattingen",
+            "bpUic": 8503429,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SCHL",
+            "bezOff": "Schlieren",
+            "bpUic": 8503509,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SLF",
+            "bezOff": "Schloss Laufen am Rheinfall",
+            "bpUic": 8506039,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SCME",
+            "bezOff": "Schmerikon",
+            "bpUic": 8503115,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "SCMI",
+            "bezOff": "Schmitten FR",
+            "bpUic": 8504102,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SCGR",
+            "bezOff": "Schmitten GR Landwasserviadukt",
+            "bpUic": 8510456,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SNT",
+            "bezOff": "Schneit",
+            "bpUic": 8518794,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "SCHK",
+            "bezOff": "Schottikon",
+            "bpUic": 8506035,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "SCHD",
+            "bezOff": "Schwanden GL",
+            "bpUic": 8503233,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SCBG",
+            "bezOff": "Schwarzenburg",
+            "bpUic": 8507089,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "SBR",
+            "bezOff": "Schwarzwasserbrücke",
+            "bpUic": 8507095,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SCWE",
+            "bezOff": "Schwerzenbach ZH",
+            "bpUic": 8503127,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SCHW",
+            "bezOff": "Schwyz",
+            "bpUic": 8505006,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "SWB",
+            "bezOff": "Schwäbis",
+            "bpUic": 8508250,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "SCAE",
+            "bezOff": "Schänis",
+            "bpUic": 8503119,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SCHO",
+            "bezOff": "Schöfflisdorf-Oberweningen",
+            "bpUic": 8503317,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SCHF",
+            "bezOff": "Schöftland",
+            "bpUic": 8502199,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "SCHB",
+            "bezOff": "Schönbühl SBB",
+            "bpUic": 8508001,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SCOE",
+            "bezOff": "Schönenwerd SO",
+            "bpUic": 8502112,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "SCBU",
+            "bezOff": "Schübelbach-Buttikon",
+            "bpUic": 8503222,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SCUE",
+            "bezOff": "Schüpfen",
+            "bpUic": 8504412,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SCHH",
+            "bezOff": "Schüpfheim",
+            "bpUic": 8508211,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SCTA",
+            "bezOff": "Scuol-Tarasp",
+            "bpUic": 8509268,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SEEV",
+            "bezOff": "Seewis-Pardisla",
+            "bpUic": 8509058,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SF",
+            "bezOff": "Seftigen",
+            "bpUic": 8507071,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "SEL",
+            "bezOff": "Selzach",
+            "bpUic": 8500204,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SEM",
+            "bezOff": "Sempach-Neuenkirch",
+            "bpUic": 8502009,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SEMS",
+            "bezOff": "Semsales",
+            "bpUic": 8504063,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "SKY",
+            "bezOff": "Sennhof-Kyburg",
+            "bpUic": 8506003,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SE",
+            "bezOff": "Seon",
+            "bpUic": 8502030,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SENO",
+            "bezOff": "Seon Nord",
+            "bpUic": 8502043,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "SEU",
+            "bezOff": "Seuzach",
+            "bpUic": 8506020,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SEV",
+            "bezOff": "Sevelen",
+            "bpUic": 8509406,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SIB",
+            "bezOff": "Siebnen-Wangen",
+            "bpUic": 8503221,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SHAU",
+            "bezOff": "Siegershausen",
+            "bpUic": 8506195,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SIE",
+            "bezOff": "Sierre/Siders",
+            "bpUic": 8501509,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "SIG",
+            "bezOff": "Siggenthal-Würenlingen",
+            "bpUic": 8503502,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SIGN",
+            "bezOff": "Signau",
+            "bpUic": 8508205,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SINS",
+            "bezOff": "Sins",
+            "bpUic": 8502218,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SIO",
+            "bezOff": "Sion",
+            "bpUic": 8501506,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "SIR",
+            "bezOff": "Sirnach",
+            "bpUic": 8506010,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SIFI",
+            "bezOff": "Siselen-Finsterhennen",
+            "bpUic": 8504466,
+            "qosBitfeld": 8800
+        },
+        {
+            "abk": "SK",
+            "bezOff": "Sisikon",
+            "bpUic": 8505111,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SIS",
+            "bezOff": "Sissach",
+            "bpUic": 8500026,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "SIT",
+            "bezOff": "Sitterdorf",
+            "bpUic": 8506214,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SO",
+            "bezOff": "Solothurn",
+            "bpUic": 8500207,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "SOAD",
+            "bezOff": "Solothurn Allmend",
+            "bpUic": 8518963,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SW",
+            "bezOff": "Solothurn West",
+            "bpUic": 8500206,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SOM",
+            "bezOff": "Sommerau",
+            "bpUic": 8500032,
+            "qosBitfeld": 8921699
+        },
+        {
+            "abk": "SCB",
+            "bezOff": "Sonceboz-Sombeval",
+            "bpUic": 8504304,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "SV",
+            "bezOff": "Sonvilier",
+            "bpUic": 8504311,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SOR",
+            "bezOff": "Sorvilier",
+            "bpUic": 8500103,
+            "qosBitfeld": 8921696
+        },
+        {
+            "abk": "SP",
+            "bezOff": "Spiez",
+            "bpUic": 8507483,
+            "qosBitfeld": 795513
+        },
+        {
+            "abk": "SPIN",
+            "bezOff": "Spinas",
+            "bpUic": 8509199,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SBL",
+            "bezOff": "St-Blaise CFF",
+            "bpUic": 8504222,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SBLB",
+            "bezOff": "St-Blaise-Lac",
+            "bpUic": 8504480,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "STCE",
+            "bezOff": "St-Cergue",
+            "bpUic": 8501062,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "STGI",
+            "bezOff": "St-Gingolph (Suisse)",
+            "bpUic": 8501428,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STI",
+            "bezOff": "St-Imier",
+            "bpUic": 8504310,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SL",
+            "bezOff": "St-Léonard",
+            "bpUic": 8501507,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SM",
+            "bezOff": "St-Maurice",
+            "bpUic": 8501403,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "STP",
+            "bezOff": "St-Prex",
+            "bpUic": 8501036,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STSA",
+            "bezOff": "St-Saphorin",
+            "bpUic": 8501127,
+            "qosBitfeld": 8921701
+        },
+        {
+            "abk": "ST",
+            "bezOff": "St-Triphon",
+            "bpUic": 8501401,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "SU",
+            "bezOff": "St-Ursanne",
+            "bpUic": 8500124,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STER",
+            "bezOff": "St. Erhard-Knutwil",
+            "bpUic": 8502010,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SG",
+            "bezOff": "St. Gallen",
+            "bpUic": 8506302,
+            "qosBitfeld": 9184249
+        },
+        {
+            "abk": "SGBR",
+            "bezOff": "St. Gallen Bruggen",
+            "bpUic": 8506301,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SGGB",
+            "bezOff": "St. Gallen GB",
+            "bpUic": 8506340,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "SGHA",
+            "bezOff": "St. Gallen Haggen",
+            "bpUic": 8506392,
+            "qosBitfeld": 534133
+        },
+        {
+            "abk": "SGF",
+            "bezOff": "St. Gallen St. Fiden",
+            "bpUic": 8506303,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SGWI",
+            "bezOff": "St. Gallen Winkeln",
+            "bpUic": 8506300,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STKT",
+            "bezOff": "St. Katharinental",
+            "bpUic": 8506148,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "SMG",
+            "bezOff": "St. Margrethen SG",
+            "bpUic": 8506314,
+            "qosBitfeld": 8921969
+        },
+        {
+            "abk": "SMOR",
+            "bezOff": "St. Moritz",
+            "bpUic": 8509253,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SNK",
+            "bezOff": "St. Niklaus VS",
+            "bpUic": 8501685,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "STPM",
+            "bezOff": "St. Peter-Molinis",
+            "bpUic": 8509153,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SURB",
+            "bezOff": "St. Urban",
+            "bpUic": 8508163,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "ZIE",
+            "bezOff": "St. Urban Ziegelei",
+            "bpUic": 8508164,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "STA",
+            "bezOff": "Staad SG",
+            "bpUic": 8506312,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STAF",
+            "bezOff": "Stabio",
+            "bpUic": 8517519,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STAL",
+            "bezOff": "Stalden i.E.",
+            "bpUic": 8508256,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "STAS",
+            "bezOff": "Stalden-Saas",
+            "bpUic": 8501683,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "STM",
+            "bezOff": "Stammheim",
+            "bpUic": 8506024,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STAN",
+            "bezOff": "Stans",
+            "bpUic": 8508391,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "SSTA",
+            "bezOff": "Stansstad",
+            "bpUic": 8508390,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "STK",
+            "bezOff": "Steckborn",
+            "bpUic": 8506136,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STEF",
+            "bezOff": "Steffisburg",
+            "bpUic": 8508251,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "STG",
+            "bezOff": "Steg",
+            "bpUic": 8503135,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STR",
+            "bezOff": "Stein am Rhein",
+            "bpUic": 8506139,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STS",
+            "bezOff": "Stein-Säckingen",
+            "bpUic": 8500320,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "STCH",
+            "bezOff": "Steinach",
+            "bpUic": 8516271,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "STB",
+            "bezOff": "Steinebrunn",
+            "bpUic": 8506397,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "STN",
+            "bezOff": "Steinen",
+            "bpUic": 8505005,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STBG",
+            "bezOff": "Steinerberg",
+            "bpUic": 8503280,
+            "qosBitfeld": 534113
+        },
+        {
+            "abk": "STE",
+            "bezOff": "Steinhausen",
+            "bpUic": 8502227,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STRI",
+            "bezOff": "Steinhausen Rigiblick",
+            "bpUic": 8518459,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STMR",
+            "bezOff": "Steinmaur",
+            "bpUic": 8503316,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "STET",
+            "bezOff": "Stettbach",
+            "bpUic": 8503147,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "STU",
+            "bezOff": "Studen BE",
+            "bpUic": 8504441,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "STAE",
+            "bezOff": "Stäfa",
+            "bpUic": 8503107,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SUB",
+            "bezOff": "Suberg-Grossaffoltern",
+            "bpUic": 8504413,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SUGI",
+            "bezOff": "Sugiez",
+            "bpUic": 8504188,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "SUHR",
+            "bezOff": "Suhr",
+            "bpUic": 8502103,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SLG",
+            "bezOff": "Sulgen",
+            "bpUic": 8506217,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "SWG",
+            "bezOff": "Sumiswald-Grünen",
+            "bpUic": 8508272,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "SUCU",
+            "bezOff": "Sumvitg-Cumpadials",
+            "bpUic": 8509178,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "SURO",
+            "bezOff": "Surovas",
+            "bpUic": 8509352,
+            "qosBitfeld": 533025
+        },
+        {
+            "abk": "SS",
+            "bezOff": "Sursee",
+            "bpUic": 8502007,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "SUS",
+            "bezOff": "Susch",
+            "bpUic": 8509263,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "TD",
+            "bezOff": "Tann-Dürnten",
+            "bpUic": 8503139,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "TAN",
+            "bezOff": "Tannay",
+            "bpUic": 8501015,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TABR",
+            "bezOff": "Tavanasa-Breil/Brigels",
+            "bpUic": 8509175,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "TA",
+            "bezOff": "Tavannes",
+            "bpUic": 8500100,
+            "qosBitfeld": 9970288
+        },
+        {
+            "abk": "TAV",
+            "bezOff": "Taverne-Torricella",
+            "bpUic": 8505218,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TK",
+            "bezOff": "Tecknau",
+            "bpUic": 8500028,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TEN",
+            "bezOff": "Tenero",
+            "bpUic": 8505401,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "TER",
+            "bezOff": "Territet",
+            "bpUic": 8501301,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "TLH",
+            "bezOff": "Thalheim-Altikon",
+            "bpUic": 8506022,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TW",
+            "bezOff": "Thalwil",
+            "bpUic": 8503202,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "THA",
+            "bezOff": "Thayngen",
+            "bpUic": 8503461,
+            "qosBitfeld": 668256
+        },
+        {
+            "abk": "TH",
+            "bezOff": "Thun",
+            "bpUic": 8507100,
+            "qosBitfeld": 795513
+        },
+        {
+            "abk": "THU",
+            "bezOff": "Thurnen",
+            "bpUic": 8507073,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "THS",
+            "bezOff": "Thusis",
+            "bpUic": 8509189,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "THOD",
+            "bezOff": "Thörishaus Dorf",
+            "bpUic": 8504115,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "THO",
+            "bezOff": "Thörishaus Station",
+            "bpUic": 8504104,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "TICA",
+            "bezOff": "Tiefencastel",
+            "bpUic": 8509192,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "TIR",
+            "bezOff": "Tirano",
+            "bpUic": 8509369,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "TOA",
+            "bezOff": "Tobel-Affeltrangen",
+            "bpUic": 8506183,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TO",
+            "bezOff": "Toffen",
+            "bpUic": 8507075,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "TRAM",
+            "bezOff": "Tramelan",
+            "bpUic": 8500170,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "TR",
+            "bezOff": "Travers",
+            "bpUic": 8504215,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TRIB",
+            "bezOff": "Triboltingen",
+            "bpUic": 8506118,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "TRI",
+            "bezOff": "Trimbach",
+            "bpUic": 8500037,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "TRIN",
+            "bezOff": "Trin",
+            "bpUic": 8509167,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "TSCH",
+            "bezOff": "Trubschachen",
+            "bpUic": 8508208,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TRUN",
+            "bezOff": "Trun",
+            "bpUic": 8509176,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "TU",
+            "bezOff": "Turbenthal",
+            "bpUic": 8506007,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TG",
+            "bezOff": "Turgi",
+            "bpUic": 8503503,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TUR",
+            "bezOff": "Turtmann",
+            "bpUic": 8501602,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "TWN",
+            "bezOff": "Twann",
+            "bpUic": 8504228,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "TAEN",
+            "bezOff": "Tägerschen",
+            "bpUic": 8506168,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TI",
+            "bezOff": "Tägertschi",
+            "bpUic": 8508201,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "TAEM",
+            "bezOff": "Tägerwilen Dorf",
+            "bpUic": 8506198,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TAEG",
+            "bezOff": "Tägerwilen-Gottlieben",
+            "bpUic": 8506132,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "TAEU",
+            "bezOff": "Täuffelen",
+            "bpUic": 8504463,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "TUE",
+            "bezOff": "Tüscherz",
+            "bpUic": 8504229,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "UER",
+            "bezOff": "Uerikon",
+            "bpUic": 8503108,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "UE",
+            "bezOff": "Uetendorf",
+            "bpUic": 8507070,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "UEA",
+            "bezOff": "Uetendorf Allmend",
+            "bpUic": 8507094,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "UET",
+            "bezOff": "Uetikon",
+            "bpUic": 8503105,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ULR",
+            "bezOff": "Ulrichen",
+            "bpUic": 8501663,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "UNT",
+            "bezOff": "Unterterzen",
+            "bpUic": 8509416,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "UVAZ",
+            "bezOff": "Untervaz-Trimmis",
+            "bpUic": 8509053,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "URD",
+            "bezOff": "Urdorf",
+            "bpUic": 8502220,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "URDW",
+            "bezOff": "Urdorf Weihermatt",
+            "bpUic": 8502229,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "UST",
+            "bezOff": "Uster",
+            "bpUic": 8503125,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "UTI",
+            "bezOff": "Uttigen",
+            "bpUic": 8507009,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "UTW",
+            "bezOff": "Uttwil",
+            "bpUic": 8506122,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "UT",
+            "bezOff": "Utzenstorf",
+            "bpUic": 8508086,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "UZ",
+            "bezOff": "Uznach",
+            "bpUic": 8503116,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "UZW",
+            "bezOff": "Uzwil",
+            "bpUic": 8506208,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "VASA",
+            "bezOff": "Valendas-Sagogn",
+            "bpUic": 8509169,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "VAL",
+            "bezOff": "Vallorbe",
+            "bpUic": 8501103,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "VD",
+            "bezOff": "Vauderens",
+            "bpUic": 8504021,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "VAUS",
+            "bezOff": "Vaulruz-Sud",
+            "bpUic": 8504065,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "VEND",
+            "bezOff": "Vendlincourt",
+            "bpUic": 8500187,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "VERN",
+            "bezOff": "Vernayaz",
+            "bpUic": 8501405,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "COI",
+            "bezOff": "Vernier",
+            "bpUic": 8501007,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "VMC",
+            "bezOff": "Vernier-Meyrin Cargo",
+            "bpUic": 8515778,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "VESA",
+            "bezOff": "Versam-Safien",
+            "bpUic": 8509168,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "VSX",
+            "bezOff": "Versoix",
+            "bpUic": 8501022,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "VV",
+            "bezOff": "Vevey",
+            "bpUic": 8501200,
+            "qosBitfeld": 9183861
+        },
+        {
+            "abk": "VEY",
+            "bezOff": "Veytaux-Chillon",
+            "bpUic": 8501302,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "GRVI",
+            "bezOff": "Villars-sous-Mont",
+            "bpUic": 8504074,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "VG",
+            "bezOff": "Villars-sur-Glâne",
+            "bpUic": 8504030,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "VZ",
+            "bezOff": "Villaz-St-Pierre",
+            "bpUic": 8504024,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "VIL",
+            "bezOff": "Villeneuve VD",
+            "bpUic": 8501303,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "VT",
+            "bezOff": "Villeret",
+            "bpUic": 8504309,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "VTE",
+            "bezOff": "Villette VD",
+            "bpUic": 8501123,
+            "qosBitfeld": 8921701
+        },
+        {
+            "abk": "VIO",
+            "bezOff": "Vionnaz",
+            "bpUic": 8501423,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "VI",
+            "bezOff": "Visp",
+            "bpUic": 8501605,
+            "qosBitfeld": 795513
+        },
+        {
+            "abk": "VOU",
+            "bezOff": "Vouvry",
+            "bpUic": 8501424,
+            "qosBitfeld": 8921715
+        },
+        {
+            "abk": "VUA",
+            "bezOff": "Vuadens-Sud",
+            "bpUic": 8504066,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "VU",
+            "bezOff": "Vufflens-la-Ville",
+            "bpUic": 8501116,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WBB",
+            "bezOff": "Wabern bei Bern",
+            "bpUic": 8507078,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "WCHW",
+            "bezOff": "Walchwil",
+            "bpUic": 8502205,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WCHO",
+            "bezOff": "Walchwil Hörndli",
+            "bpUic": 8517112,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "WL",
+            "bezOff": "Wald ZH",
+            "bpUic": 8503138,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WAB",
+            "bezOff": "Waldibrücke",
+            "bpUic": 8502017,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WAL",
+            "bezOff": "Walenstadt",
+            "bpUic": 8509414,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WALK",
+            "bezOff": "Walkringen",
+            "bpUic": 8508262,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "WS",
+            "bezOff": "Wallisellen",
+            "bpUic": 8503129,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WAVU",
+            "bezOff": "Waltensburg/Vuorz",
+            "bpUic": 8509174,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "WAST",
+            "bezOff": "Walterswil-Striegel",
+            "bpUic": 8502121,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "WAA",
+            "bezOff": "Wangen an der Aare",
+            "bpUic": 8500210,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WBOL",
+            "bezOff": "Wangen bei Olten",
+            "bpUic": 8500216,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WANZ",
+            "bezOff": "Wanzwil (Abzw)",
+            "bpUic": 8508047,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "WA",
+            "bezOff": "Wattwil",
+            "bpUic": 8506200,
+            "qosBitfeld": 534137
+        },
+        {
+            "abk": "WAU",
+            "bezOff": "Wauwil",
+            "bpUic": 8502006,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "WF",
+            "bezOff": "Weinfelden",
+            "bpUic": 8506105,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "WBA",
+            "bezOff": "Weissenbach",
+            "bpUic": 8507291,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "WG",
+            "bezOff": "Weissenburg",
+            "bpUic": 8507294,
+            "qosBitfeld": 533093
+        },
+        {
+            "abk": "WST",
+            "bezOff": "Werthenstein",
+            "bpUic": 8508216,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "WE",
+            "bezOff": "Wettingen",
+            "bpUic": 8503505,
+            "qosBitfeld": 8921717
+        },
+        {
+            "abk": "WZ",
+            "bezOff": "Wetzikon ZH",
+            "bpUic": 8503123,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "WCH",
+            "bezOff": "Wichtrach",
+            "bpUic": 8507007,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "WIED",
+            "bezOff": "Wiedlisbach",
+            "bpUic": 8500287,
+            "qosBitfeld": 533088
+        },
+        {
+            "abk": "WD",
+            "bezOff": "Wiesendangen",
+            "bpUic": 8506017,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "WIGB",
+            "bezOff": "Wil Güterbahnhof",
+            "bpUic": 8519211,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "WIL",
+            "bezOff": "Wil SG",
+            "bpUic": 8506206,
+            "qosBitfeld": 9184889
+        },
+        {
+            "abk": "WILA",
+            "bezOff": "Wila",
+            "bpUic": 8506008,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WI",
+            "bezOff": "Wildegg",
+            "bpUic": 8502115,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WILN",
+            "bezOff": "Wilen bei Wollerau",
+            "bpUic": 8503295,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "WR",
+            "bezOff": "Wiler",
+            "bpUic": 8508087,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "WSAU",
+            "bezOff": "Willisau",
+            "bpUic": 8508295,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "WM",
+            "bezOff": "Wimmis",
+            "bpUic": 8507298,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "WIN",
+            "bezOff": "Winkel am Zürichsee",
+            "bpUic": 8503111,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "W",
+            "bezOff": "Winterthur",
+            "bpUic": 8506000,
+            "qosBitfeld": 9184249
+        },
+        {
+            "abk": "WGR",
+            "bezOff": "Winterthur Grüze",
+            "bpUic": 8506001,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WHE",
+            "bezOff": "Winterthur Hegi",
+            "bpUic": 8516218,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "WSEE",
+            "bezOff": "Winterthur Seen",
+            "bpUic": 8506002,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WTOE",
+            "bezOff": "Winterthur Töss",
+            "bpUic": 8506044,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WWAL",
+            "bezOff": "Winterthur Wallrüti",
+            "bpUic": 8506038,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "WWE",
+            "bezOff": "Winterthur West (Abzw)",
+            "bpUic": 8506032,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "WWUE",
+            "bezOff": "Winterthur Wülflingen",
+            "bpUic": 8506043,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WIT",
+            "bezOff": "Wittenbach",
+            "bpUic": 8506393,
+            "qosBitfeld": 534133
+        },
+        {
+            "abk": "WO",
+            "bezOff": "Wohlen AG",
+            "bpUic": 8502213,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WOS",
+            "bezOff": "Wolfenschiessen",
+            "bpUic": 8508394,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "WH",
+            "bezOff": "Wolhusen",
+            "bpUic": 8508215,
+            "qosBitfeld": 8921721
+        },
+        {
+            "abk": "WHW",
+            "bezOff": "Wolhusen Weid",
+            "bpUic": 8516354,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "WOL",
+            "bezOff": "Wollerau",
+            "bpUic": 8503288,
+            "qosBitfeld": 534129
+        },
+        {
+            "abk": "WB",
+            "bezOff": "Worb SBB",
+            "bpUic": 8508200,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WY",
+            "bezOff": "Wynigen",
+            "bpUic": 8508006,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "WAE",
+            "bezOff": "Wädenswil",
+            "bpUic": 8503206,
+            "qosBitfeld": 9183865
+        },
+        {
+            "abk": "WUE",
+            "bezOff": "Wünnewil",
+            "bpUic": 8504113,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "WUER",
+            "bezOff": "Würenlos",
+            "bpUic": 8503529,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "YV",
+            "bezOff": "Yverdon-les-Bains",
+            "bpUic": 8504200,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "YND",
+            "bezOff": "Yvonand",
+            "bpUic": 8504130,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZELL",
+            "bezOff": "Zell LU",
+            "bpUic": 8508293,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "ZERM",
+            "bezOff": "Zermatt",
+            "bpUic": 8501689,
+            "qosBitfeld": 534112
+        },
+        {
+            "abk": "ZEZ",
+            "bezOff": "Zernez",
+            "bpUic": 8509262,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ZB",
+            "bezOff": "Ziegelbrücke",
+            "bpUic": 8503225,
+            "qosBitfeld": 9184121
+        },
+        {
+            "abk": "ZBR",
+            "bezOff": "Zihlbrücke",
+            "bpUic": 8504490,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ZIM",
+            "bezOff": "Zimeysa",
+            "bpUic": 8501000,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZIZ",
+            "bezOff": "Zizers",
+            "bpUic": 8509054,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ZF",
+            "bezOff": "Zofingen",
+            "bpUic": 8502001,
+            "qosBitfeld": 9184113
+        },
+        {
+            "abk": "ZO",
+            "bezOff": "Zollbrück",
+            "bpUic": 8508268,
+            "qosBitfeld": 533105
+        },
+        {
+            "abk": "ZOL",
+            "bezOff": "Zollikofen",
+            "bpUic": 8504410,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZK",
+            "bezOff": "Zollikon",
+            "bpUic": 8503100,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZG",
+            "bezOff": "Zug",
+            "bpUic": 8502204,
+            "qosBitfeld": 8922105
+        },
+        {
+            "abk": "ZGCA",
+            "bezOff": "Zug Casino",
+            "bpUic": 8517527,
+            "qosBitfeld": 533091
+        },
+        {
+            "abk": "KMUE",
+            "bezOff": "Zug Chollermüli",
+            "bpUic": 8502230,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "ZGFR",
+            "bezOff": "Zug Fridbach",
+            "bpUic": 8515994,
+            "qosBitfeld": 533091
+        },
+        {
+            "abk": "ZGO",
+            "bezOff": "Zug Oberwil",
+            "bpUic": 8502231,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZGPP",
+            "bezOff": "Zug Postplatz",
+            "bpUic": 8502300,
+            "qosBitfeld": 533091
+        },
+        {
+            "abk": "ZGSE",
+            "bezOff": "Zug Schutzengel",
+            "bpUic": 8516187,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZUOZ",
+            "bezOff": "Zuoz",
+            "bpUic": 8509258,
+            "qosBitfeld": 533089
+        },
+        {
+            "abk": "ZWD",
+            "bezOff": "Zweidlen",
+            "bpUic": 8503405,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZW",
+            "bezOff": "Zweisimmen",
+            "bpUic": 8507290,
+            "qosBitfeld": 533109
+        },
+        {
+            "abk": "ZWG",
+            "bezOff": "Zwingen",
+            "bpUic": 8500114,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZAE",
+            "bezOff": "Zäziwil",
+            "bpUic": 8508203,
+            "qosBitfeld": 8921697
+        },
+        {
+            "abk": "ZAF",
+            "bezOff": "Zürich Affoltern",
+            "bpUic": 8503008,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZAS",
+            "bezOff": "Zürich Altstetten",
+            "bpUic": 8503001,
+            "qosBitfeld": 9184249
+        },
+        {
+            "abk": "ZEN",
+            "bezOff": "Zürich Enge",
+            "bpUic": 8503010,
+            "qosBitfeld": 9183857
+        },
+        {
+            "abk": "ZFH",
+            "bezOff": "Zürich Flughafen",
+            "bpUic": 8503016,
+            "qosBitfeld": 9184113
+        },
+        {
+            "abk": "ZUE",
+            "bezOff": "Zürich HB",
+            "bpUic": 8503000,
+            "qosBitfeld": 9184249
+        },
+        {
+            "abk": "ZHDB",
+            "bezOff": "Zürich Hardbrücke",
+            "bpUic": 8503020,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZHER",
+            "bezOff": "Zürich Herdern",
+            "bpUic": 8503012,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "ZMUE",
+            "bezOff": "Zürich Mülligen",
+            "bpUic": 8503039,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "ZOER",
+            "bezOff": "Zürich Oerlikon",
+            "bpUic": 8503006,
+            "qosBitfeld": 9184249
+        },
+        {
+            "abk": "ZSEB",
+            "bezOff": "Zürich Seebach",
+            "bpUic": 8503007,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZSTH",
+            "bezOff": "Zürich Stadelhofen",
+            "bpUic": 8503003,
+            "qosBitfeld": 8921841
+        },
+        {
+            "abk": "ZTB",
+            "bezOff": "Zürich Tiefenbrunnen",
+            "bpUic": 8503004,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZVB",
+            "bezOff": "Zürich Vorbahnhof",
+            "bpUic": 8503025,
+            "qosBitfeld": 533024
+        },
+        {
+            "abk": "ZWIE",
+            "bezOff": "Zürich Wiedikon",
+            "bpUic": 8503011,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZWIP",
+            "bezOff": "Zürich Wipkingen",
+            "bpUic": 8503015,
+            "qosBitfeld": 8921713
+        },
+        {
+            "abk": "ZWOL",
+            "bezOff": "Zürich Wollishofen",
+            "bpUic": 8503009,
+            "qosBitfeld": 8921713
+        }
+    ]
+}

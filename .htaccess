@@ -1,0 +1,23 @@
+# 1. CORS-Freigaben für den Browser
+Header set Access-Control-Allow-Origin "*"
+Header set Access-Control-Allow-Methods "POST, GET, OPTIONS"
+Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+
+# 2. Spezifische Regeln für die proxy.php
+<Files "proxy.php">
+    # Zugriff für alle erlauben
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+
+    # ModSecurity komplett deaktivieren (beide Versionen abdecken)
+    <IfModule mod_security.c>
+        SecRuleEngine Off
+        SecRequestBodyAccess Off
+    </IfModule>
+    
+    <IfModule mod_security2.c>
+        SecRuleEngine Off
+        SecRequestBodyAccess Off
+    </IfModule>
+</Files>

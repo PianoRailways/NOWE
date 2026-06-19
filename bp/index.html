@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>OJP Quicksearch</title>
+    <style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f4f4f7;
+        margin: 0;
+        padding: 15px; /* Etwas weniger Padding am Rand */
+        color: #333;
+        overscroll-behavior: none; /* Verhindert "Pull-to-refresh" beim Scrollen */
+    }
+    .search-box {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    input {
+        width: 100%;
+        padding: 16px; /* Größeres Touch-Ziel */
+        font-size: 16px; /* WICHTIG: Mindestens 16px verhindert den Auto-Zoom bei iOS */
+        border: 2px solid #ddd;
+        border-radius: 12px; /* Weicheres Design */
+        box-sizing: border-box;
+        outline: none;
+        transition: border-color 0.2s;
+        -webkit-appearance: none; /* Verhindert Standard-Styling auf Safari */
+    }
+    input:focus {
+        border-color: #eb0000;
+    }
+    #results {
+        margin-top: 15px;
+    }
+    .station-item {
+        background: white;
+        padding: 15px; /* Größeres Padding für dicke Daumen */
+        margin-bottom: 10px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+        user-select: none; /* Verhindert Textmarkierung beim schnellen Tippen */
+        -webkit-tap-highlight-color: transparent; /* Entfernt den grauen Kasten beim Tippen auf iOS */
+    }
+    .station-info .name {
+        font-weight: bold;
+        display: block;
+        font-size: 1.1rem;
+        margin-bottom: 4px;
+    }
+    .station-info .abk {
+        color: #666;
+        font-size: 0.85rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        background: #f0f0f0;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    .uic-id {
+        font-weight: bold;
+        color: #eb0000;
+        font-family: monospace;
+        font-size: 1.1rem;
+        margin-left: 10px;
+    }
+    .no-results {
+        text-align: center;
+        color: #999;
+        margin-top: 30px;
+    }
+    /* Feedback-Animation beim Kopieren */
+    .copied {
+        animation: pulse 0.4s ease-out;
+    }
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(0.98); background-color: #e0ffe0; }
+        100% { transform: scale(1); }
+    }
+</style>
+</head>
+<body>
+
+<div class="search-box">
+    <input type="text" id="searchInput" placeholder="Name, Abkürzung oder ID eingeben..." autofocus>
+    <div id="results"></div>
+</div>
+
+<script>
+    let betriebspunkte = [];
+
+    // Lädt die DIDOK-Daten aus dem gleichen Verzeichnis
+    async function loadData() {
+        try {
+            // Pfad von '../didok.json' auf './didok.json' geändert
+            const response = await fetch('./didok.json'); 
+            const data = await response.json();
+            betriebspunkte = data.betriebspunkte;
+            console.log("Daten erfolgreich geladen");
+        } catch (error) {
+            document.getElementById('results').innerHTML = '<p class="no-results">Fehler beim Laden der didok.json im aktuellen Verzeichnis</p>';
+        }
+    }
+
+    const searchInput = document.getElementById('searchInput');
+    const resultsContainer = document.getElementById('results');
+
+    searchInput.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase().trim();
+        resultsContainer.innerHTML = '';
+
+        if (val.length < 1) return;
+
+        // Suche in Name, Abkürzung oder UIC-ID
+        const matches = betriebspunkte.filter(bp => {
+            return bp.bezOff.toLowerCase().includes(val) || 
+                   bp.abk.toLowerCase() === val || 
+                   bp.bpUic.toString().includes(val);
+        }).slice(0, 20); 
+
+        if (matches.length === 0) {
+            resultsContainer.innerHTML = '<p class="no-results">Keine Treffer gefunden.</p>';
+            return;
+        }
+
+        matches.forEach(bp => {
+            const div = document.createElement('div');
+            div.className = 'station-item';
+            div.style.cursor = 'pointer'; // Zeigt an, dass es klickbar ist
+            
+            div.innerHTML = `
+                <div class="station-info">
+                    <span class="name">${bp.bezOff}</span>
+                    <span class="abk">${bp.abk}</span>
+                </div>
+                <div class="uic-id">${bp.bpUic}</div>
+            `;
+
+            // Klick-Event für die Zwischenablage
+            div.addEventListener('click', () => {
+                navigator.clipboard.writeText(bp.bpUic).then(() => {
+                    // Kleines visuelles Feedback
+                    const originalColor = div.style.backgroundColor;
+                    div.style.backgroundColor = '#e0ffe0'; // Kurz grün aufleuchten
+                    
+                    // Status-Text kurz ändern (optional)
+                    console.log(`${bp.bezOff} (${bp.bpUic}) kopiert`);
+                    
+                    setTimeout(() => {
+                        div.style.backgroundColor = '';
+                    }, 200);
+                });
+            });
+
+            resultsContainer.appendChild(div);
+        });
+    });
+
+    loadData();
+</script>
+
+</body>
+</html>

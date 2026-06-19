@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="./trip.css">
+    <link rel="icon" type="image/png" href="../nowe.png">
+    <link rel="apple-touch-icon" href="../nowe.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>öV NOWE – Trip Info</title>
+</head>
+<body>
+
+    <!-- ═══════════════ HEADER ═══════════════ -->
+    <header id="app-header">
+        <div id="header-left">
+            <button id="btn-home" title="Zur Abfahrtstafel">⌂ Home</button>
+        </div>
+        <div id="header-center">
+            <span id="live-clock" onclick="window.location='../trip'"></span>
+        </div>
+        <div id="header-right">
+            <span id="app-title">öV NOWE</span>
+        </div>
+    </header>
+
+    <!-- ═══════════════ EINGABE ═══════════════ -->
+    <div id="trip-input-wrapper">
+        <div class="trip-input-row">
+            <input
+                id="trip-input"
+                type="text"
+                placeholder="SwissJourneyID  (z.B. ch:1:sjyid:100037:SKI-338)"
+                autocomplete="off"
+                spellcheck="false"
+            />
+            <button id="btn-trip-fetch">GO</button>
+        </div>
+        <div class="trip-date-row">
+            <label for="trip-date">Datum:</label>
+            <input id="trip-date" type="date" />
+        </div>
+    </div>
+
+    <!-- ═══════════════ STATUS ═══════════════ -->
+    <div id="trip-status" class="trip-status"></div>
+
+    <!-- ═══════════════ BOARD ═══════════════ -->
+    <main id="board-container">
+        <div id="trip-board"></div>
+    </main>
+
+    <script type="module" src="./trip-app.js"></script>
+
+</body>
+<footer class="page-footer">Zum Manual: <a href="../manual.html">manual.html</a></footer>
+</html>

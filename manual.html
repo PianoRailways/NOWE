@@ -24,26 +24,45 @@
 		</div>
 	</header>
 <div class="content" id="top">
-<details class="summary">
+<details open class="card">
 	<summary class="summary-title">Allgemeines</summary>
 		<ul>
 			<details>
 				<summary class="summary-subtitle" id="ausgangslage">Ausgangslage und Ziele</summary>
 					<p>NOWE (steht im übrigen für NOie WErsion (neue Version), dabei ist die neue Version von PIFAS gemeint) stellt Abfahrtstabellen mit Live-Daten zur Verfügugn.</p>
-			</details>
-			<details>
-				<summary class="summary-subtitle">Zielpublikum</summary>
-					<p>Das Zielpublikum sind vor allem das erweiterte private Umfeld des <a href="#autor" class="int">Autors</a>. Zu weit sollte das Tool nicht verbreitet werden, da die API ein Limit hat.</p>
-			</details>
+					<p>Da es kaum mehr nutzbare Tools gibt, welche brauchbare Abfahrtstabellen generieren können, habe ich den Entschluss gefasst, mich selber so einem Projekt zu widmen. Durch den massiven Fortschritt von künstlicher Intelligenz in den letzten Jahren bzw. Monaten wurde dies massiv einfacher, da auch geringe Programmier- und IT-Kenntnisse bereits ausreichen.</p>
+					<div class="card">
+						<h3>Projektierte Features</h3>
+						<ul>
+							<li>Abfahrten ab Schweizer Haltestellen</li>
+							<li>Anzeige von Live-Daten (aktuelle Verspätungen)</li>
+							<li>Sofort auffindbare Fahrtnummer</li>
+							<li>Fahrtverlauf</li>
+							<li>Anklickbare Halte im Fahrtverlauf und sofortige Generierung der Abfahrtstabelle ab dort</li>
+							<li>Verknüpfung von Bushaltestellen und Bahnhöfen, um Anschlüsse selber routen zu können.</li>
+						</ul>
+					</div>
+				</details>
 			<li>Begriffe und Definitionen</li>
 			<br>
 			<h2>Namensherkunft</h2>
 			<p>Die Urpsrungsidee war, eine Abfahrtstabelle von JETZT (engl. NOW) zu haben. Da <i>NOW</i> alleine eher nach einem Zeitserver o.ä. klingt und Namen mit zwei Silben aber nur vier Buchstaben durchaus cool klingen, habe ich mich anschliessend für <i>NOWE</i> entschieden. Dabei kann der Name, wie <a href="#ausgangslage" class="int">oben</a> erwähnt auch als NOie WErsion in der Miimsprache gedeutet werden.</p>
 		</ul>
 </details>
-
 <details class="summary">
-	<summary class="summary-title">Hauptseite NOWE</summary>
+	<summary class="summary-title">Zielpublikum</summary>
+		<p>Das Zielpublikum sind vor allem das erweiterte private Umfeld des <a href="#autor" class="int">Autors</a>.<br>
+			Diese wiederum dürfen <strong>NOWE</strong> natürlich auch an ihr näheres privates Umfeld weitergeben.<br>
+			Zu weit sollte das Tool nicht verbreitet werden, da die API ein Limit hat. Dieses Limit liegt derzeit bei 50 Abfragen pro Minute und 20'000 Anfragen am Tag. Dabei löst eine vermeidlich simple Abfrage eines Bahnhofs mehrere Anfragen aus. Hintergrund:
+		<ul>
+			<li>Suche von Station</li>
+			<li>Prüfe ob die Station mit anderen verknüpft ist</li>
+			<li>Abfrage der verknüpften Stationen</li>
+		</ul></p>
+</details>
+<hr>
+<details class="card">
+	<summary class="summary-title" id="start">Hauptseite NOWE</summary>
 		<ul>
 			<li>Schaltflächen</li>
 				<ol type="1">
@@ -51,28 +70,27 @@
 					<li>Home-Button mit leerem Eingabefeld</li>
 					<li><a href="#schalt-fav" class="int">Favoriten</a></li>
 			<li>Suche</li>
-			<li>Filter</li>
+			<li><a href="#filter" class="int">Filter</li>
 		</ul>
+		<p>Weiter unten gibt es Screenshots: Siehe <a href="#demo" class="int">Demo</a></p>
 </details>
 
-<details open class="summary" id="suche">
+<details class="summary" id="suche">
 	<summary class="summary-title">Suchfeld</summary>
 	<h2>Suchfeld</h2>
 	<p>Das Suchfeld ist das zentrale Element der Hauptseite. Es ermöglicht die Suche nach einer Station, um die Abfahrtstabelle dieser Station zu sehen.</p>
-	<h3>Abkürzungen</h3>
-	<p>Folgende Eingaben sind möglich:
+	<h2>Abkürzungen</h2>
+	<p>Folgende Eingaben sind möglich:</p>
 		<ul>
 			<li>SLOID</li>
 			<li>DiDok-ID</li>
 			<li>Haltestellennamen als normaler Text</li>
 			<li>Abkürzungen</li>
 		</ul>
-	</p>
-	<h2>Abkürzungen</h2>
 	<p>Es sind die meisten DiDok-Abkürzungen hinterlegt (Stand Mai 2026).</p>
-	<details open class="summary" id="didok-spoiler">
+	<details class="summary" id="didok-spoiler">
 		<summary>Beispiele für Abkürzungen</summary>
-		<table style="width: 100%">
+		<table style="width: auto;">
 			<caption>Beispiele für Abkürzungen</caption>
 			<tr>
 				<th style="width: 10%;">Abkürzung</th>
@@ -191,10 +209,16 @@
 	</p>
 </div>
 
-<div class="card" id="formation">""
+<div class="card" id="sjyid">
+<h2>Swiss Journey ID</h2>
+	<p>In der Ansicht der <a href="#demo" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
+	<p>Die SJYID wird beim Abfragen eines <a href="#trip" class="int">Trips</a> benötigt.</p>
+</div>
+
+<div class="card" id="formation">
 <h2>Formation</h2>
 <p>Die Formationsanzeige ist erreichbar über <a href="./formation" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/formation</a>. Die Eingabe des EVU ist nicht unbedingt nötig. Es werden automatisch die verfügbaren EVUs durchgerechnet.</p>
-<p>Mit der Ergänzung <span style="font-family: monospace; color: var(--sbb-red)">?train=1234</span> kann auch direkt über die URL eine Zugsformation abgefragt werden.</p>
+<p>Mit der Ergänzung <span style="font-family: monospace; color: var(--pifas-searchbar)">?train=1234</span> kann auch direkt über die URL eine Zugsformation abgefragt werden.</p>
 <ul>
 <li>EVU: Eingabe des EVU-spezifischen Kürzels (optional)</li>
 <li>Zugnummer: Eingabe der Zugnummer</li>
@@ -205,20 +229,15 @@
 	</div>
 </div>
 
-<div class="card" id="sjyid">
-<h2>Swiss Journey ID</h2>
-	<p>In der Ansicht der <a href="#demo" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
-	<p>Die SJYID wird beim Abfragen eines <a href="#trip" class="int">Trips</a> benötigt.</p>
-</div>
-
 <div class="card" id="trip">
 	<h2>Trip</h2>
 	<p>Die Trip-Ansicht ist erreichbar über <a href="./trip" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/trip</a>. Dort kann die SJYID eingegeben werden, um die Trip-Ansicht zu sehen.</p>
+	<center><img src="/img/trip.png" usemap="#trip-map"></center>
 </div>
 	
 <div class="card" id="table">
 	<div class="table">
-		<h2>Table Headers</h2>
+		<h2>Wichtige Begriffe</h2>
 
 			<table>
 			  <tr>
@@ -232,7 +251,7 @@
 			  <tr>
 			    <td>PIFAS</td>
 			    <td><strong>Pi</strong>nus <strong>Fa</strong>hrplan <strong>A</strong>u<strong>s</strong>kunft</td>
-			  	<td>Die Vorgängerversion von NOWE, welche durch eine Idee von C2 entstanden ist.</td>
+			  	<td>Die Vorgängerversion von NOWE, welche durch eine Idee durch den User C2 entstanden ist.</td>
 			  </tr>
 			  <tr>
 			    <td>BAT</td>
@@ -259,14 +278,28 @@
 			    <td>Zugnummer</td>
 			    <td>Wird auch häufig als Fahrtnummer bezeichnet.</td>
 			  </tr>
+			  <tr>
+			    <td>SLOID</td>
+			    <td>Swiss Location ID</td>
+			    <td>Eine eindeutige ID, welche einer Haltestelle zugewiesen wird. Für uns im Hinergrund (z.B. für die <a href="#combinedStations" class="int">combinedStations</a>) relevant.</td>
+			  </tr>
 			  
 			</table>
 	</div>
 </div>
+
+<div class="card">
+	<div id="filter">
+		<h1>Filter</h1>
+		<p>Die Filter können angewählt oder abgewählt werden. Einzelne Kategorien auszuschliessen geht nicht mit einem Klick, sondern man muss alle anwählen, und das gewünschte wieder abwählen.</p>
+		<p>Filter: <span class="filter-demo-active">Alle</span> <span class="filter-demo">Fernverkehr</span> <span class="filter-demo">Regional</span> <span class="filter-demo">S-Bahn</span> <span class="filter-demo">Tram</span> <span class="filter-demo">Bus</span> <span class="filter-demo">Spezial</span> <span class="filter-demo">Schiff</span> <span class="filter-demo">Bergbahn</span> <span class="filter-demo">Sonstiges</span></p>
+	</div>
+</div>
+
 <div class="card">
 <h2>Screenshots</h2>
-	<p class="box">Fahre mit der Maus über die Kartenbereiche, um Tooltip-Informationen anzuzeigen.<br>
-	Auf Mobilgeräten: Tippe auf einen Bereich.</p>
+	<p class="box desktopbox">Fahre mit der Maus über die Kartenbereiche oder klicke sie an, um Tooltip-Informationen anzuzeigen.</p><br>
+	<p class="box mobilebox">Tippe auf einen Bereich um das Tooltip anzuzeigen.</p>
 <div class="slideshow-container">
 
   <div id="fav-del-confirm" class="slide fade">
@@ -303,19 +336,10 @@
 </div>
 
 <div class="card">
-	<div id="filter">
-		<h1>Filter</h1>
-		<p>Die Filter können angewählt oder abgewählt werden. Einzelne Kategorien auszuschliessen geht nicht mit einem Klick, sondern man muss alle anwählen, und das gewünschte wieder abwählen.</p>
-		<p>Filter: <span class="filter-demo-active">Alle</span> <span class="filter-demo">Fernverkehr</span> <span class="filter-demo">Regional</span> <span class="filter-demo">S-Bahn</span> <span class="filter-demo">Tram</span> <span class="filter-demo">Bus</span> <span class="filter-demo">Spezial</span> <span class="filter-demo">Schiff</span> <span class="filter-demo">Bergbahn</span> <span class="filter-demo">Sonstiges</span></p>
-	</div>
-</div>
-
-
-<div class="card">
 	<div id="demo">
 	<h1>Demo</h1>
-	<p class="box">Fahre mit der Maus über die Kartenbereiche, um Tooltip-Informationen anzuzeigen.<br>
-	Auf Mobilgeräten: Tippe auf einen Bereich.</p>
+	<p class="box desktopbox">Fahre mit der Maus über die Kartenbereiche, um Tooltip-Informationen anzuzeigen.</p>
+	<p class="box mobilebox">Tippe auf einen Bereich, um Tooltip-Informationen anzuzeigen.</p>
 	<center><img src="/img/platform-change.png" usemap="#base-map"></center>
 	</div>
 </div>
@@ -384,6 +408,16 @@
 		<area target="" data-tooltip="Soll-Fahrplanzeiten und Verspätungsprognosen" title="Soll-Fahrplanzeiten und Verspätungsprognosen"   coords="264,1212,100,572" shape="rect">
 	</map>
 
+	<map name="trip-map">
+		<area target="" data-tooltip="Swiss Journey ID" title="Swiss Journey ID" coords="31,109,580,172" shape="rect">
+		<area target="" data-tooltip="Datum" title="Datum" coords="145,193,719,256" shape="rect">
+		<area target="" data-tooltip="Kategorie und Liniennummer" title="Kategorie und Liniennummer" coords="145,355,643,285" shape="rect">
+		<area target="" data-tooltip="Anklickbare Zwischenhalte und Gleis" title="Anklickbare Zwischenhalte und Gleis" coords="214,482,571,1330" shape="rect">
+		<area target="" data-tooltip="Nur Fahrplanzeit (keine Live-Daten oder pünktlich)" title="Nur Fahrplanzeit (keine Live-Daten oder pünktlich)" coords="5,699,179,488" shape="rect">
+		<area target="" data-tooltip="Verspätung" title="Verspätung" coords="88,705,183,1239" shape="rect">
+		<area target="" data-tooltip="Verfrühung" title="Verfrühung" coords="" shape="rect">
+		<area target="" data-tooltip="Linien-Badge und Fahrtnummer im gewohnten Design" title="Linien-Badge und Fahrtnummer im gewohnten Design" coords="29,370,140,469" shape="rect">
+	</map>
 
 </body>
 	<footer class="page-footer" id="autor">
@@ -392,99 +426,4 @@
 	</footer>
 </html>
 <script src="./manual-slide.js"></script>
-<script>
-function updateClock() {
-    const el = document.getElementById('live-clock');
-    if (!el) return;
-    const now = new Date();
-    el.textContent = now.getHours().toString().padStart(2, '0') + ':'
-                   + now.getMinutes().toString().padStart(2, '0') + ':'
-                   + now.getSeconds().toString().padStart(2, '0');
-}
-updateClock();
-setInterval(updateClock, 1000);
-
-const tooltip = document.getElementById('map-tooltip');
-
-document.querySelectorAll('area[data-tooltip]').forEach(area => {
-    let touchMoved = false;
-
-    // ── Mouse (Desktop) ──────────────────────────────────────────
-    area.addEventListener('mouseenter', () => {
-        tooltip.innerHTML = area.dataset.tooltip; // innerHTML erlaubt <br>
-        tooltip.classList.add('visible');
-    });
-
-    area.addEventListener('mousemove', e => {
-        tooltip.style.left = (e.clientX + 14) + 'px';
-        tooltip.style.top  = (e.clientY - 28) + 'px';
-    });
-
-    area.addEventListener('mouseleave', () => {
-        tooltip.classList.remove('visible');
-    });
-
-    // ── Touch (Mobil) ──────────────────────────────────────────
-    area.addEventListener('touchstart', e => {
-        touchMoved = false;
-        tooltip.innerHTML = area.dataset.tooltip;
-        tooltip.classList.add('visible');
-
-        const touch = e.touches[0];
-        // Positioniert den Tooltip mittig über dem Finger, um ihn nicht zu verdecken
-        const leftPos = touch.clientX - (tooltip.offsetWidth / 2);
-        const topPos = touch.clientY - tooltip.offsetHeight - 20;
-
-        // Verhindert das Rausrutschen aus dem Bildschirmrand
-        tooltip.style.left = Math.max(10, Math.min(window.innerWidth - tooltip.offsetWidth - 10, leftPos)) + 'px';
-        tooltip.style.top  = Math.max(10, topPos) + 'px';
-    });
-
-    area.addEventListener('touchmove', () => {
-        touchMoved = true;
-        tooltip.classList.remove('visible');
-    });
-
-    area.addEventListener('touchend', e => {
-        if (!touchMoved) {
-            e.preventDefault(); // Verhindert ungewollte Klicks beim Tippen
-        }
-        setTimeout(() => tooltip.classList.remove('visible'), 2000);
-    });
-});
-
-function rescaledMap() {
-    const images = document.querySelectorAll('img[usemap]');
-    images.forEach(img => {
-        // Falls das Bild noch nicht geladen ist, warten
-        if (!img.complete || img.naturalWidth === 0) {
-            img.addEventListener('load', rescaledMap, { once: true });
-            return;
-        }
-
-        // NEU: Wenn das Bild unsichtbar ist (Breite = 0), überspringen wir die Berechnung,
-        // bis es durch die Slideshow eingeblendet wird.
-        if (img.clientWidth === 0) {
-            return;
-        }
-
-        const mapName = img.getAttribute('usemap').replace('#', '');
-        const map = document.querySelector(`map[name="${mapName}"]`);
-        if (!map) return;
-
-        const w = img.clientWidth / img.naturalWidth;
-        const h = img.clientHeight / img.naturalHeight;
-
-        map.querySelectorAll('area').forEach(area => {
-            if (!area.dataset.coords) area.dataset.coords = area.coords;
-            const newCoords = area.dataset.coords.split(',').map((c, i) => 
-                Math.round(c * (i % 2 === 0 ? w : h))
-            );
-            area.coords = newCoords.join(',');
-        });
-    });
-}
-
-window.addEventListener('resize', rescaledMap);
-window.addEventListener('load', rescaledMap);
-</script>
+<script src="./manual-script.js"></script>

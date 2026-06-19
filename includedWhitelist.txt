@@ -29,5 +29,3 @@ Piazza Stazione
 Stazione nord
 stazione sud
 stazione est
-(See)
-(lac)
