@@ -170,7 +170,7 @@ function renderPerlschnur(trip) {
         // Wechselt die URL direkt im selben Fenster
         const chainInfo = `<div class="chain-info">
             <span class="chain-name">
-                <a href="${stsUrl}">${stop.name}</a>$ {accessIcon(stop.accessibility)}
+                <a href="${stsUrl}">${stop.name}</a> ${accessIcon(stop.accessibility)}
             </span>
             ${quayLine}
         </div>`;
