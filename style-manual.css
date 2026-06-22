@@ -87,7 +87,7 @@ p {
 a {
 	text-decoration: none;
 }
-
+/* Verschiedene Klassen für Links (verschiedene Farben) */
 a.int{
 	color: var(--night-gold);
 }
@@ -313,9 +313,9 @@ caption, th {
   width: 100%;      /* Nutzt auf dem Smartphone die volle Breite */
   position: relative;
   margin: 20px auto; 
-  background-color: #1a1a1a; /* Dunkler Hintergrund lässt Screenshots gut wirken */
+  background-color: var(--board-bg); /* Dunkler Hintergrund lässt Screenshots gut wirken */
   border-radius: 12px;       /* Abgerundete Ecken im Smartphone-Stil */
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  /* box-shadow: 0 4px 15px rgba(0,0,0,0.15); */
   overflow: hidden;
 }
 
@@ -359,29 +359,30 @@ img[usemap] {
   top: 50%;
   transform: translateY(-50%);
   padding: 16px;
-  color: white;
+  color: black;
   font-weight: bold;
   font-size: 18px;
-  background-color: rgba(0,0,0,0.3);
+  background-color: var(--plat-change);
   user-select: none;
   transition: 0.3s ease;
   z-index: 10;
 }
 
+/* Form next/prev Button unterschiedlich ob rechts oder links */
 .next { right: 0; border-radius: 3px 0 0 3px; }
 .prev { left: 0; border-radius: 0 3px 3px 0; }
 
 .prev:hover, .next:hover {
-  background-color: rgba(0,0,0,0.8);
+  background-color: var(--sob-green);
 }
 
 /* Animation beim Wechseln */
 .fade {
-  animation: fadeEffect 0.8s;
+  animation: fadeEffect 1.8s;
 }
 
 @keyframes fadeEffect {
-  from { opacity: 0.4; } 
+  from { opacity: 0.0; } 
   to { opacity: 1; }
 }
 
