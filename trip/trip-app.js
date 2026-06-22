@@ -52,6 +52,7 @@ function delayLabel(sec) {
 // ─── Rollstuhl-Icon ───────────────────────────────────────────────────────────
 function accessIcon(type) {
     if (type === 'ACCESSIBLE')    return '<span class="access-icon access-icon--ok"    title="Einstieg ohne Hilfe">♿</span>';
+    if (type === 'ASSISTANCE')    return '<span class="access-icon access-icon--assist"    title="Einstieg mit Hilfe">♿️🧑🏼‍✈️</span>';
     if (type === 'ALT_TRANSPORT') return '<span class="access-icon access-icon--alt"   title="Ersatztransport">🚌</span>';
     if (type === 'NOTIFY')        return '<span class="access-icon access-icon--notify"   title="Hilfe auf Anfrage">📞</span>';
     if (type === 'NO_BEHIG')      return '<span class="access-icon access-icon--no"   title="Nicht rollstuhlgänglich">🔺</span>';
