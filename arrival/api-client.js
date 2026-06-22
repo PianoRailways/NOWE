@@ -43,10 +43,10 @@ function createOJPRequest(stopId, queryTime = null) {
         </Location>
         <Params>
           <NumberOfResults>25</NumberOfResults>
-          <StopEventType>departure</StopEventType>
+          <StopEventType>arrival</StopEventType>
           <IncludePreviousCalls>true</IncludePreviousCalls>
           <IncludeOnwardCalls>true</IncludeOnwardCalls>
-          <IncludeOperatingDays>true</IncludeOperatingDays>
+          <IncludeOperatingDays>false</IncludeOperatingDays>
         </Params>
       </OJPStopEventRequest>
     </siri:ServiceRequest>
@@ -56,30 +56,21 @@ function createOJPRequest(stopId, queryTime = null) {
 
 export async function fetchDepartures(stopId, queryTime = null) {
     try {
+        // DIDOK-Mapping prüfen: Falls stopId ein DIDOK-Code ist, zur echten ID auflösen
         let actualStopId = stopId;
-        
-        // ✅ Legacy-Fallback: Falls stopId eine alte DiDok-ID ist, resolve zu SLOID
         if (window.didokMapping && window.didokMapping[stopId]) {
             const stationName = window.didokMapping[stopId];
-            console.log(`🔄 DIDOK-Fallback: "${stopId}" → "${stationName}"`);
-            
+            console.log(`🔄 DIDOK-Mapping: "${stopId}" → "${stationName}"`);
+            // Jetzt müssen wir den Namen in die richtige ID umwandeln
+            // Das passiert über die API
             const results = await searchStops(stationName);
             if (results && results.length > 0) {
-                actualStopId = String(results[0].ref);
-                console.log(`✓ Aufgelöst zu SLOID: "${actualStopId}"`);
+                actualStopId = results[0].ref;
+                console.log(`✓ Aufgelöst zu ID: "${actualStopId}"`);
             } else {
                 console.warn(`⚠️ DIDOK-Code konnte nicht aufgelöst werden: ${stopId}`);
-                // Fallback: Nutze stopId direkt (wird wahrscheinlich fehlschlag)
-                actualStopId = String(stopId);
+                actualStopId = stopId; // Fallback auf Original
             }
-        }
-        
-        // ✅ Validierung: actualStopId muss entweder SLOID oder externe ID sein
-        // SLOID: ch:1:sloid:XXXXX
-        // Extern: beliebiges Format (z.B. 8014440_gen:missingSLOID_pf:1, 8718462)
-        if (!/(^ch:1:sloid:\d+$|^\d{3,})/.test(actualStopId)) {
-            console.warn(`⚠️ WARNUNG: Stop-ID ist nicht im erwarteten Format: "${actualStopId}". Versuche trotzdem.`);
-            // Nicht werfen, aber loggen — externe IDs können ungewöhnliche Formate haben
         }
 
         const xmlBody = createOJPRequest(actualStopId, queryTime);
@@ -133,10 +124,7 @@ function utcToLocalISO(utcString) {
 // ─── XML Escape Helper ──────────────────────────────────────────────────────
 
 function escapeXml(unsafe) {
-    // ✅ Konvertiere zu String, falls nicht schon einer
-    const str = String(unsafe || '');
-    
-    return str.replace(/[<>&'"]/g, function (c) {
+    return unsafe.replace(/[<>&'"]/g, function (c) {
         switch (c) {
             case '<': return '&lt;';
             case '>': return '&gt;';
@@ -352,27 +340,33 @@ function parseOJPResponse(xmlString) {
         
         if (!spRef) return null;
         
-        // ✅ Swiss SLOID: Extrahiere Parent-SLOID ohne Perron/Quay
-        // Format: ch:1:sloid:79897:0:1 → ch:1:sloid:79897
-        //         ch:1:sloid:90015 → ch:1:sloid:90015
-        const swissMatch = spRef.match(/^(ch:1:sloid:\d+)(?::|$)/);
-        if (swissMatch) {
-            return swissMatch[1];
+        // Wenn es bereits eine 7-stellige Nummer ist, gib sie direkt zurück
+        if (/^\d{7}$/.test(spRef)) {
+            return spRef;
         }
         
-        // ✅ External IDs: Behalte sie als-is
-        // Deutschland: 8014440_gen:missingSLOID_pf:1
-        // Frankreich: 8718462
+        // Wenn das Format "ch:1:sloid:XXXXX::YYYYY" ist, extrahiere die erste Nummer (Parent-SLOID)
+        // Das Format ist: ch:1:sloid:<parent>::<quay>
+        const match = spRef.match(/ch:1:sloid:(\d+)/);
+        if (match) {
+            const parentSloid = match[1];
+            // Rekonstruiere zu 7-stelliger SLOID: "85" + 5-stellige Nummer
+            const fullSloid = '85' + parentSloid.padStart(5, '0');
+            return fullSloid;
+        }
+        
+        // Fallback: Gib das Original zurück
         return spRef;
     }
 
-	function getTimeInfo(callNode, tagName) {
+    function getTimeInfo(callNode, tagName) {
 		const el = callNode.getElementsByTagName(tagName)[0];
 		if (!el) return { timetabled: null, estimated: null, delayed: false, delayDisplay: null, delayMinutes: 0 };
 		
 		let ttRaw = el.getElementsByTagName('TimetabledTime')[0]?.textContent?.trim() ?? null;
 		let estRaw = el.getElementsByTagName('EstimatedTime')[0]?.textContent?.trim() ?? null;
 		
+		// Konvertierung in dein lokales Format
 		const timetabled = utcToLocalISO(ttRaw);
 		const estimated = utcToLocalISO(estRaw);
 		
@@ -381,14 +375,11 @@ function parseOJPResponse(xmlString) {
 		let delayDisplay = null;
 
 		if (delayed && estRaw && ttRaw) {
+			// Differenzberechnung direkt über die ISO-Strings (Millisekunden)
 			const diffMs = new Date(estRaw) - new Date(ttRaw);
 			delayMinutes = Math.round(diffMs / 60000);
-			
-			// ✅ Sowohl positive als auch negative Delays anzeigen
 			if (delayMinutes > 0) {
 				delayDisplay = `+${delayMinutes}'`;
-			} else if (delayMinutes < 0) {
-				delayDisplay = `${delayMinutes}'`;  // Negativ, z.B. "-2'"
 			}
 		}
 
@@ -438,7 +429,6 @@ function parseOJPResponse(xmlString) {
             const isCancelled = call.getElementsByTagName('NotServicedStop')[0]?.textContent === 'true';
             const noBoardingAtStop = call.getElementsByTagName('NoBoardingAtStop')[0]?.textContent === 'true';
             const noAlightingAtStop = call.getElementsByTagName('NoAlightingAtStop')[0]?.textContent === 'true';
-            const isRequestStop = call.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
             
             previous.push({
                 name,
@@ -459,7 +449,6 @@ function parseOJPResponse(xmlString) {
                 cancelled:            isCancelled,
                 noBoardingAtStop,
                 noAlightingAtStop,
-                requestStop:          isRequestStop,
                 stopRef:              getStopRef(call)
             });
         }
@@ -470,7 +459,6 @@ function parseOJPResponse(xmlString) {
             const arr = getTimeInfo(thisCallNode, 'ServiceArrival');
             const dep = getTimeInfo(thisCallNode, 'ServiceDeparture');
             const isCancelled = thisCallNode.getElementsByTagName('NotServicedStop')[0]?.textContent === 'true';
-            const isRequestStop = thisCallNode.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
             return {
                 name:                 getStopName(thisCallNode) ?? currentName,
                 arrivalTime:          arr.timetabled,
@@ -488,7 +476,6 @@ function parseOJPResponse(xmlString) {
                 estimatedPlatform:    q.estimated,
                 platformChanged:      q.isChanged,
                 cancelled:            isCancelled,
-                requestStop:          isRequestStop,
                 stopRef:              null
             };
         })() : null;
@@ -505,7 +492,6 @@ function parseOJPResponse(xmlString) {
             const isCancelled = call.getElementsByTagName('NotServicedStop')[0]?.textContent === 'true';
             const noBoardingAtStop = call.getElementsByTagName('NoBoardingAtStop')[0]?.textContent === 'true';
             const noAlightingAtStop = call.getElementsByTagName('NoAlightingAtStop')[0]?.textContent === 'true';
-            const isRequestStop = call.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
             
             onward.push({
                 name,
@@ -526,7 +512,6 @@ function parseOJPResponse(xmlString) {
                 cancelled:            isCancelled,
                 noBoardingAtStop,
                 noAlightingAtStop,
-                requestStop:          isRequestStop,
                 stopRef:              getStopRef(call)
             });
         }
@@ -585,14 +570,18 @@ function parseOJPResponse(xmlString) {
         }
         const timeData = getTimeInfo(thisCall, 'ServiceDeparture'); // Nutzt die Hilfsfunktion für den Haupt-Stop
 
-        const destination = service.getElementsByTagName('DestinationText')[0]
-            ?.getElementsByTagName('Text')[0]?.textContent?.trim() ?? 'Unbekannt';
-
-        const calls = parseCalls(event, destination, thisCall);
-        const vias = calls.onward
+        const calls = parseCalls(event, 'Unbekannt', thisCall);
+        const originText = calls.previous.length > 0 
+            ? `${calls.previous[0].name}`
+            : 'Unbekannt';
+        const vias = calls.previous
             .slice(0, 10)
             .map(c => c.name)
-            .filter(n => n !== destination);
+            //.reverse();
+        const onwardvias = calls.onward
+            .slice(0, 10)
+            .map(c => c.name)
+            //.reverse();
 
         // Gleis und Seite für den aktuellen Halt holen
         const currentQuay = getQuay(thisCall);
@@ -625,23 +614,7 @@ function parseOJPResponse(xmlString) {
             ?? '';
         const operatorName = getText(service, 'OperatorName') ?? operatorRef;
 
-        // ─── OperatingDays Parsing ──────────────────────────────────────────────
-        const operatingDaysEl = event?.getElementsByTagName('OperatingDays')[0];
-        let operatingDays = null;
-        if (operatingDaysEl) {
-            const fromEl = operatingDaysEl.getElementsByTagName('From')[0];
-            const toEl = operatingDaysEl.getElementsByTagName('To')[0];
-            const patternEl = operatingDaysEl.getElementsByTagName('Pattern')[0];
-            
-            if (fromEl && toEl && patternEl) {
-                operatingDays = {
-                    from: fromEl.textContent?.trim() ?? '',
-                    to: toEl.textContent?.trim() ?? '',
-                    pattern: patternEl.textContent?.trim() ?? ''
-                };
-                console.log(`✓ OperatingDays: ${operatingDays.from} – ${operatingDays.to} (${operatingDays.pattern.length} Zeichen)`);
-            }
-        }
+
 
         departures.push({
 			stopName,
@@ -650,22 +623,22 @@ function parseOJPResponse(xmlString) {
             journeyNumber,
             unplanned,
             situations: activeSituations,
-            alightingSide,
-            destination,
+            alightingSide, // Korrekt zugewiesen
+            destination: originText,
             vias,
+            onwardvias,
             platform: currentQuay.text,
             platformChanged: currentQuay.isChanged,
-            time: timeFormatted,
-            timetabledIso: timetabled ?? null,
-            estimatedIso: estimated ?? null,
+            time:            timeFormatted,
+            timetabledIso:   timetabled ?? null,
+            estimatedIso:    estimated ?? null,
             delayed,
             delayDisplay,
             delayMinutes,
             calls,
             journeyRef,
             operatorRef,
-            operatorName,
-            operatingDays
+            operatorName
         });
     }
 

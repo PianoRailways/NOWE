@@ -1,0 +1,217 @@
+1104971     Rust, Europa-Park$<1>$Europa-Park Haupteingang$<4>
+1402503     Basel EuroAirport, Abflug$<1>$BXAP$<3>$Basel Flughafen$<4>
+5457076     Praha hl. n.$<1>$PRAH$<3>$Prag$<4>$Praga$<4>$Prague$<4>$Praha$<4>
+7179300     Gerona$<1>$GERN$<3>$Girona$<4>
+8001071     Hamburg Hbf$<1>$HAHB$<3>$AH$<4>$Amburgo$<4>$Hambourg$<4>$Hamburg$<4>
+8002301     Lindau-Reutin$<1>$LIRE$<3>$Lindau Fernbahnhof$<4>
+8003005     Berlin Ostbahnhof$<1>$BEOS$<3>$BEOB$<4>$Berlin Schlesischer Bahnhof$<4>
+8010053     Dortmund Hbf$<1>$DORT$<3>$EDO$<4>
+8011068     Frankfurt (Main) Hbf$<1>$FRKF$<3>$Francfort$<4>$Frankfurt (Main)$<4>$Frankfurt Hbf$<4>
+8014008     Mannheim Hbf$<1>$MAHB$<3>$Mannheim$<4>
+8014228     Karlsruhe Hbf$<1>$KAR$<3>$Karlsruhe$<4>
+8014350     Freiburg(Breisgau) Hbf$<1>$FRBR$<3>$Freiburg im Breisgau$<4>
+8014445     Steinen (D)$<1>$STNE$<3>$Steinen Deutschland$<4>$Steinen Lörrach$<4>
+8014450     Zell (Wiesental)$<1>$ZE$<3>$Zell (W)$<4>$Zell im Wiesental$<4>
+8014558     Singen (Hohentwiel)$<1>$SIN$<3>$SI$<4>$Singen (D)$<4>
+8014586     Konstanz$<1>$KODB$<3>$KO$<4>
+8020347     München Hbf$<1>$MUEN$<3>$MUC$<4>$Monaco (D)$<4>$Munich$<4>
+8023179     Leipzig Hbf$<1>$LPZ$<3>$Leipzig$<4>
+8029034     Stuttgart Hbf$<1>$STUG$<3>$Stuttgart$<4>
+8029434     Trossingen Bahnhof$<1>$Trossingen Staatsbahnhof$<4>
+8033452     Berlin Hbf (S-Bahn)$<1>$BHBF$<4>
+8065969     Berlin Hbf$<1>$BEHB$<3>$BLS$<4>$Lehrter Bahnhof$<4>
+8101001     Wien Westbahnhof$<1>$WIW$<3>$Vienna$<4>$Vienne (A)$<4>
+8101003     Wien Hbf$<1>$WIEN$<3>$Bécs föpályaudvar$<4>$Dunajska glavna postaja$<4>$Vieden Hlavná stanica$<4>$Vienna Centrale$<4>$Vienna Main Station$<4>$Wien Hauptbahnhof$<4>
+8101222     St. Anton am Arlberg$<1>$STAR$<3>$Stanton$<4>
+8300137     Aosta$<1>$AO$<3>$Aoste$<4>
+8300219     Torino Porta Nuova$<1>$TOR$<3>$Torino$<4>$Turin$<4>
+8301003     Domodossola (I)$<1>$DOFS$<3>$Domo$<4>$Domodossola$<4>
+8301113     Luino (I)$<1>$LIFS$<3>$Luino$<4>
+8301400     Chiavenna$<1>$Ciavéna$<4>$Clavenna$<4>$Cleven$<4>
+8301700     Milano Centrale$<1>$MICL$<3>$Mailand$<4>
+8302593     Venezia S. Lucia$<1>$VESL$<3>$Venedig$<4>$Venezia$<4>$Venice$<4>$Venise$<4>
+8306421     Firenze S. M. N.$<1>$FIR$<3>$Firenze$<4>$Firenze Santa Maria Novella$<4>$Florence$<4>$Florenz$<4>
+8500010     Basel SBB$<1>$BS$<3>$Bale$<4>$Basilea FFS$<4>$Bâle CFF$<4>
+8500025     Itingen$<1>$IT$<3>$BLA$<4>$Ütige$<4>
+8500109     Delémont$<1>$DMT$<3>$Delsberg$<4>
+8500125     Courgenay$<1>$CG$<3>$Jennsdorf$<4>
+8500126     Porrentruy$<1>$POR$<3>$Pruntrut$<4>
+8500138     Basel, St-Louis Grenze$<1>$STLO$<3>$St. Louis Grenze$<4>
+8500191     Saignelégier$<1>$SAIG$<3>$Sankt Leodegar$<4>
+8500207     Solothurn$<1>$SO$<3>$SO$<4>$Soletta$<4>$Soleure$<4>
+8500897     Basel, Barfüsserplatz$<1>$BSBP$<3>$Barfi$<4>
+8501008     Genève$<1>$GE$<3>$Geneva$<4>$Genf$<4>$Genève Cornavin$<4>$Ginevra$<4>
+8501026     Genève-Aéroport$<1>$GEAP$<3>$Aéroport Genève$<4>$Flughafen Genf$<4>$Geneva Airport$<4>$Genf Flughafen$<4>$Ginevra Aeroporto$<4>
+8501120     Lausanne$<1>$LS$<3>$Losanna$<4>
+8501237     Genève-Mt-Blanc (lac)$<1>$GEMB$<3>$Genève CGN$<4>$Genève-Mont-Blanc (lac)$<4>
+8501403     St-Maurice$<1>$SM$<3>$Saint-Maurice$<4>
+8501426     Bouveret$<1>$BOU$<3>$Le Bouveret$<4>
+8501428     St-Gingolph (Suisse)$<1>$STGI$<3>$Saint-Gingolph$<4>
+8501506     Sion$<1>$SIO$<3>$Sitten$<4>
+8501509     Sierre/Siders$<1>$SIE$<3>$Siders$<4>$Sierre$<4>
+8501605     Visp$<1>$VI$<3>$Viège$<4>
+8501609     Brig$<1>$BR$<3>$Brigue$<4>
+8501656     Leukerbad, Busterminal$<1>$LKB$<3>$Leukerbad$<4>$Loèche-les-Bains$<4>
+8502007     Sursee$<1>$SS$<3>$Sorsi$<4>
+8502024     Hochdorf$<1>$HO$<3>$Hofdere$<4>
+8502034     Beinwil am See$<1>$BW$<3>$Böiju$<4>
+8502204     Zug$<1>$ZG$<3>$Zoug$<4>$Zugo$<4>
+8502230     Zug Chollermüli$<1>$KMUE$<3>$Zug Kollermühle$<4>
+8502559     Waldegg, Birmensdorferstrasse$<1>$Uitikon Waldegg, Birmensdorferstrasse$<4>
+8502679     Seengen, Poststrasse$<1>$Seengen$<4>
+8503000     Zürich HB$<1>$ZUE$<3>$Tsüri$<4>$ZH$<4>$Zurich$<4>$Zurigo$<4>$Züri$<4>$Zürich$<4>
+8503001     Zürich Altstetten$<1>$ZAS$<3>$West Link$<4>
+8503003     Zürich Stadelhofen$<1>$ZSTH$<3>$Stadelhofen$<4>
+8503010     Zürich Enge$<1>$ZEN$<3>$Enge$<4>
+8503016     Zürich Flughafen$<1>$ZFH$<3>$Aéroport Zurich$<4>$Flughafen Zürich$<4>$Zurich Airport$<4>$Zurich Aéroport$<4>$Zurigo Aeroporto$<4>
+8503068     Maiacher$<1>$MAIF$<3>$Zumikon Maiacher (FB)$<4>
+8503110     Rapperswil SG$<1>$RW$<3>$Rappi$<4>
+8503126     Nänikon-Greifensee$<1>$NAEN$<3>$Greifensee$<4>$Nänikon$<4>
+8503206     Wädenswil$<1>$WAE$<3>$Wädi$<4>
+8503423     Neuhausen$<1>$NH$<3>$Flurlingen$<4>
+8503668     Insel Ufenau$<1>$Insel Ufnau$<4>
+8503709     Waldegg, Post$<1>$Uitikon Waldegg, Post$<4>
+8503859     Pfäffikon SZ, Seedamm-Center$<1>$Alpamare Zürichsee$<4>
+8504062     Châtel-St-Denis$<1>$CHSD$<3>$Kastels St. Dionys$<4>
+8504100     Fribourg/Freiburg$<1>$FRI$<3>$Freiburg (CH)$<4>$Fribourg$<4>$Friburgo$<4>
+8504101     Düdingen$<1>$DUED$<3>$Guin$<4>
+8504126     Avenches$<1>$AV$<3>$Wifflisburg$<4>
+8504128     Murten/Morat$<1>$MRT$<3>$Morat$<4>
+8504134     Payerne$<1>$PAY$<3>$Peterlingen$<4>
+8504140     Muntelier-Löwenberg$<1>$LOEW$<3>$AZL$<4>$Centre Löwenberg$<4>
+8504200     Yverdon-les-Bains$<1>$YV$<3>$Yverdon$<4>
+8504208     Boudry$<1>$BDR$<3>$Boudry CFF$<4>$Boudry SBB$<4>
+8504221     Neuchâtel$<1>$NE$<3>$Neuenburg (CH)$<4>
+8504298     Ste-Croix$<1>$STCR$<3>$Sainte-Croix$<4>
+8504300     Biel/Bienne$<1>$BI$<3>$Biel$<4>$Bienne$<4>
+8504310     St-Imier$<1>$STI$<3>$Saint-Imier$<4>
+8504352     Evilard/Leubringen$<1>$Evilard$<4>
+8504400     Kerzers$<1>$KZ$<3>$Chiètres$<4>
+8504482     Gampelen$<1>$GP$<3>$Champion$<4>
+8504483     Ins$<1>$INS$<3>$Anet$<4>
+8504486     Gümmenen$<1>$GMM$<3>$Gumine$<4>
+8504946     Bonnefontaine, village$<1>$Muffethan$<4>
+8504992     Vinelz, Dorf$<1>$Fenis, poste$<4>
+8505000     Luzern$<1>$LZ$<3>$Lozärn$<4>$Lucerna$<4>$Lucerne$<4>
+8505269     Lukmanier Passhöhe$<1>$Lucomagno$<4>
+8505300     Lugano$<1>$LG$<3>$Lauis$<4>
+8505301     Paradiso$<1>$LGP$<3>$Paradiso (Lugano)$<4>
+8505374     Monte Generoso Vetta$<1>$GEVE$<3>$Monte Generoso Vetta$<4>
+8505395     Agno$<1>$AGNO$<3>$Lugano Aeroporto$<4>$Lugano Airport$<4>$Lugano Flughafen$<4>
+8505400     Locarno$<1>$LO$<3>$Muralto$<4>
+8505407     S. Nazzaro$<1>$SN$<3>$San Nazzaro$<4>
+8505671     Gersau, Schiffstation$<1>$Gersau$<4>
+8506000     Winterthur$<1>$W$<3>$Winti$<4>
+8506208     Uzwil$<1>$UZW$<3>$Henau$<4>
+8506302     St. Gallen$<1>$SG$<3>$Saint Gall$<4>$San Gallo$<4>$Sangalle$<4>
+8506303     St. Gallen St. Fiden$<1>$SGF$<3>$St. Fiden$<4>
+8506394     Roggwil-Berg$<1>$ROBG$<3>$Freidorf$<4>
+8506870     Frauenfeld, Kantonsspital$<1>$Frauenfeld Krankenhaus$<4>
+8507000     Bern$<1>$BN$<3>$Berna$<4>$Berne (CH)$<4>$Bärn$<4>
+8507062     Muri bei Bern$<1>$MIBN$<3>$Muri b. Bern$<4>
+8507100     Thun$<1>$TH$<3>$Thoune$<4>
+8507279     Lenk im Simmental$<1>$LENK$<3>$Lenk$<4>
+8507364     Jungfraujoch$<1>$JU$<3>$Top of Europe$<4>
+8507785     Bern, Hauptbahnhof$<1>$BNHO$<3>$Bern, Postautostation$<4>
+8507851     Adelboden, Post$<1>$ADE$<3>$Adelboden$<4>
+8508005     Burgdorf$<1>$BDF$<3>$Berthoud$<4>
+8508076     Ittigen, Kappelisacker$<1>$Chäppu$<4>
+8508471     Rütli$<1>$RULI$<3>$Grütli$<4>
+8508752     Axalp, Sportbahnen$<1>$Axalp$<4>
+8509000     Chur$<1>$CH$<3>$Coira$<4>$Coire$<4>
+8509255     Pontresina$<1>$PORE$<3>$Puntraschigna$<4>
+8509259     S-chanf$<1>$SCAN$<3>$Schanf$<4>
+8509268     Scuol-Tarasp$<1>$SCTA$<3>$Schuls$<4>$Scuol$<4>$Tarasp$<4>
+8509361     Poschiavo$<1>$POS$<3>$Puschlav$<4>
+8509605     Surlej, Corvatschbahn$<1>$SCO$<4>
+8509668     S. Bernardino, Muc. Casa Cant.$<1>$San Bernardino, Muccia Casa Cantonale$<2>$San Bernardino, Muc. Casa Cant.$<4>
+8509789     Lantsch/Lenz, Vischnanca$<1>$LAEB$<3>$Lantsch/Lenz, Dorf$<4>
+8509855     Süsom Givè (Passhöhe)$<1>$Ofenpass$<4>
+8509866     S. Bernardino, Ospizio$<1>$San Bernardino, Ospizio$<2>$San Bernardino, Ospizio$<4>
+8509867     S. Bernardino, Villaggio$<1>$San Bernardino, Villaggio$<2>$San Bernardino, Posta$<4>
+8511476     Dietlikon, Bahnhof Ost$<1>$Dietlikon, Pappelstrasse$<4>
+8515997     Root D4$<1>$LBD$<3>$D4$<4>
+8516161     Bern Wankdorf$<1>$BNWD$<3>$Wankdorf$<4>
+8516174     Genève-Stade$<1>$GEST$<3>$Stade de Genève$<4>
+8516350     Buchrain$<1>$BURN$<3>$Mall of Switzerland$<4>
+8519133     Fribourg/Freiburg Poya$<1>$FRPO$<3>$Freiburg Poya$<4>$Fribourg Poya$<4>$Friburgo Poya$<4>
+8530347     Planplatten$<1>$Alpen Tower$<4>
+8572351     Waldenburg, Station$<1>$WAG$<4>
+8573088     Altdorf UR, Bahnhof Ost$<1>$ALBF$<3>$Altdorf$<4>
+8573700     Dägerlen, Lindenhof$<1>$KTF Wyland$<4>
+8573714     Ringlikon, Langwies$<1>$Uitikon Ringlikon, Langwis$<4>
+8574631     Salouf, vischnanca$<1>$Salouf$<4>
+8574739     Waldegg, Katholische Kirche$<1>$Uitikon Waldegg, Katholische Kirche$<4>
+8574780     Ringlikon, Dorf$<1>$Uitikon Ringlikon, Dorf$<4>
+8574898     Ringlikon, Gättern$<1>$Uitikon Ringlikon, Gättern$<4>
+8576094     Kempten, Kreuzackerstrasse$<1>$Kempten (Wetzikon), Post$<4>
+8576393     Biel/Bienne, Altstadt/V. Ville$<1>$Biel/Bienne, Altstadt/Vieille Ville$<2>$BIPM$<3>$Biel/Bienne, Mühlebrücke$<4>
+8576973     Münchenbuchsee, Mätteli$<1>$LSW$<4>
+8576997     Bern, Markuskirche$<1>$HMI1$<4>
+8578681     Baden, Kantonsspital$<1>$Baden, Kantonsspital$<4>
+8580183     S. Bernardino, Campeggio$<1>$San Bernardino, Campeggio$<2>$San Bernardino, Campeggio$<4>
+8580951     Mastrils, Tardisbrücke$<1>$Socka Hitsch$<4>
+8581417     Wädenswil, Campus Grüental$<1>$ZHAW$<4>
+8581489     Altenrhein, Flugplatz$<1>$Flughafen Altenrhein$<4>
+8582227     St. Gallen, Arena$<1>$SGAA$<3>$Kybunpark$<4>$St. Gallen Kybunpark$<4>
+8582502     Schupfart, Abzw. Flugplatz$<1>$Schupfart Festival$<4>
+8582984     Messen, Dorfplatz$<1>$Messen$<4>
+8587605     Segnas, casa da scola$<1>$SCDS$<3>$Segnas, Hauptstrasse$<4>
+8587651     Wallisellen, Glatt (Bus)$<1>$Glatt Wallisellen (Bus)$<4>
+8587776     Bern Flughafen$<1>$Belp Flughafen$<4>$Berna Aeroporto$<4>$Berne Airport$<4>$Flughafen Bern$<4>
+8587852     S-chanf, Parc Naziunal$<1>$Schanf, Park Naziunal$<4>
+8587890     S-chanf, Chesa cumünela$<1>$Schanf, Chesa cumünela$<4>
+8587895     S-chanf, Somvih$<1>$Schanf, Somvih$<4>
+8588314     Dietlikon, Bahnhof West$<1>$Dietlikon, Bahnhof$<4>
+8588775     Basel, Marktplatz$<1>$Basel Rathaus$<4>
+8588792     Reinach BL, Lochacker$<1>$Bildungszentrum KvBL Reinach$<4>
+8588793     Reinach BL, Reinacherhof$<1>$International School Basel$<4>
+8588855     Pratteln, Grüssen$<1>$Pratteln, IKEA$<4>
+8588862     Epagny, aérodrome$<1>$Gordon Bennett 2017$<4>
+8588943     Basel, St. Jakob$<1>$Joggeli$<4>
+8589000     Bern, Parkstrasse$<1>$HMI2$<4>
+8589008     Bern, Wyleregg$<1>$WYPA$<4>
+8590034     Bern, Bärenpark$<1>$Bern, Bärengraben$<4>$Bärengraben$<4>
+8590417     Olten, Bifang$<1>$SBB Kleider und Schuhe$<4>
+8590454     St. Moritz Bad, Youth Hostel$<1>$St. Moritz Bad, Jugendherberge$<4>
+8590539     Dietlikon, Schwimmbad$<1>$Dietlikon, Bahnhof/Bad$<4>
+8591299     Zürich, Paradeplatz$<1>$Paradeplatz$<4>$Paradeplatz Zürich$<4>
+8591849     S-chanf, Pradels$<1>$Schanf, Pradels$<4>
+8592377     Villars-sur-Glâne, Hôp. cant.$<1>$Villars-sur-Glâne, Hôpital cantonal$<2>$Kantonsspital Fribourg$<4>$Villars Spital$<4>$Villars hôpital cantonal$<4>
+8592457     Biel/Bienne, Bärenhof$<1>$BJB$<4>
+8593266     Koppigen, Gemeindeverwaltung$<1>$Koppigen$<4>
+8594198     Wallisellen, Glatt (Tram)$<1>$Glatt Wallisellen (Tram)$<4>
+8594271     Evilard, école$<1>$Evilard/Leubringen, école/Schule$<2>$Leubringen, Schule$<4>
+8594272     Evilard, place du village$<1>$Evilard/Leubringen, place du village/Dorfplatz$<2>$Leubringen, Dorfplatz$<4>
+8594273     Evilard, chapelle$<1>$Evilard/Leubringen, chapelle/Kapelle$<2>$Leubringen, Kapelle$<4>
+8594274     Evilard, La Lisière$<1>$Evilard/Leubringen, La Lisière$<2>$Leubringen, La Lisière$<4>
+8594275     Magglingen,Zum Alten Schweizer$<1>$Magglingen/Macolin, Z.A. Schweizer/Au vieux Suisse$<2>$Macolin, Au Vieux Suisse$<4>
+8594276     Magglingen, Epicerie$<1>$Magglingen/Macolin, Epicerie$<2>$Macolin, Epicerie$<4>
+8594277     Magglingen, Seilbahn$<1>$Magglingen/Macolin, Seilbahn/Funiculaire$<2>$Macolin, Funiculaire$<4>
+8594278     Magglingen, Kapellenweg$<1>$Magglingen/Macolin, Kapellenweg$<2>$Macolin, Kapellenweg$<4>
+8594279     Magglingen, Alte Sporthalle$<1>$Magglingen/Macolin, A. Sporthalle/Anc. salle sport$<2>$Macolin, ancienne salle de sport$<4>
+8594280     Magglingen, End der Welt$<1>$Magglingen/Macolin, End der Welt/Fin du Monde$<2>$Macolin, Fin du Monde$<4>
+8594514     Rothenburg, Wahligen Nord$<1>$Rothenburg, IKEA$<4>
+8595606     Biel/Bienne, Stadien/Stades$<1>$Tissot Arena$<4>
+8714100     Nancy$<1>$NAN$<3>$Nanzig$<4>
+8717504     Bar-le-Duc$<1>$BLD$<3>$Herzogenbar$<4>
+8718206     Mulhouse$<1>$MUL$<3>$Mülhausen$<4>
+8718213     Saint-Louis (Haut-Rhin)$<1>$STL$<3>$St-Louis (Haut-Rhin)$<4>$St. Louis (Haut-Rhin)$<4>
+8718400     Belfort$<1>$BELF$<3>$Beffert$<4>
+8718440     Meroux$<1>$METG$<3>$Mörlingen$<4>
+8718443     Grandvillars$<1>$GVIL$<3>$Granweiler$<4>
+8718444     Delle$<1>$DELL$<3>$Dattenried$<4>
+8718452     Montbéliard$<1>$MONT$<3>$Mömpelgard$<4>
+8719361     Sarreguemines$<1>$SARG$<3>$Saargemünd$<4>
+8721202     Strasbourg$<1>$STRS$<3>$Strassburg$<4>
+8728600     Lille-Flandres$<1>$LIL$<3>$Ryssel$<4>
+8730082     Belfort-Montbéliard TGV$<1>$BEMB$<3>$Beffert-Mömpelgard$<4>
+8770015     Joncherey$<1>$JOCH$<3>$Guntscherach$<4>
+8771800     Besançon Viotte$<1>$BES$<3>$Bisanz$<4>
+8772319     Lyon Part Dieu$<1>$LYD$<3>$Leyden$<4>
+8774500     Bellegarde-sur-Valserine$<1>$BELG$<3>$Bellegarde (Ain)$<4>
+8774687     Vallorcine (F)$<1>$VLL$<3>$Vallorcine$<4>
+8774700     Grenoble$<1>$GRE$<3>$Graswalde$<4>
+8775100     Marseille-Saint-Charles$<1>$MARS$<3>$Marseille$<4>
+8775605     Nice-Ville$<1>$NIC$<3>$Nizza$<4>
+8814001     Bruxelles-Midi$<1>$BRMI$<3>$Brussel-Zuid$<4>$Brussels$<4>$Brüssel$<4>

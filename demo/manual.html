@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<title>öV NOWE combinedStations</title>
+    <link rel="stylesheet" href="style-manual.css">
+	<link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <link rel="apple-touch-icon" href="nowe.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+    <header id="app-header">
+        <div id="header-left">
+			<button id="btn-home" onClick="window.location = 'https://nowe.stellwerksim.ch'">⌂ Home</button>
+        </div>
+        <div id="header-center">
+            <span id="live-clock" onClick="window.location = './'"></span>
+        </div>
+		<div id="header-right">
+			<span id="app-title">öV NOWE</span>
+		</div>
+	</header>
+<div class="content">
+<details>
+	<summary>Allgemeines</summary>
+		<ul>
+			<details>
+				<summary>Ausgangslage und Ziele</summary>
+					<p>NOWE (steht im übrigen für NOie WErsion (neue Version), dabei ist die neue Version von PIFAS gemeint) stellt Abfahrtstabellen mit Live-Daten zur Verfügugn.</p>
+			</details>
+			<li>Zielpublikum</li>
+			<li>Begriffe und Definitionen</li>
+		</ul>
+</details>
+
+<details>
+	<summary>Hauptseite NOWE</summary>
+		<ul>
+			<li>Schaltflächen</li>
+			<li>Favoriten</li>
+			<li>Suche</li>
+			<li>Filter</li>
+		</ul>
+</details>
+	
+<details>
+	<summary>Abfahrtstabelle</summary>
+		<ul>
+			<li>Spalte Zeit</li>
+			<li>Spalte Gattung</li>
+			<li>Spalte Fahrverlauf</li>
+			<li>Spalte Gleis</li>
+			<li>Chain</li>
+		</ul>
+</details>
+
+<details>
+	<summary>Verschiedenes</summary>
+		<ul>
+			<li>Versionen und History</li>
+			<li>Fehlermeldungen</li>
+			<li>Verbindungsabbruch</li>
+		</ul>
+</details>
+
+	
+	<a href="#autor">zu den Autoreninfos</a>
+	<div class="table">
+		<h2>Table Headers</h2>
+
+			<p>Use the TH element to define table headers.</p>
+
+			<table style="width:70%">
+			  <tr>
+			    <th>Abkürzung</th>
+			    <th>Begriff</th>
+			    <th>Beschreibung</th>
+			  </tr>
+			  <tr>
+			    <td>DiDok</td>
+			    <td>Dienststellendokumentation</td>
+			    <td></td>
+			  </tr>
+			  <tr>
+			    <td>PIFAS</td>
+			    <td><strong>Pi</strong>nus <strong>Fa</strong>hrplan <strong>A</strong>u<strong>s</strong>kunft</td>
+			  	<td>Die Vorgängerversion von NOWE, welche durch eine Idee von C2 entstanden ist.</td>
+			  </tr>
+			  <tr>
+			    <td>BAT</td>
+			    <td>Schiff</td>
+			    <td />
+			  </tr>
+			  <tr>
+			    <td>RV</td>
+			    <td>Regionalverkehr</td>
+			    <td />
+			  </tr>
+			  <tr>
+			    <td>NV</td>
+			    <td>Nahverkehr</td>
+			    <td />
+			  </tr>
+			  <tr>
+			    <td>FV</td>
+			    <td>Fernverkehr</td>
+			    <td />
+			  </tr>
+			  <tr>
+			    <td>ZN/ZNR</td>
+			    <td>Zugnummer</td>
+			    <td>Wird auch häufig als Fahrtnummer bezeichnet.</td>
+			  </tr>
+			  
+			</table>
+	</div>
+	<hr />
+	<footer class="page-footer" id="autor">Autor: Gian Hofer</footer>
+</div>
+
+</body>
+</html>
+<script>
+function updateClock() {
+    const el = document.getElementById('live-clock');
+    if (!el) return;
+    const now = new Date();
+    el.textContent = now.getHours().toString().padStart(2,'0') + ':'
+                   + now.getMinutes().toString().padStart(2,'0') + ':'
+                   + now.getSeconds().toString().padStart(2,'0');
+}
+updateClock();
+setInterval(updateClock, 1000);
+</script>

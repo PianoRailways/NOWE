@@ -30,15 +30,15 @@ function getCategory(departure) {
 function loadFavorites() {
     const saved = localStorage.getItem('ojp_favs');
     return saved ? JSON.parse(saved) : [
-        { name: 'Zürich HB', id: 'ch:1:sloid:3000' },
-        { name: 'Bern', id: 'ch:1:sloid:7000' },
-        { name: 'Olten', id: 'ch:1:sloid:218' },
-        { name: 'Biel/Bienne', id: 'ch:1:sloid:4300' },
-        { name: 'Basel SBB', id: 'ch:1:sloid:10' },
-        { name: 'Luzern', id: 'ch:1:sloid:5000' },
-        { name: 'Spiez', id: 'ch:1:sloid:7483' },
-        { name: 'Langenthal', id: 'ch:1:sloid:8100' },
-        { name: 'Bellinzona', id: 'ch:1:sloid:5213' },
+        { name: 'Zürich HB', id: '8503000' },
+        { name: 'Bern', id: '8507000' },
+        { name: 'Olten', id: '8500218' },
+        { name: 'Biel/Bienne', id: '8504300' },
+        { name: 'Basel SBB', id: '8500010' },
+        { name: 'Luzern', id: '8505000' },
+        { name: 'Spiez', id: '8507483' },
+        { name: 'Langenthal', id: '8508100' },
+        { name: 'Bellinzona', id: '8505213' },
 
     ];
 }
@@ -76,11 +76,13 @@ function updateFavHighlight() {
 
 // ─── Es beginnt mit COMBINED_STATIONS... -────────────────────────────────────
 
-const COMBINED_STATIONS = {
-    // Beispiel: Bahnhof X mit IDs für verschiedene Bereiche (SLOID-Format)
-    'ch:1:sloid:8508100': ['ch:1:sloid:8508100', 'ch:1:sloid:8576937'],
-	// Du kannst hier beliebig viele Gruppen hinzufügen
-};
+//const COMBINED_STATIONS = {
+    // Beispiel: Bahnhof X mit IDs für verschiedene Bereiche
+//    '8508100': ['8508100', '8576937'],
+	//'8507000': ['8576937'],
+    //'8576937': ['8508100', '8576937'], 
+    // Du kannst hier beliebig viele Gruppen hinzufügen
+//};
 
 // Hilfsfunktion, um die Gruppe zu finden
 function getStationGroup(idOrName) {
@@ -275,17 +277,8 @@ async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME)
         console.log(`✓ Gefunden in window.combinedStations: ${stopId}`);
         idsToFetch = window.combinedStations[stopId];
     }
-    
-        // 2.1. Wenn stopId eine ID ist und nicht als Key existiert, versuche in window.includedStations zu suchen
-    else if (window.includedStations && window.includedStations[stopId]) {
-        console.log(`✓ Gefunden in window.includedStations: ${stopId}`);
-        idsToFetch = window.includedStations[stopId];
-    }
-    
-
-    // 3. Falls stopId ein Name ist (nicht numerisch und nicht SLOID und nicht externe ID), versuche zu mappen
-    // Regex erklärt: ch:1:sloid:XXXXX, 7-8-stellige IDs, und externe IDs mit _ oder : sind keine Namen
-    else if (!/^(ch:1:sloid:\d+|\d{7,8}|[A-Z0-9]+[_:].+)$/.test(stopId) && window.combinedStations) {
+    // 3. Falls stopId ein Name ist (nicht numerisch), versuche zu mappen
+    else if (!/^\d{7,8}$/.test(stopId) && window.combinedStations) {
         const group = getStationGroupByName(stopId);
         if (group) {
             console.log(`✓ Gefunden als Gruppenschlüssel: ${stopId}`, group);
@@ -330,12 +323,6 @@ async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME)
     }
 }
 
-// Hilfsfunktion
-function getDelayClass(delayMinutes) {
-    if (delayMinutes < 0) return 'chain-delay-early';      // Verfrühung (blau)
-    if (delayMinutes < 1) return 'chain-delay-minor';      // <1 Min (grün)
-    return '';                                              // ≥1 Min (rot, default)
-}
 
 function renderBoard(departures) {
 	//console.log("Sichtbare Stationen:", departures.map(d => d.stopName));
@@ -415,23 +402,15 @@ function renderBoard(departures) {
         if (dep.situations && dep.situations.length > 0) {
             infoBtn = `<button class="btn-sit-info" style="background: #e60000; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-weight: bold; cursor: pointer; margin-left: 8px; line-height: 1;">i</button>`;
 
-            const sitContent = dep.situations.map(s => {
-                const parts = [];
-                if (s.summary) parts.push(`<strong>${s.summary}</strong>`);
-                if (s.reason) parts.push(`<strong style="color:#c00;">Grund:</strong> ${s.reason}`);
-                if (s.desc) parts.push(`<strong>Info:</strong> ${s.desc}`);
-                if (s.consequence) parts.push(`<strong style="color:#e60000;">Folge:</strong> ${s.consequence}`);
-                if (s.rec) parts.push(`<strong style="color:#006600;">Empfehlung:</strong> ${s.rec}`);
-                if (s.duration) parts.push(`<strong style="color:#0066cc;">Dauer:</strong> ${s.duration}`);
-                return parts.join('<br>');
-            }).join('<hr style="margin:8px 0; border:none; border-top:1px solid #ccc;">');
+            const sitContent = dep.situations.map(s =>
+                `<strong>${s.summary}</strong>: ${s.desc} <em>${s.rec}</em>`
+            ).join(' | ');
 
             situationRowHtml = `
                 <tr class="ereignisgrund-row" id="situation-${index}" style="display: none;">
                     <td colspan="4">
                         <div class="ereignis-content">
-                            <span class="ereignis-icon">⚠️</span>
-                            <div style="margin-top:8px; line-height:1.5;">${sitContent}</div>
+                            <span class="ereignis-icon">⚠️</span> ${sitContent}
                         </div>
                     </td>
                 </tr>
@@ -446,8 +425,8 @@ function renderBoard(departures) {
                 <td class="col-time">${timeCell}</td>
                 <td class="col-line">
                     <div class="line-container">
-                        <a href="/trip/?sjyid=${dep.journeyRef}"><span class="line-badge" data-type="${lineType}">${fullLine}</span></a>
-                        ${dep.journeyNumber ? `<div class="journey-num" style="${unplannedStyle}"><a href="/formation/?train=${dep.journeyNumber}">${dep.journeyNumber}</a></div>` : ''}
+                        <span class="line-badge" data-type="${lineType}">${fullLine}</span>
+                        ${dep.journeyNumber ? `<div class="journey-num" style="${unplannedStyle}">${dep.journeyNumber}</div>` : ''}
                     </div>
                 </td>
                 <td class="col-dest">
@@ -501,19 +480,12 @@ function renderBoard(departures) {
         el.addEventListener('click', e => {
             e.stopPropagation();
             const stopRef = el.dataset.stopRef;
-            const stopName = el.dataset.stopName;
             const arrivalIso = el.dataset.arrivalIso;
             if (!stopRef) return;
             STOP_ID = stopRef;
-            DOM.stopInput().value = stopName || stopRef;
             QUERY_DATE = arrivalIso ? isoToDate(arrivalIso) : (QUERY_DATE || todayISO());
             QUERY_TIME = arrivalIso ? isoToTime(arrivalIso) : QUERY_TIME;
-            // Date/Time Inputs aktualisieren
-            const di = DOM.dateInput();
-            if (di) di.value = QUERY_DATE;
-            const ti = DOM.timeInput();
-            if (ti) ti.value = QUERY_TIME;
-            // Nicht syncInputsFromState() aufrufen, weil das den Namen überschreiben würde!
+            syncInputsFromState();
             updateUrlParams();
             loadBoard(STOP_ID, QUERY_DATE, QUERY_TIME);
             startAutoRefresh();
@@ -523,27 +495,36 @@ function renderBoard(departures) {
 
 // ─── Live-Position berechnen ─────────────────────────────────────────────────
 function computeTrainPosition(dep, allStops) {
-    // ✅ IMMER echte Zeit nutzen (nicht QUERY_DATE/QUERY_TIME)
-    const d = new Date();
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    const hours = String(d.getHours()).padStart(2, '0');
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    const seconds = String(d.getSeconds()).padStart(2, '0');
-    const nowISO = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    const isLiveMode = !QUERY_DATE && !QUERY_TIME;
+    let nowISO;
+
+    if (isLiveMode) {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const hours = String(d.getHours()).padStart(2, '0');
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+        const seconds = String(d.getSeconds()).padStart(2, '0');
+        nowISO = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    } else {
+        nowISO = buildISO(QUERY_DATE, QUERY_TIME);
+    }
 
     if (!nowISO) return { state: 'unknown' };
-    
+
     for (let i = 0; i < allStops.length; i++) {
         const stop = allStops[i];
         const arrIso = stop.arrivalEstimated ?? stop.arrivalTime;
         const depIso = stop.departureEstimated ?? stop.departureTime;
+
         const afterArr = !arrIso || compareISO(nowISO, arrIso) >= 0;
         const beforeDep = !depIso || compareISO(nowISO, depIso) <= 0;
+
         if (afterArr && beforeDep) {
             return { state: 'at-stop', stopIndex: i };
         }
+
         if (depIso && compareISO(nowISO, depIso) > 0 && i < allStops.length - 1) {
             const nextStop = allStops[i + 1];
             const nextArrIso = nextStop.arrivalEstimated ?? nextStop.arrivalTime;
@@ -552,6 +533,7 @@ function computeTrainPosition(dep, allStops) {
             }
         }
     }
+
     return { state: 'unknown' };
 }
 
@@ -591,11 +573,11 @@ function buildChain(dep) {
         const depTime   = fmt(stop.departureTime);
 
         // Verspätungs-Badges für An/Abfahrt
-        const arrDelayHtml = stop.arrivalDelayMinutes !== 0
-            ? `<span class="chain-delay ${getDelayClass(stop.arrivalDelayMinutes)}">${stop.arrivalDelayDisplay}</span>`
+        const arrDelayHtml = (stop.arrivalDelayed && stop.arrivalDelayMinutes > 0)
+            ? `<span class="chain-delay">${stop.arrivalDelayDisplay}</span>`
             : '';
-        const depDelayHtml = stop.departureDelayMinutes !== 0
-            ? `<span class="chain-delay ${getDelayClass(stop.departureDelayMinutes)}">${stop.departureDelayDisplay}</span>`
+        const depDelayHtml = (stop.departureDelayed && stop.departureDelayMinutes > 0)
+            ? `<span class="chain-delay">${stop.departureDelayDisplay}</span>`
             : '';
 
         const arrDisplay = arrTime || '';
@@ -617,22 +599,12 @@ function buildChain(dep) {
             ? '<span style="background:#e60000; color:#fff; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">Ausfall</span>'
             : '';
 
-        // ✅ FIX #3: Diensthalt-Status (NoBoardingAtStop && NoAlightingAtStop)
-        const isServiceStop = stop.noBoardingAtStop && stop.noAlightingAtStop;
-        const serviceStopBadge = isServiceStop
-            ? '<span style="background:#000; color:#aaa; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">Diensthalt</span>'
-            : '';
-
-        // Dot-Farbe: ausgefallene Halte grau, Diensthalte schwarz
-        const dotStyle = stop.cancelled 
-            ? ' style="background:#555;"' 
-            : isServiceStop 
-                ? ' style="background:#000; box-shadow: 0 0 0 2px #444;"'
-                : '';
+        // Dot-Farbe: ausgefallene Halte grau
+        const dotStyle = stop.cancelled ? ' style="background:#555;"' : '';
 
         html += `
             <div class="chain-stop chain-${stop.type}${clickable ? ' chain-clickable' : ''}${stop.cancelled ? ' chain-cancelled' : ''}"
-                 ${clickable ? `data-stop-ref="${stopRef}" data-stop-name="${stop.name}" data-arrival-iso="${arrIso}"` : ''}>
+                 ${clickable ? `data-stop-ref="${stopRef}" data-arrival-iso="${arrIso}"` : ''}>
 
                 <div class="chain-dot-col">
                     <div class="chain-dot-wrapper">
@@ -661,7 +633,7 @@ function buildChain(dep) {
                 </div>
 
                 <div class="chain-info">
-                    <div class="chain-name" style="${stopNameStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}</div>
+                    <div class="chain-name" style="${stopNameStyle}">${stop.name}${cancelledBadge}</div>
                     ${platHtml ? `<div class="chain-platform">Gl. ${platHtml}</div>` : ''}
                 </div>
             </div>
@@ -818,44 +790,6 @@ function initFilterBar() {
 
 // ─── Stop-Autocomplete ────────────────────────────────────────────────────────
 
-/**
- * Prüft, ob ein Query in didokmapping vorhanden ist.
- * Gibt ein Objekt { id (SLOID), name } zurück oder null.
- * ✅ Löst DiDok-ID immer zu SLOID auf
- */
-function checkDidokMapping(query) {
-    if (!window.didokMapping) return null;
-    
-    const q = query.trim().toUpperCase();
-    
-    // 1. Direkte Suche (Key ist exakt oder in Großbuchstaben)
-    if (window.didokMapping[q]) {
-        const name = window.didokMapping[q];
-        return { id: q, name, isDidokMatch: true };
-    }
-    
-    // 2. Fallback: Alle Keys durchsuchen (Case-insensitive)
-    for (const [key, value] of Object.entries(window.didokMapping)) {
-        if (key.toUpperCase() === q) {
-            return { id: key, name: value, isDidokMatch: true };
-        }
-    }
-    
-    // 3. Numerische ID: Suche ob diese ID im didokmapping vorhanden ist
-    if (/^\d{7,8}$/.test(q)) {
-        if (window.didokMapping[q]) {
-            const name = window.didokMapping[q];
-            // ✅ DiDok-ID zu SLOID konvertieren: 85XXXXX → ch:1:sloid:XXXXX
-            const sloidId = /^85\d{5}$/.test(q) 
-                ? `ch:1:sloid:${q.substring(2)}`
-                : q;
-            return { id: sloidId, name, isDidokMatch: true };
-        }
-    }
-    
-    return null;
-}
-
 function initStopSearch() {
     const input    = DOM.stopInput();
     const dropdown = DOM.stopDropdown();
@@ -877,25 +811,6 @@ function initStopSearch() {
 
         searchDebounce = setTimeout(async () => {
             try {
-                // 1. Zuerst in didokmapping prüfen
-                const didokResult = checkDidokMapping(q);
-                
-                if (didokResult) {
-                    console.log(`✓ didokmapping Match: "${q}" → "${didokResult.name}" (ID: ${didokResult.id})`);
-                    // Zeige nur das didokmapping-Ergebnis
-                    dropdown.innerHTML = `
-                        <li data-id="${didokResult.id}" data-name="${didokResult.name}" class="didok-match">
-                            <span class="dd-name">${didokResult.name}</span>
-                            <span class="dd-id">${didokResult.id}</span>
-                            <span style="font-size: 0.75em; color: #666; margin-left: 4px;">(Didok)</span>
-                        </li>
-                    `;
-                    dropdown.classList.remove('hidden');
-                    return;
-                }
-                
-                // 2. Falls kein didokmapping-Match: API-Suche
-                console.log(`✗ didokmapping kein Match, frage API…`);
                 const results = await searchStops(q);
 
                 if (!results || results.length === 0) {
@@ -942,19 +857,7 @@ function initStopSearch() {
                 closeDropdown();
             } else {
                 const v = input.value.trim();
-                // Erst didokmapping prüfen
-                const didokResult = checkDidokMapping(v);
-                if (didokResult) {
-                    STOP_ID = didokResult.id; // Bereits SLOID
-                    input.value = didokResult.name;
-                } else if (/^\d{7,8}$/.test(v)) {
-                    // ✅ Falls es eine DiDok-ID ist (85XXXXX), konvertiere zu SLOID
-                    if (/^85\d{5}$/.test(v)) {
-                        STOP_ID = `ch:1:sloid:${v.substring(2)}`;
-                    } else {
-                        STOP_ID = v;
-                    }
-                }
+                if (/^\d{7,8}$/.test(v)) STOP_ID = v;
             }
 
             if (STOP_ID) {
@@ -1004,22 +907,18 @@ function offsetTime(minutes) {
     const baseDate = QUERY_DATE || todayISO();
     const baseTime = QUERY_TIME || now.toTimeString().substring(0, 5);
     
-    // Erzeuge ein Date-Objekt für die Berechnung (Parsing als lokale Zeit)
+    // Erzeuge ein Date-Objekt für die Berechnung
     let dateObj = new Date(`${baseDate}T${baseTime}:00`);
     
     // Minuten addieren oder subtrahieren
     dateObj.setMinutes(dateObj.getMinutes() + minutes);
     
-    // ✅ Konvertiere zurück zu lokaler ISO-Zeit (ohne UTC-Versatz)
-    const offset = dateObj.getTimezoneOffset() * 60000;
+    // Neue Werte für den State formatieren
     QUERY_TIME = dateObj.toTimeString().substring(0, 5);
-    QUERY_DATE = (new Date(dateObj - offset)).toISOString().slice(0, 10);
+    QUERY_DATE = dateObj.toISOString().split('T')[0];
     
-    // Nur Date/Time Inputs aktualisieren, nicht das Stop-Feld
-    const di = DOM.dateInput();
-    if (di) di.value = QUERY_DATE;
-    const ti = DOM.timeInput();
-    if (ti) ti.value = QUERY_TIME;
+    // UI und URL aktualisieren, ohne die Seite neu zu laden
+    syncInputsFromState();
     updateUrlParams();
     loadBoard();
     
@@ -1039,11 +938,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnNow.onclick = () => {
             QUERY_DATE = '';
             QUERY_TIME = '';
-            // Nur Date/Time Inputs aktualisieren, nicht das Stop-Feld
-            const di = DOM.dateInput();
-            if (di) di.value = '';
-            const ti = DOM.timeInput();
-            if (ti) ti.value = '';
+            syncInputsFromState();
             updateUrlParams();
             loadBoard();
             startAutoRefresh(); // Zurück im "Live"-Modus
@@ -1103,19 +998,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     DOM.dtClearBtn()?.addEventListener('click', () => {
-        const now = new Date();
-        // ✅ Nutze die gleiche Logik wie todayISO() für korrekte lokale Zeit
-        const offset = now.getTimezoneOffset() * 60000;
-        QUERY_DATE = (new Date(now - offset)).toISOString().slice(0, 10);
-        QUERY_TIME = now.toTimeString().substring(0, 5);
-        // Aktualisiere die Input-Felder
-        const di = DOM.dateInput();
-        if (di) di.value = QUERY_DATE;
-        const ti = DOM.timeInput();
-        if (ti) ti.value = QUERY_TIME;
+        QUERY_DATE = '';
+        QUERY_TIME = '';
+        syncInputsFromState();
         updateUrlParams();
         if (STOP_ID) loadBoard();
-        stopAutoRefresh(); // Auto-Refresh stoppen, da wir jetzt ein fixes Datum haben
+        startAutoRefresh();
     });
 
     DOM.refreshBtn()?.addEventListener('click', () => {

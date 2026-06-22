@@ -114,6 +114,11 @@ function renderPerlschnur(trip) {
         const arrTime = fmtTime(stop.arrival.timetabled);
         const depTime = fmtTime(stop.departure.timetabled);
 
+        // ✅ Datum und Uhrzeit für die URL extrahieren
+        const arrivalIso = stop.arrival.timetabled;
+        const arrivalDate = arrivalIso ? arrivalIso.split('T')[0] : null;
+        const arrivalTimeForUrl = arrTime; // "HH:MM"
+
         // Verspätungs-/Verfrühungs-Badges
         const arrDelay = delayLabel(stop.arrival.delaySec);
         const depDelay = delayLabel(stop.departure.delaySec);
@@ -166,7 +171,10 @@ function renderPerlschnur(trip) {
         // Nutzt die jetzt im Objekt vorhandene ID (z.B. "ch:1:sloid:8100:2:3")
         const stopParam = stop.stopPointRef || stop.name;
         
-        const stsUrl = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(stopParam)}`;
+        // ✅ GEÄNDERT: Datum + Zeit mit übergeben
+        const stsUrl = arrivalDate && arrivalTimeForUrl
+            ? `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(stopParam)}&date=${encodeURIComponent(arrivalDate)}&time=${encodeURIComponent(arrivalTimeForUrl)}`
+            : `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(stopParam)}`;
 
         // Wechselt die URL direkt im selben Fenster
         const chainInfo = `<div class="chain-info">

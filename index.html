@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="nowe.png">
+    <link rel="apple-touch-icon" href="nowe.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>öV NOWE26</title>
+</head>
+<body>
+
+    <!-- ═══════════════ HEADER ═══════════════ -->
+    <header id="app-header">
+        <div id="header-left">
+            <button id="btn-home" title="Startseite">⌂ Home</button>
+        </div>
+        <div id="header-center">
+            <span id="live-clock" onClick="window.location = './'"></span>
+        </div>
+		<div id="header-right">
+			<span id="app-title" style="text-decoration: none;" onclick="toggleArrival()">öV NOWE</span>
+		</div>
+		    </header>
+    <!-- ═══════════════ FAVORITENLEISTE ═══════════════ -->
+
+    <nav id="fav-bar">
+        <!-- wird von app.js befüllt -->
+    </nav>
+    <!-- ═══════════════ INPUTLEISTE ═══════════════ -->
+
+            <!-- Stop-Suche mit Autocomplete -->
+            <div id="stop-search-wrapper">
+                <input id="stop-input" type="text" placeholder="Bahnhof / ID" autocomplete="off" style="flex: 1;"/>
+                <ul id="stop-dropdown" class="hidden"></ul>
+				<button id="btn-add-fav" title="Aktuelle Station als Favorit speichern" style="cursor: pointer;">⭐</button>
+            </div>
+
+            <!-- Datum + Zeit Picker -->
+            <div id="datetime-picker">
+                <input id="date-input" type="date" title="Datum wählen" />
+                <input id="time-input" type="time" title="Abfahrtszeit wählen" />
+                <button id="btn-datetime-clear" title="Auf jetzt zurücksetzen">JETZT</button>
+				<button id="btn-refresh" title="Aktualisieren">GO</button>
+				<!--//<button id="btn-refresh" title="Aktualisieren">&#8635;</button>-->
+            </div>
+
+    
+
+    <!-- ═══════════════ FILTERLEISTE ═══════════════ -->
+    <div id="filter-bar">
+        <span class="filter-label">Filter:</span>
+        <button class="filter-btn active" data-cat="all">Alle</button>
+        <button class="filter-btn" data-cat="fernverkehr">Fernverkehr</button>
+        <button class="filter-btn" data-cat="regional">Regional</button>
+        <button class="filter-btn" data-cat="sbahn">S-Bahn</button>
+        <button class="filter-btn" data-cat="tram">Tram</button>
+        <button class="filter-btn" data-cat="bus">Bus</button>
+        <button class="filter-btn" data-cat="spezial">Spezial</button>
+        <button class="filter-btn" data-cat="schiff">Schiff</button>
+        <button class="filter-btn" data-cat="bergbahn">Bergbahn</button>
+        <button class="filter-btn" data-cat="sonstige">Sonstiges</button>
+    </div>
+
+    <!-- ═══════════════ STATUS ═══════════════ -->
+    <div id="status-message"></div>
+
+    <!-- ═══════════════ ABFAHRTSTAFEL ═══════════════ -->
+	<div class="time-controls"><button id="btn-time-prev">↑ Früher (20')</button></div> 
+    <main id="board-container">
+        <div id="departure-board"></div>
+    </main>
+<div class="time-controls">
+    <button id="btn-time-next">↓ Später (20')</button>
+</div>
+	<script src="./didokMappingNOWE.js"></script>
+	<script src="./includedStationsNOWE.js"></script>
+	<script src="./combinedStationsNOWE.js"></script>
+    <script type="module" src="./app.js?v=8"></script>
+<script>
+function toggleArrival() {
+  const currentPath = window.location.pathname;
+  const queryString = window.location.search;
+  
+  if (currentPath.includes('/arrival/')) {
+    window.location.href = '/index.html' + queryString;
+  } else {
+    window.location.href = '/arrival/index.html' + queryString;
+  }
+}
+</script>
+</body>
+<footer class="page-footer">Zum Manual: <a href="./manual.html">manual.html</a></footer>
+</html>
