@@ -40,8 +40,12 @@ p {
   text-align: justify; /* Blocksatz (ginge auch left oder right) */
   hyphens: auto; /* Automatischer Zeilenumbruch bei langen Wörtern */
   word-break: break-word; /* Verhindert Überlaufen von langen Wörtern */
+  padding-top: 10px;
 }
 
+.card p {
+  padding-top: 10px;
+}
 
 .content { 
 	background: var(--board-row); 
@@ -50,6 +54,7 @@ p {
 	padding: 1.5rem; 
 	margin-bottom: 1.5rem; 
 }
+
 /* MOBILE */
 @media screen and (max-width: 600px) {
   .content {
