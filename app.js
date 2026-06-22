@@ -458,6 +458,7 @@ function renderBoard(departures) {
                 </td>
                 <td class="col-platform">
                     <span class="platform-value ${platClass}">${dep.platform}</span>
+                    ${dep.calls.current?.requestStop ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>' : ''}
                 </td>
             </tr>
             ${situationRowHtml}
@@ -623,6 +624,12 @@ function buildChain(dep) {
             ? '<span style="background:#000; color:#aaa; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">Diensthalt</span>'
             : '';
 
+
+        // ✅ FIX #4: Request-Stop (Halt auf Verlangen)
+        const requestStopBadge = stop.requestStop
+            ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>'
+            : '';
+
         // Dot-Farbe: ausgefallene Halte grau, Diensthalte schwarz
         const dotStyle = stop.cancelled 
             ? ' style="background:#555;"' 
@@ -661,7 +668,7 @@ function buildChain(dep) {
                 </div>
 
                 <div class="chain-info">
-                    <div class="chain-name" style="${stopNameStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}</div>
+                    <div class="chain-name" style="${stopNameStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}${requestStopBadge}</div>
                     ${platHtml ? `<div class="chain-platform">Gl. ${platHtml}</div>` : ''}
                 </div>
             </div>
