@@ -369,7 +369,7 @@
 .access-icon--ok  { opacity: 1; }
 .access-icon--alt,
 .access-icon--notify,
-.access-icon--no, { opacity: .75; filter: saturate(0.8); }
+.access-icon--no,
 .access-icon--assist { opacity: .75; filter: saturate(0.8); }
 
 /* ─────── Situations / Ausfälle ──────────────────────────────────────────────── */
