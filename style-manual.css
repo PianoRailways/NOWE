@@ -84,11 +84,6 @@ p {
 	position: inside;
 }
 
-.summary a {
-	text-decoration: none;
-	color: var(--sbb-red);
-}
-
 a {
 	text-decoration: none;
 }
