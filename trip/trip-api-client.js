@@ -72,6 +72,8 @@ function parseAccessibility(nameSuffix) {
     const v = nameSuffix.trim().toUpperCase();
     if (v === 'ALTERNATIVE_TRANSPORT') return 'ALT_TRANSPORT';
     if (v === 'PLATFORM_ACCESS_WITHOUT_ASSISTANCE') return 'ACCESSIBLE';
+    if (v === 'PLATFORM_ACCESS_WITH_ASSISTANCE_WHEN_NOTIFIED') return 'NOTIFY';
+    if (v === 'PLATFORM_NOT_WHEELCHAIR_ACCESSIBLE') return 'NO_BEHIG';
     return null;
 }
 

@@ -53,6 +53,9 @@ function delayLabel(sec) {
 function accessIcon(type) {
     if (type === 'ACCESSIBLE')    return '<span class="access-icon access-icon--ok"    title="Einstieg ohne Hilfe">♿</span>';
     if (type === 'ALT_TRANSPORT') return '<span class="access-icon access-icon--alt"   title="Ersatztransport">🚌</span>';
+    if (type === 'NOTIFY')        return '<span class="access-icon access-icon--notify"   title="Hilfe auf Anfrage">📞</span>';
+    if (type === 'NO_BEHIG')      return '<span class="access-icon access-icon--no"   title="Nicht rollstuhlgänglich">🔺</span>';
+    
     return '';
 }
 
@@ -167,7 +170,7 @@ function renderPerlschnur(trip) {
         // Wechselt die URL direkt im selben Fenster
         const chainInfo = `<div class="chain-info">
             <span class="chain-name">
-                <a href="${stsUrl}">${stop.name}</a>${accessIcon(stop.accessibility)}
+                <a href="${stsUrl}">${stop.name}</a>$ {accessIcon(stop.accessibility)}
             </span>
             ${quayLine}
         </div>`;
