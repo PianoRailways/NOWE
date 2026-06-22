@@ -176,10 +176,15 @@ function renderPerlschnur(trip) {
             ? `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(stopParam)}&date=${encodeURIComponent(arrivalDate)}&time=${encodeURIComponent(arrivalTimeForUrl)}`
             : `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(stopParam)}`;
 
+        // Request Stop Badge (Halt auf Verlangen)
+        const requestStopBadge = stop.requestStop
+            ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>'
+            : '';
+
         // Wechselt die URL direkt im selben Fenster
         const chainInfo = `<div class="chain-info">
             <span class="chain-name">
-                <a href="${stsUrl}">${stop.name}</a> ${accessIcon(stop.accessibility)}
+                <a href="${stsUrl}">${stop.name}</a> ${accessIcon(stop.accessibility)}${requestStopBadge}
             </span>
             ${quayLine}
         </div>`;
