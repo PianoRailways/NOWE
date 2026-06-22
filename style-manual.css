@@ -349,7 +349,7 @@ img[usemap] {
   padding: 15px;
   text-align: center;
   width: 100%;
-  border-top: 1px solid #333;
+  /* border-top: 1px solid #333; */
 }
 
 /* Pfeile zum Klicken */
