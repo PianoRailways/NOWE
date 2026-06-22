@@ -54,11 +54,12 @@
 		<p>Das Zielpublikum sind vor allem das erweiterte private Umfeld des <a href="#autor" class="int">Autors</a>.<br>
 			Diese wiederum dürfen <strong>NOWE</strong> natürlich auch an ihr näheres privates Umfeld weitergeben.<br>
 			Zu weit sollte das Tool nicht verbreitet werden, da die API ein Limit hat. Dieses Limit liegt derzeit bei 50 Abfragen pro Minute und 20'000 Anfragen am Tag. Dabei löst eine vermeidlich simple Abfrage eines Bahnhofs mehrere Anfragen aus. Hintergrund:
-		<ul>
+		<ol>
 			<li>Suche von Station</li>
-			<li>Prüfe ob die Station mit anderen verknüpft ist</li>
+			<li>Prüfe ob die Station mit anderen verknüpft ist (combined überschreibt included!)</li>
 			<li>Abfrage der verknüpften Stationen</li>
-		</ul></p>
+		</ol></p>
+		<p>Bitte gib doch rasch dem <a href="#autor" class="int">Autor</a> Bescheid, wenn du das Tool jemandem weiterempfiehlst. Falls das Interesse sehr gross wird, könnte es zu einem späteren Zeitpunkt eine Überlegung wert sein, eine Lösung zur Überwindung der Limits zu finden.</p>
 </details>
 <hr>
 <details class="card">
@@ -232,6 +233,15 @@
 <div class="card" id="trip">
 	<h2>Trip</h2>
 	<p>Die Trip-Ansicht ist erreichbar über <a href="./trip" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/trip</a>. Dort kann die SJYID eingegeben werden, um die Trip-Ansicht zu sehen.</p>
+	<h3>BehiG-Konformität</h3>
+	<table>
+		<tr><td>♿</td><td>Einstieg ohne Hilfe</td></tr>
+		<tr><td>♿️🧑🏼‍✈️</td><td>Einstieg mit Hilfe durch Personal</td></tr>
+		<tr><td>🚌</td><td>Ersatztransport</td></tr>
+		<tr><td>📞</td><td>Voranmeldung nötig</td></tr>
+		<tr><td>🔺</td><td>Nicht konform</td></tr>
+		<tr><td></td><td>Keine Information vorhanden</td></tr>
+	</table>
 	<center><img src="/img/trip.png" usemap="#trip-map"></center>
 </div>
 	
