@@ -118,6 +118,23 @@
     border-bottom: 1px solid rgba(255, 59, 48, 0.2);
 }
 
+.status-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-size: 0.7em;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
+.status-badge--hav {
+    background: var(--sbb-orange);
+    color: #000;
+    text-transform: uppercase;
+}
+
 /* ─────── Trip-Header (Line-Badge links + Destination + Zugnummer) ───────────── */
 
 .trip-header {
