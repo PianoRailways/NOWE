@@ -62,7 +62,7 @@ p {
     padding: 0.5rem;
   }
   .desktopbox {
-    display: none important;
+    display: none !important;
   }
 }
 /* DESKTOP */
