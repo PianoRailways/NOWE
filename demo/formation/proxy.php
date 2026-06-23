@@ -4,7 +4,7 @@ error_reporting(0);
 ini_set('display_errors', 0);
 
 // API KEY HIER EINTRAGEN
-$apiKey = 'eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6IjZkNTUzYmI2MDgyNzRkODU5NDRjYjViMDQzNzY0Nzc5IiwiaCI6Im11cm11cjEyOCJ9';
+$apiKey = '';
 
 $train = isset($_GET['trainNumber']) ? trim($_GET['trainNumber']) : '';
 $date = isset($_GET['operationDate']) ? trim($_GET['operationDate']) : '';
