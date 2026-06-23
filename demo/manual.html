@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-	<title>öV NOWE combinedStations</title>
+	<title>NOWE • Manual</title>
     <link rel="stylesheet" href="style-manual.css">
 	<link rel="icon" type="image/x-icon" href="./favicon.ico">
     <link rel="apple-touch-icon" href="nowe.png">
@@ -17,77 +17,249 @@
 			<button id="btn-home" onClick="window.location = 'https://nowe.stellwerksim.ch'">⌂ Home</button>
         </div>
         <div id="header-center">
-            <span id="live-clock" onClick="window.location = './'"></span>
+            <a  ><span id="live-clock"></span></a>
         </div>
 		<div id="header-right">
 			<span id="app-title">öV NOWE</span>
 		</div>
 	</header>
-<div class="content">
-<details>
-	<summary>Allgemeines</summary>
+<div class="content" id="top">
+<details open class="card">
+	<summary class="summary-title">Allgemeines</summary>
 		<ul>
 			<details>
-				<summary>Ausgangslage und Ziele</summary>
+				<summary class="summary-subtitle" id="ausgangslage">Ausgangslage und Ziele</summary>
 					<p>NOWE (steht im übrigen für NOie WErsion (neue Version), dabei ist die neue Version von PIFAS gemeint) stellt Abfahrtstabellen mit Live-Daten zur Verfügugn.</p>
-			</details>
-			<li>Zielpublikum</li>
+					<p>Da es kaum mehr nutzbare Tools gibt, welche brauchbare Abfahrtstabellen generieren können, habe ich den Entschluss gefasst, mich selber so einem Projekt zu widmen. Durch den massiven Fortschritt von künstlicher Intelligenz in den letzten Jahren bzw. Monaten wurde dies massiv einfacher, da auch geringe Programmier- und IT-Kenntnisse bereits ausreichen.</p>
+					<div class="card">
+						<h3>Projektierte Features</h3>
+						<ul>
+							<li>Abfahrten ab Schweizer Haltestellen</li>
+							<li>Anzeige von Live-Daten (aktuelle Verspätungen)</li>
+							<li>Sofort auffindbare Fahrtnummer</li>
+							<li>Fahrtverlauf</li>
+							<li>Anklickbare Halte im Fahrtverlauf und sofortige Generierung der Abfahrtstabelle ab dort</li>
+							<li>Verknüpfung von Bushaltestellen und Bahnhöfen, um Anschlüsse selber routen zu können.</li>
+						</ul>
+					</div>
+				</details>
 			<li>Begriffe und Definitionen</li>
+			<br>
+			<h2>Namensherkunft</h2>
+			<p>Die Urpsrungsidee war, eine Abfahrtstabelle von JETZT (engl. NOW) zu haben. Da <i>NOW</i> alleine eher nach einem Zeitserver o.ä. klingt und Namen mit zwei Silben aber nur vier Buchstaben durchaus cool klingen, habe ich mich anschliessend für <i>NOWE</i> entschieden. Dabei kann der Name, wie <a href="#ausgangslage" class="int">oben</a> erwähnt auch als NOie WErsion in der Miimsprache gedeutet werden.</p>
 		</ul>
 </details>
-
-<details>
-	<summary>Hauptseite NOWE</summary>
+<details class="summary">
+	<summary class="summary-title">Zielpublikum</summary>
+		<p>Das Zielpublikum sind vor allem das erweiterte private Umfeld des <a href="#autor" class="int">Autors</a>.<br>
+			Diese wiederum dürfen <strong>NOWE</strong> natürlich auch an ihr näheres privates Umfeld weitergeben.<br>
+			Zu weit sollte das Tool nicht verbreitet werden, da die API ein Limit hat. Dieses Limit liegt derzeit bei 50 Abfragen pro Minute und 20'000 Anfragen am Tag. Dabei löst eine vermeidlich simple Abfrage eines Bahnhofs mehrere Anfragen aus. Hintergrund:
+		<ol>
+			<li>Suche von Station</li>
+			<li>Prüfe ob die Station mit anderen verknüpft ist (combined überschreibt included!)</li>
+			<li>Abfrage der verknüpften Stationen</li>
+		</ol></p>
+		<p>Bitte gib doch rasch dem <a href="#autor" class="int">Autor</a> Bescheid, wenn du das Tool jemandem weiterempfiehlst. Falls das Interesse sehr gross wird, könnte es zu einem späteren Zeitpunkt eine Überlegung wert sein, eine Lösung zur Überwindung der Limits zu finden.</p>
+</details>
+<hr>
+<details class="card">
+	<summary class="summary-title" id="start">Hauptseite NOWE</summary>
 		<ul>
 			<li>Schaltflächen</li>
-			<li>Favoriten</li>
+				<ol type="1">
+					<li>Home-Button mit Standard-ID</li>
+					<li>Home-Button mit leerem Eingabefeld</li>
+					<li><a href="#schalt-fav" class="int">Favoriten</a></li>
 			<li>Suche</li>
-			<li>Filter</li>
+			<li><a href="#filter" class="int">Filter</li>
 		</ul>
+		<p>Weiter unten gibt es Screenshots: Siehe <a href="#demo" class="int">Demo</a></p>
 </details>
+
+<details class="summary" id="suche">
+	<summary class="summary-title">Suchfeld</summary>
+	<h2>Suchfeld</h2>
+	<p>Das Suchfeld ist das zentrale Element der Hauptseite. Es ermöglicht die Suche nach einer Station, um die Abfahrtstabelle dieser Station zu sehen.</p>
+	<h2>Abkürzungen</h2>
+	<p>Folgende Eingaben sind möglich:</p>
+		<ul>
+			<li>SLOID</li>
+			<li>DiDok-ID</li>
+			<li>Haltestellennamen als normaler Text</li>
+			<li>Abkürzungen</li>
+		</ul>
+	<p>Es sind die meisten DiDok-Abkürzungen hinterlegt (Stand Mai 2026).</p>
+	<details class="summary" id="didok-spoiler">
+		<summary>Beispiele für Abkürzungen</summary>
+		<table style="width: auto;">
+			<caption>Beispiele für Abkürzungen</caption>
+			<tr>
+				<th style="width: 10%;">Abkürzung</th>
+				<th style="width: 90%;">Dienststelle</th>
+			</tr>
+			<tr><td>ZUE</td><td>Zürich HB</td></tr>
+			<tr><td>BN</td><td>Bern</td></tr>
+			<tr><td>ABO</td><td>Aarburg-Oftringen</td></tr>
+			<tr><td>SUDO</td><td>Sumiswald, Post</td></tr>
+			<tr><td>GURKE</td><td>Kilchberg, Schwelle</td></tr>
+		</table>
+	</details>
+	<hr>
+	<div class="box">
+		<span class="important">Hinweis:</span> Es ist zu beachten, dass bei der Eingabe einer Abkürzung die <a href="#combinedStations" class="int">verknüpften Stationen</a> absichtlich nicht berücksichtigt werden.
+		<p>Einige Abkürzungen sind auch manuell programmiert und werden als sogenanntes <span style="font-style: italic;">"Secret"</span> (Aussprache: <span style="font-style: italic;">"Sekret"</span> bzw./oder <span style="font-style: italic;">"Siikrett"</span>) bezeichnet.</p></div>
+	</details>
 	
-<details>
-	<summary>Abfahrtstabelle</summary>
+<details class="summary">
+	<summary class="summary-title">Abfahrtstabelle</summary>
 		<ul>
 			<li>Spalte Zeit</li>
-			<li>Spalte Gattung</li>
-			<li>Spalte Fahrverlauf</li>
-			<li>Spalte Gleis</li>
-			<li>Chain</li>
+				<p></p>
+			<li>Spalte Linie</li>
+			<li>Spalte Ziel</li>
+			<li>Spalte Gleis/Kante</li>
+			<details><summary>Gleisänderung</summary>In der Spalte Gl./Kante werden Gleisänderungen mit einem <span style="background-color: var(--plat-change); color: black;"><strong> gelben </strong></span> Hintergrund.</details>
+			<li>Chain (beim Anwählen einer Fahrt)</li>
+				<p>In der Perlschnur (auch Chain genannt) werden Gleisänderungen wie folgt dargestellt:<br>
+				altes Gleis durchgestrichen, neues Gleis fett<br>
+				<h3>Beispiel</h3>
+				<p><s>34</s><strong>33</strong></p>
 		</ul>
 </details>
-
-<details>
-	<summary>Verschiedenes</summary>
+<details class="summary">
+	<summary class="summary-title">Verschiedenes</summary>
 		<ul>
-			<li>Versionen und History</li>
-			<li>Fehlermeldungen</li>
-			<li>Verbindungsabbruch</li>
+			<h2>Versionen und History</h2>
+				<p>Da es sich eigentlich um ein Privatprojekt handelt, ist die neuste Version auch immer die PROD-Version.<br>
+				Dies hat den Nachteil, dass für externe User ggf. auch fehlerhafte Funktionen auftauchen</p>
+				<p>Ältere stabile oder instabile Versionen werden im Unterordner <span style="font-family: monospace;">/history</span> abgelegt und sind nicht weiter dokumentiert.</p>
+			<h2>Fehlermeldungen</h2>
+				<p>Seit Anfang Juni 2026 ist der grösste Teil des Codes von NOWE auf GitHub verfügbar.<br>
+				Fehler und Wünsche können über das Issue-Tracker-System mitgeteilt werden.</p>
+			<h2>Verbindungsabbruch</h2>
+				<p>Es kann vorkommen, das die Webapp aus ungeklärten Gründen die Verbindung zum Server oder zur API verliert. In diesem Fall hilft in der Regel ein kurzer Reload der Seite.<br>
+				Dass der Browser (oder WebClip etc.) Verbindung zur WebApp verliert ist auch möglich, dies ist jedoch dem Gerät verschuldet. Dies ist erkennbar daran, dass die Uhrzeit sich nicht mehr aktualisiert.</p>
 		</ul>
 </details>
 
+<div class="card" id="converters">
+	<h2>Die verschiedenen Hilfskonverter</h2>
+	<p>Da das Backend ein bestimmtes Format benötigt, um Stationen miteinander verknüpfen zu können, existieren verschiedene Hilfskonverter. Neben den auf GitHub verfügbaren Quellfiles, in welchen die zu verknüpfenden Stationen intuitiver erfasst werden können, wird zusätzlich noch die DiDok.csv Datei benötigt. Letztere stellen wir nicht bereit, da sich diese erstens von Zeit zu Zeit durch Opentransportdata ändern kann und zweitens relativ gross ist.</p>
+	<ul>
+		<li><a href="#includedStations" class="oeva">includedStations</a></li>
+		<li><a href="#combinedStations" class="oeva">combinedStations</a></li>
+	</ul>
+</div>
+
+<details class="summary">
+	<summary class="summary-title" id="schalt-fav">Favoriten</summary>
+		<p>Standardmässig sind ein paar wenige Favoriten vordefiniert. Selbstverständlich kann man weitere hinzufügen oder bestehende löschen. Dies funktioniert jedoch nur auf dem jeweiligen Gerät, da die Favoriten als "ojp_favs" im Local storage des Browsers gespeichert werden.</p>
+		<hr>
+		<h2>Hinzufügen von Favoriten</h2>
+		<ol>
+			<li>Gewünschte Station suchen</li>
+			<li>Stern/Favorit-Button drücken</li>
+		</ol>
+		<hr>
+		<h2>Löschen von Favoriten</h2>
+		<ol>
+			<li>Favorit anwählen</li>
+			<li>erneut auf Favorit klicken</li>
+			<li>löschen bestätigen</li>
+			Alternativ kann auch lange auf den Favorit-Button gedrückt werden. (Langes Drücken funktioniert nur auf Desktopgeräten.)
+		</ol></p>
+		<details><summary>Bild anzeigen</summary>
+		<figure>
+			<img src="/img/fav-del-confirm.png" alt="Bestätigung" class="clickable-preview" tabindex="0"></img>
+			<figcaption>Man sieht, dass der Button des angewählten Favorits nun "Löschen?" fragt.</figcaption>
+		</figure>
+		</details>
+</details>
+
+<div class="card" id="includedStations">
+	<h2>Inkludierte Stationen</h2>
+	<h3>includedStations</h3>
+	<p>Das ist eine Liste mit Verknüpfungen von Stationen.<br>
+	Diese Liste beinhaltet vor allem die Verknüpfung von Bahnhöfen und der dazugehörenden Haltestelle "Bahnhof" (frz. "gare", rumantsch "staziun", it. "stazione").<br>
+	Um die Verknüpfungen zu ändern, muss die Liste neu erstellt werden. Dazu gibt es zum Glück <a href="#converters" class="int">Hilfskonverter</a>.
+</div>
+
+<div class="card" id="combinedStations">
+	<h2>Verknüpfte Stationen</h2>
+	<h3>combinedStations</h3>
+	<p>Das ist eine Liste mit Verknüpfungen von Stationen. Gründe für Verknüpfungen können ganz unterschiedlich sein. In der Regel handelt es sich um Haltestellen in der Nähe oder Alternativhaltestellen.<br>
+	<div class="box">
+		<span class="important">Hinweis:</span> combinedStations überschreiben mögliche includedStations!
+	</div>
+	<h4>Kann ich mithelfen?</h4>
+	<p><strong>JA!</strong> Mach eine Liste an den zu verknüpfenden Stationen. Das verpflichtende Format findest du im <a href="https://wiki.oev-ansagen.ch/NOWE" class="oeva">Wiki</a>. Kontribuiere anschliessend auf <a href="#github" class="int">GitHub.</a></p>
+	<hr>
+	<h4>Beispiel</h4>
+	<p>Siehe <a href="#kastanienbaum" class="int">Kastanienbaum</a></p>
+</div>
+
+<div class="card" id="webconverters">
+	<h2>Webkonverter</h2>
+	<p>Es gibt Webkonverter, mit denen man die includedStations und combinedStations erstellen kann, damit NOWE sie lesen kann. Denn NOWE braucht die IDs. Wir erstellen die Listen jedoch mit den tatsächlichen Namen. Im Zusammenspiel mit den <span style="font-family: monospace">dienststellen-gemass-opentransportdataswiss.csv</span> werden die IDs zugeordnet.<br>
+	<ul>
+		<li><a href="./combined_stations_converter_web.html" class="oeva" style="font-family: monospace";>combinedStations.html</a></li>
+		<li><a href="./included_stations_converter_web.html" class="oeva" style="font-family: monospace";>includedStations.html</a></li>
+	</ul>
+	</p>
+</div>
+
+<div class="card" id="sjyid">
+<h2>Swiss Journey ID</h2>
+	<p>In der Ansicht der <a href="#demo" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
+	<p>Die SJYID wird beim Abfragen eines <a href="#trip" class="int">Trips</a> benötigt.</p>
+</div>
+
+<div class="card" id="formation">
+<h2>Formation</h2>
+<p>Die Formationsanzeige ist erreichbar über <a href="./formation" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/formation</a>. Die Eingabe des EVU ist nicht unbedingt nötig. Es werden automatisch die verfügbaren EVUs durchgerechnet.</p>
+<p>Mit der Ergänzung <span style="font-family: monospace; color: var(--pifas-searchbar)">?train=1234</span> kann auch direkt über die URL eine Zugsformation abgefragt werden.</p>
+<ul>
+<li>EVU: Eingabe des EVU-spezifischen Kürzels (optional)</li>
+<li>Zugnummer: Eingabe der Zugnummer</li>
+<li>Eingabe eines anderen Datums (optional)</li>
+</ul>
+<div class="box">
+		Die Formationsanzeige funktioniert derzeit <span style="font-style: italic;">as it is</span> und steht auf der Prioritätenliste, überarbeitet zu werden.
+	</div>
+</div>
+
+<div class="card" id="trip">
+	<h2>Trip</h2>
+	<p>Die Trip-Ansicht ist erreichbar über <a href="./trip" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/trip</a>. Dort kann die SJYID eingegeben werden, um die Trip-Ansicht zu sehen.</p>
+	<h3>BehiG-Konformität</h3>
+	<table>
+		<tr><td>♿</td><td>Einstieg ohne Hilfe</td></tr>
+		<tr><td>♿️🧑🏼‍✈️</td><td>Einstieg mit Hilfe durch Personal</td></tr>
+		<tr><td>🚌</td><td>Ersatztransport</td></tr>
+		<tr><td>📞</td><td>Voranmeldung nötig</td></tr>
+		<tr><td>🔺</td><td>Nicht konform</td></tr>
+		<tr><td></td><td>Keine Information vorhanden</td></tr>
+	</table>
+	<center><img src="/img/trip.png" usemap="#trip-map"></center>
+</div>
 	
-	<a href="#autor">zu den Autoreninfos</a>
+<div class="card" id="table">
 	<div class="table">
-		<h2>Table Headers</h2>
+		<h2>Wichtige Begriffe</h2>
 
-			<p>Use the TH element to define table headers.</p>
-
-			<table style="width:70%">
+			<table>
 			  <tr>
-			    <th>Abkürzung</th>
-			    <th>Begriff</th>
-			    <th>Beschreibung</th>
+			    <th style="width: 10%;">Abkz.</th><th>Begriff</th><th>Beschreibung</th>
 			  </tr>
 			  <tr>
 			    <td>DiDok</td>
-			    <td>Dienststellendokumentation</td>
+			    <td>Dienststellen&shy;dokumentation</td>
 			    <td></td>
 			  </tr>
 			  <tr>
 			    <td>PIFAS</td>
 			    <td><strong>Pi</strong>nus <strong>Fa</strong>hrplan <strong>A</strong>u<strong>s</strong>kunft</td>
-			  	<td>Die Vorgängerversion von NOWE, welche durch eine Idee von C2 entstanden ist.</td>
+			  	<td>Die Vorgängerversion von NOWE, welche durch eine Idee durch den User C2 entstanden ist.</td>
 			  </tr>
 			  <tr>
 			    <td>BAT</td>
@@ -97,41 +269,181 @@
 			  <tr>
 			    <td>RV</td>
 			    <td>Regionalverkehr</td>
-			    <td />
+			    <td>z.B. S-Bahn, Regionalzug</td>
 			  </tr>
 			  <tr>
 			    <td>NV</td>
 			    <td>Nahverkehr</td>
-			    <td />
+			    <td>z.B. Tram, Bus, PostAuto</td>
 			  </tr>
 			  <tr>
 			    <td>FV</td>
 			    <td>Fernverkehr</td>
-			    <td />
+			    <td>z.B. InterCity, EuroCity</td>
 			  </tr>
 			  <tr>
 			    <td>ZN/ZNR</td>
 			    <td>Zugnummer</td>
 			    <td>Wird auch häufig als Fahrtnummer bezeichnet.</td>
 			  </tr>
+			  <tr>
+			    <td>SLOID</td>
+			    <td>Swiss Location ID</td>
+			    <td>Eine eindeutige ID, welche einer Haltestelle zugewiesen wird. Für uns im Hinergrund (z.B. für die <a href="#combinedStations" class="int">combinedStations</a>) relevant.</td>
+			  </tr>
 			  
 			</table>
 	</div>
-	<hr />
-	<footer class="page-footer" id="autor">Autor: Gian Hofer</footer>
 </div>
 
+<div class="card">
+	<div id="filter">
+		<h1>Filter</h1>
+		<p>Die Filter können angewählt oder abgewählt werden. Einzelne Kategorien auszuschliessen geht nicht mit einem Klick, sondern man muss alle anwählen, und das gewünschte wieder abwählen.</p>
+		<p>Filter: <span class="filter-demo-active">Alle</span> <span class="filter-demo">Fernverkehr</span> <span class="filter-demo">Regional</span> <span class="filter-demo">S-Bahn</span> <span class="filter-demo">Tram</span> <span class="filter-demo">Bus</span> <span class="filter-demo">Spezial</span> <span class="filter-demo">Schiff</span> <span class="filter-demo">Bergbahn</span> <span class="filter-demo">Sonstiges</span></p><br>
+		<p>Es kann sein, dass nicht alle Kategorien erfasst sind. Solltest du Kategorien unter <code>Sonstiges</code> finden, die einsortiert werden sollten, erstelle eine Fehlermeldung auf Github. Mehr dazu unter <a href="#github" class="int">#Github</a></p>
+	</div>
+</div>
+
+<div class="card">
+<h2>Screenshots</h2>
+	<p class="box desktopbox">Fahre mit der Maus über die Kartenbereiche oder klicke sie an, um Tooltip-Informationen anzuzeigen.</p><br>
+	<p class="box mobilebox">Tippe auf einen Bereich um das Tooltip anzuzeigen.</p>
+<div class="slideshow-container">
+
+  <div id="fav-del-confirm" class="slide fade">
+    <img src="/img/fav-del-confirm.png" alt="Favorit löschen Bestätigungsdialog">
+    <div class="caption">Um einen Favoriten zu löschen musst du ihn anwählen und danach erneut drauf klicken, um den Löschvorgang zu bestätigen.</div>
+  </div>
+  <div id="ausfall-ersatzzug" class="slide fade">
+    <img src="/img/ausfall-ersatzzug.png" alt="Darstellung von Ausfällen und Ersatzzügen">
+    <div class="caption">
+		Darstellung von Ausfällen und Ersatzzügen
+	</div>
+  </div>
+  <div id="platform-change" class="slide fade">
+    <img src="/img/platform-change.png" alt="" usemap="#base-map-slide">
+    <div class="caption">Gleisänderungen sind in der Hauptansicht sichtbar sowie auch in der Chain.</div>
+  </div>
+  <div id="chain-unterwegs" class="slide fade">
+    <img src="/img/chain-unterwegs.png" alt="Perlschnuransicht">
+    <div class="caption"><strong>Perlschnuransicht</strong><br>
+		Die Fahrt befindet sich rechnerisch zum aktuellen Zeitpunkt zwischen zwei Fahrplanpunkten.</div>
+  </div>
+  <div id="diensthalt" class="slide fade">
+    <img src="/img/chain-diensthalt.png" alt="Diensthalt in der Chain" usemap="#diensthalt-map-slide">
+    <div class="caption">Sehr selten werden uns Fahrten geliefert, bei denen ein Diensthalt kommuniziert wird.</div>
+  </div>
+  <div id="kastanienbaum" class="slide fade">
+    <img src="/img/combined-stations.png" alt="">
+    <div class="caption">Ein gutes Beispiel, wie es aussieht, wenn Stationen miteinander verknüpft sind.</div>
+  </div>
+
+  <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
+  <a class="next" onclick="changeSlide(1)">&#10095;</a>
+</div>
+</div>
+
+<div class="card">
+	<div id="demo">
+	<h1>Demo</h1>
+	<p class="box desktopbox">Fahre mit der Maus über die Kartenbereiche, um Tooltip-Informationen anzuzeigen.</p>
+	<p class="box mobilebox">Tippe auf einen Bereich, um Tooltip-Informationen anzuzeigen.</p>
+	<center><img src="/img/platform-change.png" usemap="#base-map"></center>
+	</div>
+</div>
+
+<div class="card">
+	<div id="github">
+		<h1>GitHub</h1>
+		<p>Am besten ist es, wenn du auf GitHub ein entsprechendes <a href="https://github.com/PianoRailways/NOWE/issues/new" class="ext">Issue</a> eröffnest oder die combinedStations gleich selbst ergänzt.<br>
+		Zu GitHub geht es hier: <a href="https://github.com/PianoRailways/NOWE" class="ext">NOWE auf GitHub</a></p>
+	</div>
+</div>
+
+
+<!-- Schliessendes Div für den Content, Content muss vorher platziert werden -->
+</div>
+
+<!-- Tooltip-Element (einmal im Body) -->
+<div id="map-tooltip" class="map-tooltip" role="tooltip"></div>
+
+<button id="topButton" onClick="window.location = '#'">nach oben</button>
+
+<!-- Maps -->
+<map name="base-map">
+		<area target="" alt="Gleisänderung" data-tooltip="Hier steht das neue Abfahrtsgleis" coords="749,379,624,232" shape="rect">
+		<area target="" alt="Verkehrsmittelgattung" data-tooltip="Verkehrsmittelgattung"   coords="266,247,132,313" shape="rect">
+		<area target="" alt="Fahrtnummer" data-tooltip="Fahrtnummer"   coords="135,347,265,313" shape="rect">
+		<area target="" alt="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren" data-tooltip="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren"   coords="293,78,473,11" shape="rect">
+		<area target="" alt="Kehre zur Startseite von NOWE zurück" data-tooltip="Kehre zur Startseite von NOWE zurück"   coords="215,80,19,9" shape="rect">
+		<area target="" alt="Modus umschalten (falls vorhanden)" data-tooltip="Modus umschalten (falls vorhanden)"   coords="548,82,733,9" shape="rect">
+		<area target="" alt="Ausgewählte Favoritstation" data-tooltip="Ausgewählte Favoritstation"   coords="514,94,424,131" shape="rect">
+		<area target="" alt="Vordefinierte Favoriten" data-tooltip="Vordefinierte Favoriten"   coords="21,92,421,133" shape="rect">
+		<area target="" alt="Gleisänderung (Fahrplangleis durchgestrichen, neues Gleis fett)" data-tooltip="Gleisänderung (Fahrplangleis durchgestrichen, neues Gleis fett)"   coords="266,565,370,523" shape="rect">
+		<area target="" alt="Vias" data-tooltip="Vias"   coords="284,194,549,454" shape="rect">
+		<area target="" alt="Berechnete Position der Fahrt" data-tooltip="Berechnete Position der Fahrt"   coords="84,520,48,486" shape="rect">
+		<area target="" alt="Verspätung am entsprechenden Halt" data-tooltip="Verspätung am entsprechenden Halt"   coords="221,584,260,1319" shape="rect">
+		<area target="" alt="Endziel der Fahrt" data-tooltip="Endziel der Fahrt"   coords="281,140,434,190" shape="rect">
+		<area target="" alt="Hinweistexte (z.B. Baustellen- und Störungsinfo)" data-tooltip="Hinweistexte (z.B. Baustellen- und Störungsinfo)"   coords="445,142,507,193" shape="rect">
+		<area target="" alt="Unterwegshalte und Abfahrtsgleise" data-tooltip="Unterwegshalte und Abfahrtsgleise"   coords="264,571,494,1325" shape="rect">
+		<area target="" alt="Ankunfts- und Abfahrtszeit" data-tooltip="Ankunfts- und Abfahrtszeit"   coords="" shape="rect">
+</map>
+<!-- Maps für die Slides (muss, warum auch immer separat aufgelistet sein) -->
+<map name="base-map-slide">
+		<area target="" alt="Gleisänderung" data-tooltip="Hier steht das neue Abfahrtsgleis"   coords="749,379,624,232" shape="rect">
+		<area target="" alt="Verkehrsmittelgattung" data-tooltip="Verkehrsmittelgattung"   coords="266,247,132,313" shape="rect">
+		<area target="" alt="Fahrtnummer" data-tooltip="Fahrtnummer"   coords="135,347,265,313" shape="rect">
+		<area target="" alt="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren" data-tooltip="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren"   coords="293,78,473,11" shape="rect">
+		<area target="" alt="Kehre zur Startseite von NOWE zurück" data-tooltip="Kehre zur Startseite von NOWE zurück"   coords="215,80,19,9" shape="rect">
+		<area target="" alt="Modus umschalten (falls vorhanden)" data-tooltip="Modus umschalten (falls vorhanden)"   coords="548,82,733,9" shape="rect">
+		<area target="" alt="Ausgewählte Favoritstation" data-tooltip="Ausgewählte Favoritstation"   coords="514,94,424,131" shape="rect">
+		<area target="" alt="Vordefinierte Favoriten" data-tooltip="Vordefinierte Favoriten"   coords="21,92,421,133" shape="rect">
+		<area target="" alt="Gleisänderung (Fahrplangleis durchgestrichen, neues Gleis fett)" data-tooltip="Gleisänderung (Fahrplangleis durchgestrichen, neues Gleis fett)"   coords="266,565,370,523" shape="rect">
+		<area target="" alt="Vias" data-tooltip="Vias"   coords="284,194,549,454" shape="rect">
+		<area target="" alt="Berechnete Position der Fahrt" data-tooltip="Berechnete Position der Fahrt"   coords="84,520,48,486" shape="rect">
+		<area target="" alt="Verspätung am entsprechenden Halt" data-tooltip="Verspätung am entsprechenden Halt"   coords="221,584,260,1319" shape="rect">
+		<area target="" alt="Endziel der Fahrt" data-tooltip="Endziel der Fahrt"   coords="281,140,434,190" shape="rect">
+		<area target="" alt="Hinweistexte (z.B. Baustellen- und Störungsinfo)" data-tooltip="Hinweistexte (z.B. Baustellen- und Störungsinfo)"   coords="445,142,507,193" shape="rect">
+		<area target="" alt="Unterwegshalte und Abfahrtsgleise" data-tooltip="Unterwegshalte und Abfahrtsgleise"   coords="264,571,494,1325" shape="rect">
+		<area target="" alt="Ankunfts- und Abfahrtszeit" data-tooltip="Ankunfts- und Abfahrtszeit"   coords="" shape="rect">
+	</map>
+
+	<map name="diensthalt-map-slide">
+		<area target="" data-tooltip="Aktuelle Uhrzeit&lt;br&gt;Klick, um Inputfeld zu leeren"   coords="293,78,473,11" shape="rect">
+		<area target="" data-tooltip="Kehre zur Startseite von NOWE zurück"   coords="215,80,19,9" shape="rect">
+		<area target="" data-tooltip="Modus umschalten (falls vorhanden)"   coords="548,82,733,9" shape="rect">
+		<area target="" data-tooltip="Fahrt befindet sich aktuell an der Station (rein rechnerisch)" href="" coords="38,746,95,816" shape="rect">
+		<area target="" data-tooltip="Die JourneyReference (Swiss Journey ID) (brauchst du für den Trip!)" href="#sjyid" coords="38,1245,379,1303" shape="rect">
+		<area target="" data-tooltip="Betreiber (derzeit nur als Code verfügbar)" href="#betreiber" coords="406,1249,584,1304" shape="rect">
+	    <area target="" data-tooltip="Home" title="Home" href="#top" coords="26,15,198,74" shape="rect">
+		<area target="" data-tooltip="Fahrt befindet sich aktuell an der Station (rein rechnerisch)"   coords="38,746,95,816" shape="rect">
+		<area target="" data-tooltip="Die JourneyReference (Swiss Journey ID) (brauchst du für den Trip!)" href="#sjyid" coords="38,1245,379,1303" shape="rect">
+		<area target="" data-tooltip="Betreiber (derzeit nur als Code verfügbar)" href="#betreiber" coords="406,1249,584,1304,56,785,607,1296,660,1307,700,1296,685,1269,634,1243" shape="rect">
+		<area target="" data-tooltip="Favoritenleiste" title="Favoritenleiste" href="#schalt-fav" coords="23,93,750,154" shape="rect">
+		<area target="" data-tooltip="Verkehrsmittelgattung" title="Verkehrsmittelgattung"   coords="137,252,251,311" shape="rect">
+		<area target="" data-tooltip="Endziel und ein paar Vias" title="Endziel und ein paar Vias"   coords="264,232,514,359" shape="rect">
+		<area target="" data-tooltip="Markierungen eines Diensthalts" title="Markierungen eines Diensthalts"   coords="7,466,750,570" shape="rect">
+		<area target="" data-tooltip="Weiterer Fahrverlauf" title="Weiterer Fahrverlauf"   coords="268,570,578,1226" shape="rect">
+		<area target="" data-tooltip="Soll-Fahrplanzeiten und Verspätungsprognosen" title="Soll-Fahrplanzeiten und Verspätungsprognosen"   coords="264,1212,100,572" shape="rect">
+	</map>
+
+	<map name="trip-map">
+		<area target="" data-tooltip="Swiss Journey ID" title="Swiss Journey ID" coords="31,109,580,172" shape="rect">
+		<area target="" data-tooltip="Datum" title="Datum" coords="145,193,719,256" shape="rect">
+		<area target="" data-tooltip="Kategorie und Liniennummer" title="Kategorie und Liniennummer" coords="145,355,643,285" shape="rect">
+		<area target="" data-tooltip="Anklickbare Zwischenhalte und Gleis" title="Anklickbare Zwischenhalte und Gleis" coords="214,482,571,1330" shape="rect">
+		<area target="" data-tooltip="Nur Fahrplanzeit (keine Live-Daten oder pünktlich)" title="Nur Fahrplanzeit (keine Live-Daten oder pünktlich)" coords="5,699,179,488" shape="rect">
+		<area target="" data-tooltip="Verspätung" title="Verspätung" coords="88,705,183,1239" shape="rect">
+		<area target="" data-tooltip="Verfrühung" title="Verfrühung" coords="" shape="rect">
+		<area target="" data-tooltip="Linien-Badge und Fahrtnummer im gewohnten Design" title="Linien-Badge und Fahrtnummer im gewohnten Design" coords="29,370,140,469" shape="rect">
+	</map>
+
 </body>
+	<footer class="page-footer" id="autor">
+		<p>Autor: Gian Hofer (<a href="https://gianhofer.ch" class="ext">gianhofer.ch</a>), spring 2026.<br>
+		 | Code ist grösstenteils auf <a href="https://github.com/PianoRailways/NOWE" class="ext">GitHub</a></p>
+	</footer>
 </html>
-<script>
-function updateClock() {
-    const el = document.getElementById('live-clock');
-    if (!el) return;
-    const now = new Date();
-    el.textContent = now.getHours().toString().padStart(2,'0') + ':'
-                   + now.getMinutes().toString().padStart(2,'0') + ':'
-                   + now.getSeconds().toString().padStart(2,'0');
-}
-updateClock();
-setInterval(updateClock, 1000);
-</script>
+<script src="./manual-slide.js"></script>
+<script src="./manual-script.js"></script>

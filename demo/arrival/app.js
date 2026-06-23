@@ -30,15 +30,15 @@ function getCategory(departure) {
 function loadFavorites() {
     const saved = localStorage.getItem('ojp_favs');
     return saved ? JSON.parse(saved) : [
-        { name: 'Zürich HB', id: 'ch:1:sloid:3000' },
-        { name: 'Bern', id: 'ch:1:sloid:7000' },
-        { name: 'Olten', id: 'ch:1:sloid:218' },
-        { name: 'Biel/Bienne', id: 'ch:1:sloid:4300' },
-        { name: 'Basel SBB', id: 'ch:1:sloid:10' },
-        { name: 'Luzern', id: 'ch:1:sloid:5000' },
-        { name: 'Spiez', id: 'ch:1:sloid:7483' },
-        { name: 'Langenthal', id: 'ch:1:sloid:8100' },
-        { name: 'Bellinzona', id: 'ch:1:sloid:5213' },
+        { name: 'Zürich HB', id: '8503000' },
+        { name: 'Bern', id: '8507000' },
+        { name: 'Olten', id: '8500218' },
+        { name: 'Biel/Bienne', id: '8504300' },
+        { name: 'Basel SBB', id: '8500010' },
+        { name: 'Luzern', id: '8505000' },
+        { name: 'Spiez', id: '8507483' },
+        { name: 'Langenthal', id: '8508100' },
+        { name: 'Bellinzona', id: '8505213' },
 
     ];
 }
@@ -77,9 +77,11 @@ function updateFavHighlight() {
 // ─── Es beginnt mit COMBINED_STATIONS... -────────────────────────────────────
 
 const COMBINED_STATIONS = {
-    // Beispiel: Bahnhof X mit IDs für verschiedene Bereiche (SLOID-Format)
-    'ch:1:sloid:8508100': ['ch:1:sloid:8508100', 'ch:1:sloid:8576937'],
-	// Du kannst hier beliebig viele Gruppen hinzufügen
+    // Beispiel: Bahnhof X mit IDs für verschiedene Bereiche
+    '8508100': ['8508100', '8576937'],
+	//'8507000': ['8576937'],
+    //'8576937': ['8508100', '8576937'], 
+    // Du kannst hier beliebig viele Gruppen hinzufügen
 };
 
 // Hilfsfunktion, um die Gruppe zu finden
@@ -283,9 +285,8 @@ async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME)
     }
     
 
-    // 3. Falls stopId ein Name ist (nicht numerisch und nicht SLOID und nicht externe ID), versuche zu mappen
-    // Regex erklärt: ch:1:sloid:XXXXX, 7-8-stellige IDs, und externe IDs mit _ oder : sind keine Namen
-    else if (!/^(ch:1:sloid:\d+|\d{7,8}|[A-Z0-9]+[_:].+)$/.test(stopId) && window.combinedStations) {
+    // 3. Falls stopId ein Name ist (nicht numerisch), versuche zu mappen
+    else if (!/^\d{7,8}$/.test(stopId) && window.combinedStations) {
         const group = getStationGroupByName(stopId);
         if (group) {
             console.log(`✓ Gefunden als Gruppenschlüssel: ${stopId}`, group);
@@ -330,12 +331,6 @@ async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME)
     }
 }
 
-// Hilfsfunktion
-function getDelayClass(delayMinutes) {
-    if (delayMinutes < 0) return 'chain-delay-early';      // Verfrühung (blau)
-    if (delayMinutes < 1) return 'chain-delay-minor';      // <1 Min (grün)
-    return '';                                              // ≥1 Min (rot, default)
-}
 
 function renderBoard(departures) {
 	//console.log("Sichtbare Stationen:", departures.map(d => d.stopName));
@@ -394,8 +389,15 @@ function renderBoard(departures) {
         }
 
         const viaHtml = dep.vias.length > 0
-            ? `<span class="via">via ${dep.vias.join(' · ')}</span>`
+            ? `<span class="via">von ${dep.vias.join(' · ')}</span>`
             : '';
+
+        const onwardviaHtml = dep.onwardvias.length > 0
+            ? `<span class="via">nach ${dep.onwardvias.join(' · ')}</span>`
+            : '';
+            
+            
+
 
         // StationHint: Zeigt den Bahnhofsnamen nur bei kombinierten Ansichten an
         const stationHint = showStationHint && dep.stopName
@@ -445,7 +447,7 @@ function renderBoard(departures) {
             <tr class="dep-row ${bgClass} ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}" data-index="${index}">
                 <td class="col-time">${timeCell}</td>
                 <td class="col-line">
-                    <div class="line-container">
+					<div class="line-container">
                         <a href="/trip/?sjyid=${dep.journeyRef}"><span class="line-badge" data-type="${lineType}">${fullLine}</span></a>
                         ${dep.journeyNumber ? `<div class="journey-num" style="${unplannedStyle}"><a href="/formation/?train=${dep.journeyNumber}">${dep.journeyNumber}</a></div>` : ''}
                     </div>
@@ -453,12 +455,11 @@ function renderBoard(departures) {
                 <td class="col-dest">
                     <span class="destination" style="${isCancelledAtCurrent ? 'color:#999;' : ''}">${dep.destination}</span> 
                     ${infoBtn}
-                    ${viaHtml ? '<br>' + viaHtml : ''}<br>
+                    ${viaHtml ? '<br>' + viaHtml : ''}${onwardviaHtml ? '<br>' + onwardviaHtml : ''}<br>
                     ${stationHint}
                 </td>
                 <td class="col-platform">
                     <span class="platform-value ${platClass}">${dep.platform}</span>
-                    ${dep.calls.current?.requestStop ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>' : ''}
                 </td>
             </tr>
             ${situationRowHtml}
@@ -592,11 +593,11 @@ function buildChain(dep) {
         const depTime   = fmt(stop.departureTime);
 
         // Verspätungs-Badges für An/Abfahrt
-        const arrDelayHtml = stop.arrivalDelayMinutes !== 0
-            ? `<span class="chain-delay ${getDelayClass(stop.arrivalDelayMinutes)}">${stop.arrivalDelayDisplay}</span>`
+        const arrDelayHtml = (stop.arrivalDelayed && stop.arrivalDelayMinutes > 0)
+            ? `<span class="chain-delay">${stop.arrivalDelayDisplay}</span>`
             : '';
-        const depDelayHtml = stop.departureDelayMinutes !== 0
-            ? `<span class="chain-delay ${getDelayClass(stop.departureDelayMinutes)}">${stop.departureDelayDisplay}</span>`
+        const depDelayHtml = (stop.departureDelayed && stop.departureDelayMinutes > 0)
+            ? `<span class="chain-delay">${stop.departureDelayDisplay}</span>`
             : '';
 
         const arrDisplay = arrTime || '';
@@ -622,12 +623,6 @@ function buildChain(dep) {
         const isServiceStop = stop.noBoardingAtStop && stop.noAlightingAtStop;
         const serviceStopBadge = isServiceStop
             ? '<span style="background:#000; color:#aaa; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">Diensthalt</span>'
-            : '';
-
-
-        // ✅ FIX #4: Request-Stop (Halt auf Verlangen)
-        const requestStopBadge = stop.requestStop
-            ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>'
             : '';
 
         // Dot-Farbe: ausgefallene Halte grau, Diensthalte schwarz
@@ -668,7 +663,7 @@ function buildChain(dep) {
                 </div>
 
                 <div class="chain-info">
-                    <div class="chain-name" style="${stopNameStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}${requestStopBadge}</div>
+                    <div class="chain-name" style="${stopNameStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}</div>
                     ${platHtml ? `<div class="chain-platform">Gl. ${platHtml}</div>` : ''}
                 </div>
             </div>
@@ -827,8 +822,7 @@ function initFilterBar() {
 
 /**
  * Prüft, ob ein Query in didokmapping vorhanden ist.
- * Gibt ein Objekt { id (SLOID), name } zurück oder null.
- * ✅ Löst DiDok-ID immer zu SLOID auf
+ * Gibt ein Objekt { id, name } zurück oder null.
  */
 function checkDidokMapping(query) {
     if (!window.didokMapping) return null;
@@ -852,11 +846,7 @@ function checkDidokMapping(query) {
     if (/^\d{7,8}$/.test(q)) {
         if (window.didokMapping[q]) {
             const name = window.didokMapping[q];
-            // ✅ DiDok-ID zu SLOID konvertieren: 85XXXXX → ch:1:sloid:XXXXX
-            const sloidId = /^85\d{5}$/.test(q) 
-                ? `ch:1:sloid:${q.substring(2)}`
-                : q;
-            return { id: sloidId, name, isDidokMatch: true };
+            return { id: q, name, isDidokMatch: true };
         }
     }
     
@@ -952,15 +942,10 @@ function initStopSearch() {
                 // Erst didokmapping prüfen
                 const didokResult = checkDidokMapping(v);
                 if (didokResult) {
-                    STOP_ID = didokResult.id; // Bereits SLOID
+                    STOP_ID = didokResult.id;
                     input.value = didokResult.name;
                 } else if (/^\d{7,8}$/.test(v)) {
-                    // ✅ Falls es eine DiDok-ID ist (85XXXXX), konvertiere zu SLOID
-                    if (/^85\d{5}$/.test(v)) {
-                        STOP_ID = `ch:1:sloid:${v.substring(2)}`;
-                    } else {
-                        STOP_ID = v;
-                    }
+                    STOP_ID = v;
                 }
             }
 
@@ -1010,16 +995,15 @@ function offsetTime(minutes) {
     const baseDate = QUERY_DATE || todayISO();
     const baseTime = QUERY_TIME || now.toTimeString().substring(0, 5);
     
-    // Erzeuge ein Date-Objekt für die Berechnung (Parsing als lokale Zeit)
+    // Erzeuge ein Date-Objekt für die Berechnung
     let dateObj = new Date(`${baseDate}T${baseTime}:00`);
     
     // Minuten addieren oder subtrahieren
     dateObj.setMinutes(dateObj.getMinutes() + minutes);
     
-    // ✅ Konvertiere zurück zu lokaler ISO-Zeit (ohne UTC-Versatz)
-    const offset = dateObj.getTimezoneOffset() * 60000;
+    // Neue Werte für den State formatieren
     QUERY_TIME = dateObj.toTimeString().substring(0, 5);
-    QUERY_DATE = (new Date(dateObj - offset)).toISOString().slice(0, 10);
+    QUERY_DATE = dateObj.toISOString().split('T')[0];
     
     // Nur Date/Time Inputs aktualisieren, nicht das Stop-Feld
     const di = DOM.dateInput();
@@ -1110,9 +1094,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     DOM.dtClearBtn()?.addEventListener('click', () => {
         const now = new Date();
-        // ✅ Nutze die gleiche Logik wie todayISO() für korrekte lokale Zeit
-        const offset = now.getTimezoneOffset() * 60000;
-        QUERY_DATE = (new Date(now - offset)).toISOString().slice(0, 10);
+        // Formatiere aktuelles Datum und Zeit
+        QUERY_DATE = now.toISOString().split('T')[0];
         QUERY_TIME = now.toTimeString().substring(0, 5);
         // Aktualisiere die Input-Felder
         const di = DOM.dateInput();

@@ -2,7 +2,7 @@
 ini_set('display_errors', 0);
 error_reporting(E_ALL);
 
-$logFile = __DIR__ . '/debug_proxy.log';
+$logFile = __DIR__ . '/debug_trip_proxy.log';
 
 function logDebug($message) {
     global $logFile;
@@ -10,7 +10,7 @@ function logDebug($message) {
     file_put_contents($logFile, "[$timestamp] $message\n", FILE_APPEND);
 }
 
-logDebug("--- NEUER REQUEST START ---");
+logDebug("--- NEUER TRIP-REQUEST START ---");
 logDebug("Methode: " . $_SERVER['REQUEST_METHOD']);
 logDebug("URI: " . $_SERVER['REQUEST_URI']);
 
@@ -58,8 +58,6 @@ logDebug("CURL-VERBOSE: " . str_replace("\n", " | ", $verboseLog));
 logDebug("SBB Antwort-Code: " . $httpCode);
 logDebug("Effektive URL: " . $info['effective_url']);
 logDebug("CURL-Zeit gesamt: " . $info['total_time'] . "s");
-logDebug("Response-Body-Größe: " . strlen($resBody) . " Bytes");
-logDebug("Response-Body (FULL): " . $resBody);
 
 if ($response === false) {
     logDebug("CURL-FEHLER: " . curl_error($ch));
@@ -71,8 +69,8 @@ if ($response === false) {
     $resHeader  = substr($response, 0, $headerSize);
     $resBody    = substr($response, $headerSize);
 
-    logDebug("oeVA-Response-Header: " . str_replace("\n", " | ", $resHeader));
-    logDebug("oeVA-Response-Body (Vorschau): " . substr($resBody, 0, 300));
+    logDebug("SBB-Response-Header: " . str_replace("\n", " | ", $resHeader));
+    logDebug("SBB-Response-Body (Vorschau): " . substr($resBody, 0, 500));
 
     http_response_code($httpCode);
     header('Content-Type: application/xml');

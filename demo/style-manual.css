@@ -1,7 +1,7 @@
 :root {
     --sbb-red:    #eb0000;
     --sbb-blue:   #2d327d;
-	--sbb-orange: #E84E10;
+	  --sbb-orange: #E84E10;
     --sob-green:  #7BA55B;
     --sob-blue:   #1A527F;
     --board-bg:   #0a1a4a;
@@ -18,9 +18,17 @@
     --pifas-searchbar: #d7d7d7;
     --pifas-timenav: #eef;
     --live-red:   #ff3b30;
+	  --plat-change:#fcbb00;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+	scroll-behavior: smooth;
+  scroll-padding-top: 55px;
+	scrollbar-gutter: stable;
+	line-height: 1.5rem;
+}
 
 body {
     font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
@@ -29,8 +37,84 @@ body {
     min-height: 100vh;
 }
 
-.content {
-	padding: 14px;
+p {
+  text-align: justify; /* Blocksatz (ginge auch left oder right) */
+  hyphens: auto; /* Automatischer Zeilenumbruch bei langen Wörtern */
+  word-break: break-word; /* Verhindert Überlaufen von langen Wörtern */
+  padding-top: 10px;
+}
+
+.card p {
+  padding-top: 10px;
+}
+
+.content { 
+	background: var(--board-row); 
+	border: 0.5px solid rgba(255,255,255,0.1); 
+	border-radius: 8px; 
+	padding: 1.5rem; 
+	margin-bottom: 1.5rem; 
+}
+
+/* MOBILE */
+@media screen and (max-width: 600px) {
+  .content {
+    padding: 0.5rem;
+  }
+  .desktopbox {
+    display: none important;
+  }
+}
+/* DESKTOP */
+@media screen and (min-width: 600px) {
+  .mobilebox {
+    display: none !important;
+  }
+  img[usemap], img {
+      height: 80vh !important;
+  }
+}
+  
+
+.summary, .card { 
+	background: var(--board-alt); 
+	border: 0.5px solid rgba(255,255,255,0.1); 
+	border-radius: 8px; 
+	padding: 1.2rem; 
+	margin-bottom: 1.5rem;
+	position: inside;
+}
+
+a {
+	text-decoration: none;
+}
+/* Verschiedene Klassen für Links (verschiedene Farben) */
+a.int{
+	color: var(--night-gold);
+}
+a.oeva{
+	color: var(--sbb-red);
+}
+a.ext{
+	color: var(--sob-green);
+  font-weight: bold;
+}
+
+.summary-title {
+	font-size: 22px;
+  font-weight: bold;
+}
+.summary-subtitle {
+	font-size: 16px;
+	margin-left: 10px;
+}
+
+.summary-hide details summary::-webkit-details-marker {
+	display: none;
+}
+
+.summary, .card li, ol {
+	list-style-position: inside;
 }
 
 table, th, td {
@@ -38,13 +122,19 @@ table, th, td {
   background: --var(--board-row);
   border-collapse: collapse;
   text-align: left;
+  font-family: monospace;
+  font-size: medium;
+}
+td {
+  padding-left: 5px;
+}
+
+caption, th {
+  font-weight: bold;
+  font-size: large;
 }
 
 .container { max-width: 680px; margin: 0 auto; padding: 2rem 1rem; }
-.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; }
-/* h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.5rem; color: var(--color-text-primary); }
-.subtitle { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 1.5rem; }
-*/
 		
 #app-header {
     display: flex;
@@ -100,7 +190,6 @@ table, th, td {
     color: var(--text-main);
 }
 
-
 #header-right {
     display: flex;
     gap: 7px;
@@ -109,13 +198,215 @@ table, th, td {
     justify-content: flex-end;
 }
 
+/* Textfärbung (Leuchtstift) */
+.important {
+	background-color: var(--plat-change);
+	color: white;
+	font-weight: bold;
+	letter-spacing: 3px;
+}
+
+.box {
+  margin: 10px 0;
+	border-radius: 10px;
+	border: 2px solid var(--plat-change);
+	background: var(--board-alt);
+	padding: 10px;
+}
+
+.box p {
+  text-align: left;
+}
+
+.filter-demo {
+    background: rgba(255,255,255,0.07);
+    color: var(--text-via);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 4px 11px;
+    border-radius: 2px;
+    font-size: 0.78em;
+    letter-spacing: 0.02em;
+}
+
+.filter-demo-active {
+    background: rgba(255,255,255,0.22);
+    border-color: rgba(255,255,255,0.1);
+    color: white;
+    padding: 4px 11px;
+    border-radius: 2px;
+    font-size: 0.78em;
+    letter-spacing: 0.02em;
+}
+
+/* Das Bild im Normalzustand (kleine Vorschau) */
+.clickable-preview {
+  width: 250px;
+  height: auto;
+  cursor: pointer;
+  transition: transform 0.5s ease;
+  border-radius: 4px;
+}
+
+/* Zustand, wenn das Bild angeklickt wird (groÃŸe Ansicht) */
+.clickable-preview:focus {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1.5); /* VergrÃ¶ÃŸerungsfaktor */
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  z-index: 9999;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  outline: none;
+}
+
+/* Der unscharfe Hintergrund, wenn das Bild aktiv ist */
+.clickable-preview:focus::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.2); /* Leicht helle Abdunklung, alternativ (0,0,0,0.4) fÃ¼r dunkel */
+  backdrop-filter: blur(80px); /* Erzeugt den UnschÃ¤rfe-Effekt */
+  -webkit-backdrop-filter: blur(8px); /* Safari-UnterstÃ¼tzung */
+  z-index: -1; /* Schiebt den Hintergrund hinter das vergrÃ¶ÃŸerte Bild */
+  
+  /* Setzt den Ursprung zurÃ¼ck, damit das Overlay die ganze Seite fÃ¼llt */
+  transform: translate(calc(-50vw - 50%), calc(-50vh - 50%)) scale(1);
+}
+
 .page-footer {
-	position: absolute;
 	text-decoration: none;
-	bottom: 0;
+	padding: 8px 14px;
+	margin-top: auto;
+	border-top: 1px solid var(--border);
+	background: var(--header-bg);
 }
 
 .page-footer a, a:hover, a:visited, a:active {
-	color: inherit;
 	text-decoration: none;
  }
+ 
+#topButton {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 99;
+  font-size: 15px;
+  border: none;
+  outline: none;
+  background-color: var(--plat-change);
+  color: black;
+  cursor: pointer;
+  padding: 15px;
+  border-radius: 4px;
+}
+
+
+
+/* Für die Gemini-Slideshow */
+
+/* Behälter für die Handy-Screenshots */
+.slideshow-container {
+  max-width: 400px; /* Perfekte Breite für hochkantige iPhone-Screenshots auf Desktop */
+  width: 100%;      /* Nutzt auf dem Smartphone die volle Breite */
+  position: relative;
+  margin: 20px auto; 
+  background-color: var(--board-bg); /* Dunkler Hintergrund lässt Screenshots gut wirken */
+  border-radius: 12px;       /* Abgerundete Ecken im Smartphone-Stil */
+  /* box-shadow: 0 4px 15px rgba(0,0,0,0.15); */
+  overflow: hidden;
+}
+
+/* Versteckt die Slides standardmäßig */
+.slide {
+  display: none;
+  width: 100%;
+}
+
+/* Das eigentliche Screenshot-Bild */
+.slide img {
+  width: 100%;
+  max-height: 70vh;    /* Verhindert, dass das Bild zu hoch wird und man scrollen muss */
+  object-fit: contain; /* Behält die Proportionen des iPhones absolut unverzerrt bei */
+  display: block;
+  margin: 0 auto;
+}
+
+img[usemap] {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Bildunterschrift */
+.caption {
+  background-color: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1.4;
+  padding: 15px;
+  text-align: center;
+  width: 100%;
+  /* border-top: 1px solid #333; */
+}
+
+/* Pfeile zum Klicken */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 16px;
+  color: black;
+  font-weight: bold;
+  font-size: 18px;
+  background-color: var(--plat-change);
+  user-select: none;
+  transition: 0.3s ease;
+  z-index: 10;
+}
+
+/* Form next/prev Button unterschiedlich ob rechts oder links */
+.next { right: 0; border-radius: 4px 0 0 4px; }
+.prev { left: 0; border-radius: 0 4px 4px 0; }
+
+.prev:hover, .next:hover {
+  background-color: var(--sob-green);
+}
+
+/* Animation beim Wechseln */
+.fade {
+  animation: fadeEffect 1.8s;
+}
+
+@keyframes fadeEffect {
+  from { opacity: 0.0; } 
+  to { opacity: 1; }
+}
+
+/* Tooltip für Kartenbereiche */
+.map-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background-color: #ffcc00; /* Gelber Hintergrund */
+  color: #000000;            /* Schwarze Schrift für besseren Kontrast auf Gelb */
+  padding: 15px 20px;        /* Grössere Fläche */
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: system-ui, sans-serif;
+  line-height: 1.4;
+  max-width: 350px;          /* Mehr Platz in der Breite */
+  pointer-events: none;
+  white-space: normal;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.map-tooltip.visible {
+  opacity: 1;
+}

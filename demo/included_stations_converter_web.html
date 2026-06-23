@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>öV NOWE Didok-ID Parser</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <style>
+        :root {
+            --sbb-red:    #eb0000;
+            --sbb-blue:   #2d327d;
+            --board-bg:   #0a1a4a;
+            --board-row:  #0d2060;
+            --text-main:  #ffffff;
+            --text-dim:   #6080a0;
+            --header-bg:  #061030;
+            --bg-success: #065f46;
+            --bg-danger:  #991b1b;
+            --bg-info:    #0369a1;
+            --bg-warn:    #854d0e;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
+            background: var(--board-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        #app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 14px;
+            background: var(--header-bg);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        #btn-home, button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.15s;
+        }
+        #btn-home:hover, button:hover:not(:disabled) { 
+            background: rgba(255,255,255,0.22); 
+        }
+        button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        #app-title {
+            color: white;
+            font-size: 1.05em;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+        }
+
+        .container { max-width: 720px; margin: 0 auto; padding: 2rem 1rem; }
+        
+        .card { 
+            background: var(--board-row); 
+            border: 0.5px solid rgba(255,255,255,0.1); 
+            border-radius: 8px; 
+            padding: 1.5rem; 
+            margin-bottom: 1.5rem; 
+        }
+
+        h1 { font-size: 22px; font-weight: 500; margin-bottom: 0.5rem; }
+        .subtitle { font-size: 14px; color: var(--text-dim); margin-bottom: 1.5rem; }
+        
+        .upload-section { margin-bottom: 1.5rem; }
+        .upload-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 0.5rem; }
+        
+        input[type="file"], textarea, input[type="text"] { 
+            display: block; 
+            width: 100%; 
+            margin-bottom: 0.75rem; 
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        textarea { height: 120px; resize: vertical; font-family: monospace; font-size: 13px; }
+
+        .file-info { font-size: 12px; padding: 0.5rem 0.75rem; border-radius: 4px; margin-top: 0.5rem; }
+        .file-info.success { background: var(--bg-success); }
+        .file-info.error { background: var(--bg-danger); }
+
+        .button-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1.5rem; }
+        button.primary { background: #3b82f6; border-color: #3b82f6; }
+        button.confirm { background: var(--sbb-red); border-color: var(--sbb-red); animation: pulse 2s infinite; }
+        button.download-final { background: #10b981; border-color: #10b981; font-weight: bold; margin-top: 10px; width: 100%; text-align: center; }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(235, 0, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(235, 0, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(235, 0, 0, 0); }
+        }
+
+        .status { font-size: 13px; padding: 0.75rem; border-radius: 4px; margin-top: 1rem; }
+        .status.loading { background: var(--bg-info); }
+        .status.success { background: var(--bg-success); }
+        .status.warning { background: var(--bg-warn); }
+        .status.error { background: var(--bg-danger); }
+
+        .preview-box {
+            margin-top: 1.25rem;
+        }
+        .preview-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .output-preview { 
+            background: rgba(0,0,0,0.4); 
+            border: 0.5px solid rgba(255,255,255,0.15); 
+            border-radius: 4px; 
+            padding: 1rem; 
+            max-height: 350px; 
+            overflow-y: auto; 
+            font-family: monospace; 
+            font-size: 12px; 
+            white-space: pre;
+        }
+        .text-preview { color: #f59e0b; }
+        .id-preview { color: #10b981; }
+        
+        a { color: var(--sbb-red); text-decoration: none; font-weight: bold;}
+    </style>
+</head>
+<body>
+    <header id="app-header">
+        <button id="btn-home" onClick="window.location = 'https://nowe.stellwerksim.ch'">⌂ Home</button>
+        <span id="app-title">öV NOWE</span>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h1>Didok Parser (Schweizweiter Batch-Modus)</h1>
+            <p class="subtitle">Filter optional frei lassen, um die gesamte CSV-Datei nach Ortsgruppen zu durchsuchen</p>
+
+            <div class="upload-section">
+                <label class="upload-label">1. DIDOK-CSV Datei (Dienststellendatei)</label>
+                <input type="file" id="didokFile" accept=".csv" />
+                <div id="didokInfo"></div>
+            </div>
+
+            <div class="upload-section">
+                <label class="upload-label">2. Filter & Whitelist Optionen</label>
+                <input type="text" id="filterInput" placeholder="Optional: Bestimmten Ort filtern (z.B. 'Baden') - leer lassen für alle Orte">
+                <textarea id="whitelistInput" placeholder="Zusätze nach dem Komma (Exakter 1:1 Match, eine Zeile pro Eintrag):&#10;bahnhof west&#10;bahnhof ost&#10;postautostation&#10;bahnhofplatz"></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="primary" id="analyzeBtn" disabled>1. Stationen analysieren (Text-Vorschau)</button>
+                <button class="confirm" id="confirmBtn" style="display: none;">2. Bestätigen & in IDs umwandeln</button>
+            </div>
+
+            <div id="status"></div>
+            <div id="previewContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        let didokRawData = null;
+        let finalIdResult = null;
+        let textPreviewString = ""; 
+
+        const didokFile = document.getElementById('didokFile');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const didokInfo = document.getElementById('didokInfo');
+        const filterInput = document.getElementById('filterInput');
+        const whitelistInput = document.getElementById('whitelistInput');
+        const statusDiv = document.getElementById('status');
+        const previewContainer = document.getElementById('previewContainer');
+
+        didokFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const lines = text.split('\n');
+                const rawList = [];
+
+                const header = lines[0].split(';');
+                const numberIdx = header.indexOf('sloid');
+                const designationIdx = header.indexOf('designationOfficial');
+
+                if (numberIdx === -1 || designationIdx === -1) {
+                    didokInfo.innerHTML = `<div class="file-info error">✗ CSV Spalten 'number' und 'designationOfficial' nicht gefunden!</div>`;
+                    analyzeBtn.disabled = true;
+                    return;
+                }
+
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    const row = lines[i].split(';');
+                    const id = row[numberIdx]?.trim();
+                    const name = row[designationIdx]?.trim();
+                    if (id && name) {
+                        rawList.push({ id, name });
+                    }
+                }
+
+                didokRawData = rawList;
+                didokInfo.innerHTML = `<div class="file-info success">✓ ${rawList.length} DIDOK-Stationen eingelesen.</div>`;
+                analyzeBtn.disabled = false;
+            } catch (err) {
+                didokInfo.innerHTML = `<div class="file-info error">✗ Fehler: ${err.message}</div>`;
+            }
+        });
+
+        // STUFE 1: Ortsbasierte Gruppierung & Text-Vorschau
+        analyzeBtn.addEventListener('click', () => {
+            if (!didokRawData) return;
+
+            statusDiv.innerHTML = '<div class="status loading">⏳ Gruppiere Stationen schweizweit...</div>';
+            previewContainer.innerHTML = '';
+            confirmBtn.style.display = 'none';
+            finalIdResult = null;
+
+            setTimeout(() => {
+                const filter = filterInput.value.trim().toLowerCase();
+                const whitelistLines = whitelistInput.value.split('\n').map(w => w.trim().toLowerCase()).filter(w => w);
+
+                const cityGroups = {};
+
+				didokRawData.forEach(station => {
+					const sName = station.name.toLowerCase();
+					
+					if (filter && !sName.includes(filter)) return;
+
+					let cityPart = sName;
+					let suffixPart = "";
+
+					// Variante 1: Trennung durch Komma (z.B. "Baden, Bahnhof")
+					if (sName.includes(',')) {
+						const parts = sName.split(',');
+						cityPart = parts[0].trim();
+						suffixPart = parts[1] ? parts[1].trim() : "";
+					} 
+					// Variante 2: Trennung durch Klammern am Ende (z.B. "Baden (See)")
+					else if (sName.endsWith(')')) {
+						const openBracketIdx = sName.lastIndexOf('(');
+						if (openBracketIdx !== -1) {
+							cityPart = sName.substring(0, openBracketIdx).trim();
+							// Extrahiert den Inhalt zwischen den Klammern
+							suffixPart = sName.substring(openBracketIdx + 1, sName.length - 1).trim();
+						}
+					}
+
+					if (filter && cityPart !== filter) return;
+
+					if (!cityGroups[cityPart]) {
+						cityGroups[cityPart] = { mains: [], subs: [] };
+					}
+
+					// Abgleich mit der Whitelist (enthält pure Begriffe wie "see" oder "bahnhof west")
+					const isWhitelistedSub = whitelistLines.length > 0 && whitelistLines.includes(suffixPart);
+
+					if (isWhitelistedSub) {
+						cityGroups[cityPart].subs.push(station);
+						return;
+					}
+
+					const isExactMain = (sName === cityPart);
+					const isExactMainWithSuf = (
+						sName === `${cityPart}, bahnhof` || 
+						sName === `${cityPart}, bhf` || 
+						sName === `${cityPart} sbb` ||
+						sName.startsWith(`${cityPart}, gleis`)
+					);
+
+					if (isExactMain || isExactMainWithSuf) {
+						cityGroups[cityPart].mains.push(station);
+					}
+				});
+
+                finalIdResult = {};
+                textPreviewString = "";
+                let validGroupsCount = 0;
+
+                for (const [cityName, data] of Object.entries(cityGroups)) {
+                    if (data.mains.length > 0 && data.subs.length > 0) {
+                        validGroupsCount++;
+
+                        const groupIDs = [
+                            ...data.mains.map(s => s.id),
+                            ...data.subs.map(s => s.id)
+                        ];
+                        const uniqueGroupIDs = Array.from(new Set(groupIDs));
+
+                        data.mains.forEach(m => finalIdResult[m.id] = uniqueGroupIDs);
+                        data.subs.forEach(s => finalIdResult[s.id] = uniqueGroupIDs);
+
+                        textPreviewString += `=========================================\n`;
+                        textPreviewString += `ORT: ${cityName.toUpperCase()}\n`;
+                        textPreviewString += `=========================================\n`;
+                        textPreviewString += `Hauptbahnhöfe:\n`;
+                        data.mains.forEach(m => textPreviewString += `  • [${m.id}] ${m.name}\n`);
+                        textPreviewString += `Whitelist-Haltestellen (Exakter Suffix Match):\n`;
+                        data.subs.forEach(s => textPreviewString += `  • [${s.id}] ${s.name}\n`);
+                        
+                        textPreviewString += `\nMAP FÜR DIESEN ORT:\n`;
+                        const allNames = [...data.mains.map(m => m.name), ...data.subs.map(s => s.name)];
+                        allNames.forEach(name => {
+                            textPreviewString += `"${name}" => [\n  ` + allNames.map(n => `"${n}"`).join(',\n  ') + `\n]\n`;
+                        });
+                        textPreviewString += `\n`;
+                    }
+                }
+
+                if (validGroupsCount === 0) {
+                    statusDiv.innerHTML = `<div class="status error">⚠ Keine gültigen Kombinationen in den CSV-Daten gefunden. Bitte Whitelist/Filter prüfen.</div>`;
+                    return;
+                }
+
+                statusDiv.innerHTML = `<div class="status warning">👀 ${validGroupsCount} passende Ortsgruppe(n) gefunden! Bitte Vorschau prüfen und bestätigen.</div>`;
+                
+                previewContainer.innerHTML = `
+                    <div class="preview-box">
+                        <span class="preview-title">Text-Vorschau (Exakter Suffix-Match aktiv):</span>
+                        <div class="output-preview text-preview">${textPreviewString.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                    </div>`;
+                
+                confirmBtn.style.display = 'inline-block';
+            }, 100);
+        });
+
+        // STUFE 2: Umwandlung in Javascript DIDOK-ID Format & Downloadbereitstellung
+        confirmBtn.addEventListener('click', () => {
+            if (!finalIdResult || Object.keys(finalIdResult).length === 0) return;
+
+            statusDiv.innerHTML = '<div class="status loading">⚡ Schreibe JS-Objekt mit DIDOK-IDs...</div>';
+
+            setTimeout(() => {
+                let jsOutput = '// ─── Es beginnt mit INCLUDED_STATIONS... ─────────────────────────────────────\n';
+                jsOutput += 'window.includedStations = {\n';
+
+                const entries = Object.entries(finalIdResult);
+                entries.forEach(([key, stations], i) => {
+                    const stationsStr = stations.map(s => `'${s}'`).join(', ');
+                    jsOutput += `    '${key}': [${stationsStr}]`;
+                    if (i < entries.length - 1) jsOutput += ',';
+                    jsOutput += '\n';
+                });
+                jsOutput += '};\n';
+
+                statusDiv.innerHTML = `<div class="status success">✅ IDs erfolgreich generiert! Klicke unten auf den grünen Button, um die Datei zu speichern.</div>`;
+                
+                // Neue ID-Box aufbauen inklusive des direkten Download-Buttons darunter
+                const idBox = document.createElement('div');
+                idBox.className = 'preview-box';
+                idBox.innerHTML = `
+                    <span class="preview-title" style="margin-top:15px;">Generierter JavaScript-Code (DIDOK-IDs):</span>
+                    <div class="output-preview id-preview">${jsOutput.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                    <button class="download-final" id="finalDownloadBtn">⬇️ Datei herunterladen (includedStationsNOWE.js)</button>
+                `;
+                
+                const oldIdBox = previewContainer.children[1];
+                if (oldIdBox) previewContainer.removeChild(oldIdBox);
+                previewContainer.appendChild(idBox);
+
+                confirmBtn.style.display = 'none';
+
+                // Event-Listener für den frisch generierten Download-Button aktivieren
+                document.getElementById('finalDownloadBtn').addEventListener('click', () => {
+                    const blob = new Blob([jsOutput], { type: 'text/javascript' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'includedStationsNOWE.js';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+
+            }, 150);
+        });
+    </script>
+</body>
+<footer style="padding: 14px; font-size: 12px; color: var(--text-dim); text-align: center;">Zum Manual: <a href="/manual.html">manual.html</a></footer>
+</html>

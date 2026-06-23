@@ -217,7 +217,7 @@ a {
 
                 // Parse CSV
                 const header = lines[0].split(';');
-                const numberIdx = header.indexOf('number');
+                const numberIdx = header.indexOf('sloid');
                 const designationIdx = header.indexOf('designationOfficial');
 
                 for (let i = 1; i < lines.length; i++) {
@@ -297,7 +297,7 @@ a {
                 convertedResult = converted;
 
                 let jsOutput = '// ─── Es beginnt mit COMBINED_STATIONS... ─────────────────────────────────────\n';
-                jsOutput += 'const COMBINED_STATIONS = {\n';
+                jsOutput += 'window.combinedStations = {\n';
 
                 const entries = Object.entries(converted);
                 entries.forEach(([key, stations], i) => {
@@ -327,7 +327,7 @@ a {
             if (!convertedResult) return;
 
             let jsOutput = '// ─── Es beginnt mit COMBINED_STATIONS... ─────────────────────────────────────\n';
-            jsOutput += 'const COMBINED_STATIONS = {\n';
+            jsOutput += 'window.combinedStations = {\n';
 
             const entries = Object.entries(convertedResult);
             entries.forEach(([key, stations], i) => {
@@ -343,7 +343,7 @@ a {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'combinedStationsNEW.js';
+            a.download = 'combinedStationsNOWE.js';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);

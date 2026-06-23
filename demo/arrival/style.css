@@ -4,16 +4,16 @@
 	--sbb-orange: #E84E10;
     --sob-green:  #7BA55B;
     --sob-blue:   #1A527F;
-    --board-bg:   #0a1a4a;
-    --board-row:  #0d2060;
-    --board-alt:  #0a1a4a;
-    --board-head: #0d2060;
-    --text-main:  #ffffff;
-    --text-via:   #a0b8d8;
-    --text-dim:   #6080a0;
+    --board-bg:   #f5f5f5;      /* Hellgrau statt dunkelblau */
+    --board-row:  #ffffff;       /* Weiß statt dunkelblau */
+    --board-alt:  #f9f9f9;       /* Sehr helles grau statt dunkelblau */
+    --board-head: #eeeeee;       /* Hellgrau statt dunkelblau */
+    --text-main:  #1a1a1a;       /* Dunkelgrau statt weiß */
+    --text-via:   #555555;       /* Dunkelgrau statt hellblau */
+    --text-dim:   #888888;       /* Mittleres grau statt blaugrau */
     --night-gold: #d4af37;
-    --border:     rgba(200,200,200,0.09);
-    --header-bg:  #061030;
+    --border:     rgba(0,0,0,0.08);  /* Dunkle Ränder statt helle */
+    --header-bg:  #f0f0f0;       /* Hellgrau statt dunkelblau */
     --pifas-bg:   #ED702D;
     --pifas-searchbar: #d7d7d7;
     --pifas-timenav: #eef;
@@ -22,9 +22,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html {
-	scrollbar-gutter: stable;
-}
+
 body {
     font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
     background: var(--board-bg);
@@ -58,8 +56,8 @@ body {
 
 #btn-home {
     background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: white;
+    border: 1px solid rgba(0,0,0,0.2);
+    color: black;
     padding: 5px 10px;
     border-radius: 2px;
     cursor: pointer;
@@ -71,7 +69,7 @@ body {
 
 #app-title,
 #app-title a {
-    color: white;
+    color: black;
     font-size: 1.05em;
     font-weight: 700;
     letter-spacing: 0.04em;
@@ -256,7 +254,7 @@ body {
     display: flex;
     gap: 6px;
     padding: 4px 14px;
-    background: #07163a;
+    background: var(--board-bg);
     overflow-x: auto;
     position: sticky;
     top: 46px;
@@ -270,7 +268,7 @@ body {
 .fav-btn {
     background: rgba(255,255,255,0.08);
     color: var(--text-main);
-    border: 1px solid rgba(255,255,255,0.13);
+    border: 1px solid rgba(0,0,0,0.13);
     padding: 5px 13px;
     border-radius: 2px;
     white-space: nowrap;
@@ -280,7 +278,7 @@ body {
     transition: background 0.15s;
     flex-shrink: 0;
 }
-.fav-btn:hover { background: rgba(255,255,255,0.18); }
+.fav-btn:hover { background: rgba(0,0,0,0.18); }
 .fav-btn.active {
     background: var(--sbb-red);
     border-color: var(--sbb-red);
@@ -319,7 +317,7 @@ body {
     align-items: center;
     gap: 5px;
 	padding: 8px 14px;
-    background: #081540;
+    background: var(--board-bg);
     border-bottom: 1px solid var(--border);
     overflow-x: auto;
     scrollbar-width: none;
@@ -341,9 +339,9 @@ body {
 }
 
 .filter-btn {
-    background: rgba(255,255,255,0.07);
+    background: rgba(0,0,0,0.07);
     color: var(--text-via);
-    border: 1px solid rgba(255,255,255,0.1);
+    border: 1px solid rgba(0,0,0,0.1);
     padding: 4px 11px;
     border-radius: 2px;
     white-space: nowrap;
@@ -353,11 +351,11 @@ body {
     transition: background 0.15s, color 0.15s;
     flex-shrink: 0;
 }
-.filter-btn:hover { background: rgba(255,255,255,0.14); color: white; }
+.filter-btn:hover { background: rgba(0,0,0,0.14); color: black; }
 .filter-btn.active {
-    background: rgba(255,255,255,0.22);
+    background: var(--sbb-red);
     color: white;
-    border-color: rgba(255,255,255,0.3);
+    border-color: rgba(0,0,0,0.3);
 }
 
 .time-controls {
@@ -406,7 +404,7 @@ body {
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.6);
+    color: black;
     text-align: left;
 }
 .th-platform { text-align: right !important; }
@@ -425,14 +423,12 @@ body {
 }
 
 .departure-table tbody .dep-row:hover { 
-    background: #1a3a7a !important; 
+    background: var(--sob-green) !important; 
 }
 
 
 
-.departure-table tbody tr:hover {
-	background: #1a3a7a;
-}
+.departure-table tbody tr:hover { background: var(--sbb-orange) }
 
 .departure-table td {
     padding: 2px 8px;
@@ -446,7 +442,7 @@ body {
     display: inline-block;
     font-size: 0.74em;
     color: var(--sbb-red);
-    font-weight: 600;
+    font-weight: 400;
     vertical-align: baseline;
 }
 
@@ -532,10 +528,7 @@ body {
 	text-decoration: none;
 }
 
-a:visited {
-	color: none;
-	text-decoration: none;
-}
+
 
 /* Zielspalte */
 .destination {
@@ -574,7 +567,7 @@ a:visited {
 .dep-row.active { background: #1a3a7a !important; }
 
 /*  PERLSCHNUR */
-.chain-row { background: var(--board-alt) !important; }
+.chain-row { background: var(--board-bg) !important; }
 
 .chain {
     display: flex;
@@ -612,7 +605,7 @@ a:visited {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.28);
+    background: rgba(0,0,0,0.28);
     flex-shrink: 0;
 }
 .dot-current {
@@ -656,7 +649,7 @@ a:visited {
     right: 0;
     bottom: 0;
     width: 2px;
-    background: rgba(255,255,255,0.13);
+    background: rgba(0,0,0,0.13);
 }
 
 /* Roter Live-Punkt unterwegs (mittig auf der Linie) */
@@ -720,9 +713,6 @@ a:visited {
     letter-spacing: 0;
 }
 
-.chain-delay-early { color: #1e88e5; } /* Blau */
-.chain-delay-minor { color: #43a047; } /* Grün */
-
 /* â”€â”€â”€ Info-Spalte â”€â”€â”€ */
 .chain-info {
     display: flex;
@@ -734,7 +724,7 @@ a:visited {
 .chain-name {
     font-size: 1em;
     font-weight: 200;
-    color: white;
+    color: black;
 }
 .chain-platform {
     font-size: 0.83em;
@@ -795,38 +785,15 @@ a:visited {
 	white-space: normal;"
 }
 
-/* ─── OperatingDays Badge ────────────────────────────────────────────────────*/
-.operating-days-badge {
-    display: inline-block;
-    min-width: 20px;
-    height: 20px;
-    line-height: 20px;
-    text-align: center;
-    background: var(--board-head, #222);
-    color: var(--text-main, #ccc);
-    border: 1px solid var(--border, #444);
-    border-radius: 3px;
-    font-weight: bold;
-    font-size: 0.85em;
-    letter-spacing: 0.05em;
-    padding: 0 4px;
-    box-sizing: border-box;
-}
-
-.meta-operating-days {
-    font-size: 0.9em;
-    color: var(--text-secondary, #999);
-}
-
 .page-footer {
 	text-decoration: none;
-	padding: 25px 14px;
+	padding: 8px 14px;
 	margin-top: auto;
 	border-top: 1px solid var(--border);
 	background: var(--header-bg);
 }
 
-.page-footer a, a:hover, a:active {
+.page-footer a, a:hover, a:visited, a:active {
 	color: var(--sbb-red);
 	text-decoration: none;
  }

@@ -1,0 +1,40 @@
+Bahnhof
+Hauptbahnhof
+Hauptbahnhof Süd
+Hauptstrasse/Bhf
+Bahnhof/Post
+Post/Bahnhof
+Bahnhof/Campus
+Bahnhof/Zentrum
+Zentrum/Bahnhof
+Bahnhof Süd
+Bahnhof Nord
+Bahnhof Ost
+Bahnhof West
+Bahnhofplatz
+Bahnhofsplatz
+Bhf.
+Hauptstr./Bhf.
+Postautostation
+Abzw. Bahnhof
+(See)
+(Schiff)
+(Schiff/bateau)
+gare
+gare nord
+gare sud
+gare est
+gare ouest
+place de la gare
+pl. gare
+bif. gare
+(lac)
+(bateau)
+stazione
+Piazza Stazione
+Stazione nord
+stazione sud
+stazione est
+(lago)
+staziun
+stazione est

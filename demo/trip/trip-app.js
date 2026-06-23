@@ -5,7 +5,7 @@ const $ = (id) => document.getElementById(id);
 
 // ─── Uhr ──────────────────────────────────────────────────────────────────────
 function updateClock() {
-    
+    const el = $('live-clock');
     if (!el) return;
     const now = new Date();
     el.textContent =
