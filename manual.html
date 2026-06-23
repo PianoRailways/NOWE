@@ -118,12 +118,12 @@
 			<li>Spalte Linie</li>
 			<li>Spalte Ziel</li>
 			<li>Spalte Gleis/Kante</li>
-			<details><summary>Gleisänderung</summary>In der Spalte Gl./Kante werden Gleisänderungen mit einem <span style="background-color: var(--plat-change); color: black;"><strong> gelben </strong></span> Hintergrund.</details>
+			<details class="summary"><summary>Gleisänderung</summary>In der Spalte Gl./Kante werden Gleisänderungen mit einem <span style="background-color: var(--plat-change); color: black;"><strong> gelben </strong></span> Hintergrund.</details>
 			<li>Chain (beim Anwählen einer Fahrt)</li>
 				<p>In der Perlschnur (auch Chain genannt) werden Gleisänderungen wie folgt dargestellt:<br>
 				altes Gleis durchgestrichen, neues Gleis fett<br>
 				<h3>Beispiel</h3>
-				<p><s>34</s><strong>33</strong></p>
+				<ul><li><s>34</s><strong>33</strong></li></ul>
 		</ul>
 </details>
 <details class="summary">
@@ -241,7 +241,8 @@
 		<tr><td></td><td>Keine Information vorhanden</td></tr>
 	</table>
 	<h3>Darstellung von Verspätungen</h3>
-	<p>Verspätungen sind <span style="color: var(--sbb-red); font-weight: bold;">rot</span>, Verfrühungen haben einen <span style="background-color: rgba(79, 195, 247, 0.9); color: white; font-weight: bold;">blauen Hintergrund</span></p>
+	<p>Verspätungen sind <span style="color: var(--sbb-red); font-weight: bold;">rot</span>, Verfrühungen haben einen <span style="background-color: rgba(79, 195, 247, 0.9); color: white; font-weight: bold;">blauen Hintergrund</span><br>
+	Auch hier werden die Verspätungen sekundengenau angezeigt.</p>
 	<center><img src="/img/trip-behig-symbols.png" usemap="#trip-map"></center>
 </div>
 	
@@ -293,6 +294,11 @@
 			    <td>Swiss Location ID</td>
 			    <td>Eine eindeutige ID, welche einer Haltestelle zugewiesen wird. Für uns im Hinergrund (z.B. für die <a href="#combinedStations" class="int">combinedStations</a>) relevant.</td>
 			  </tr>
+			  <tr>
+			    <td>BehiG</td>
+			    <td>Behindertengleichstellungsgesetz</td>
+			    <td>Wir verwenden den Ausdruck, um zu veranschaulichen, ob z.B. die Zugänglichkeit "behig", also z.B. ebenerdig oder rollstuhlgänglich, ist. Im <a href="#trip" class="int">Trip</a> werden die von NOWE verwendeten Symbole erklärt.</td>
+			  </tr>
 			  
 			</table>
 	</div>
@@ -312,33 +318,33 @@
 	<p class="box desktopbox">Fahre mit der Maus über die Kartenbereiche oder klicke sie an, um Tooltip-Informationen anzuzeigen.</p><br>
 	<p class="box mobilebox">Tippe auf einen Bereich um das Tooltip anzuzeigen.</p>
 <div class="slideshow-container">
-
-  <div id="fav-del-confirm" class="slide fade">
-    <img src="/img/fav-del-confirm.png" alt="Favorit löschen Bestätigungsdialog">
-    <div class="caption">Um einen Favoriten zu löschen musst du ihn anwählen und danach erneut drauf klicken, um den Löschvorgang zu bestätigen.</div>
-  </div>
-  <div id="ausfall-ersatzzug" class="slide fade">
-    <img src="/img/ausfall-ersatzzug.png" alt="Darstellung von Ausfällen und Ersatzzügen">
-    <div class="caption">
-		Darstellung von Ausfällen und Ersatzzügen
-	</div>
-  </div>
-  <div id="platform-change" class="slide fade">
-    <img src="/img/platform-change.png" alt="" usemap="#base-map-slide">
-    <div class="caption">Gleisänderungen sind in der Hauptansicht sichtbar sowie auch in der Chain.</div>
-  </div>
   <div id="chain-unterwegs" class="slide fade">
     <img src="/img/chain-unterwegs.png" alt="Perlschnuransicht">
     <div class="caption"><strong>Perlschnuransicht</strong><br>
 		Die Fahrt befindet sich rechnerisch zum aktuellen Zeitpunkt zwischen zwei Fahrplanpunkten.</div>
+  </div>$
+  <div id="platform-change" class="slide fade">
+    <img src="/img/platform-change.png" alt="" usemap="#base-map-slide">
+    <div class="caption">Gleisänderungen sind in der Hauptansicht sichtbar sowie auch in der Chain.</div>
+  </div>
+<div id="kastanienbaum" class="slide fade">
+    <img src="/img/combined-stations.png" alt="">
+    <div class="caption">Ein gutes Beispiel, wie es aussieht, wenn Stationen miteinander verknüpft sind.</div>
+  </div>
+  <div id="fav-del-confirm" class="slide fade">
+    <img src="/img/fav-del-confirm.png" alt="Favorit löschen Bestätigungsdialog">
+    <div class="caption"><strong>Favorit löschen</strong><br>Um einen Favoriten zu löschen musst du ihn anwählen und danach erneut drauf klicken, um den Löschvorgang zu bestätigen.</div>
+  </div>
+  <div id="ausfall-ersatzzug" class="slide fade">
+    <img src="/img/ausfall-ersatzzug.png" alt="Darstellung von Ausfällen und Ersatzzügen">
+    <div class="caption">
+		<strong>Darstellung von Ausfällen und Ersatzzügen</strong>
+		<p>Ausfälle werden <span style="text-decoration: line-through; color: var(--sbb-red)">rot durchgestrichen</span> bzw. <span style="color: #666;">ausgegraut</span>, Ersatzüge mit einem <span style="background-color: #00cc44; color: #000; border-radius: 3px; padding: 1px 5px; display: inline-block; border: 1px solid #009933; font-weight: bold; font-size: smaller;">grünen Hintergrund</span> dargestellt.</p>
+	</div>
   </div>
   <div id="diensthalt" class="slide fade">
     <img src="/img/chain-diensthalt.png" alt="Diensthalt in der Chain" usemap="#diensthalt-map-slide">
     <div class="caption">Sehr selten werden uns Fahrten geliefert, bei denen ein Diensthalt kommuniziert wird.</div>
-  </div>
-  <div id="kastanienbaum" class="slide fade">
-    <img src="/img/combined-stations.png" alt="">
-    <div class="caption">Ein gutes Beispiel, wie es aussieht, wenn Stationen miteinander verknüpft sind.</div>
   </div>
 
   <a class="prev" onclick="changeSlide(-1)">&#10094;</a>
