@@ -48,6 +48,10 @@ p {
   padding-top: 10px;
 }
 
+hr {
+  margin: 0.75rem 0rem;
+}
+
 .content { 
 	background: var(--board-row); 
 	border: 0.5px solid rgba(255,255,255,0.1); 
@@ -80,8 +84,9 @@ p {
 	background: var(--board-alt); 
 	border: 0.5px solid rgba(255,255,255,0.1); 
 	border-radius: 8px; 
-	padding: 1.2rem; 
-	margin-bottom: 1.5rem;
+	padding: 1.2rem;
+  margin-top: 0.75rem;
+	margin-bottom: 0.75rem;
 	position: inside;
 }
 
