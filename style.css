@@ -327,7 +327,7 @@ body {
     gap: 10px;
     flex-wrap: wrap;
 }
-}
+
 #filter-bar::-webkit-scrollbar { display: none; }
 
 .filter-label {
@@ -793,7 +793,7 @@ a:visited {
 	top: 50px;
 	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 	font-size: 0.85em;
-	white-space: normal;"
+	white-space: normal;
 }
 
 /* ─── OperatingDays Badge ────────────────────────────────────────────────────*/
