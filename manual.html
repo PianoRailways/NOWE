@@ -25,7 +25,7 @@
 	</header>
 <div class="content" id="top">
 <div class="card summary-title">NOWE stellt Abfahrtstabellen für den Schweizer öV bereit mit Anzeige der aktuellen IST-Daten von Opentransportdata.</div>
-<details class="card">
+<details class="summary">
 	<summary class="summary-title">Allgemeines</summary>
 		<ul>
 			<li>Begriffe und Definitionen</li>
@@ -62,7 +62,7 @@
 		<p>Bitte gib doch rasch dem <a href="#autor" class="int">Autor</a> Bescheid, wenn du das Tool jemandem weiterempfiehlst. Falls das Interesse sehr gross wird, könnte es zu einem späteren Zeitpunkt eine Überlegung wert sein, eine Lösung zur Überwindung der Limits zu finden.</p>
 </details>
 <hr>
-<details class="card">
+<details class="summary">
 	<summary class="summary-title" id="start">Hauptseite NOWE</summary>
 		<ul>
 			<li>Schaltflächen</li>
@@ -170,7 +170,7 @@
 		</ol></p>
 </details>
 
-<details class="card" id="includedStations">
+<details class="summary" id="includedStations">
 	<summary class="summary-title">Inkludierte Stationen</summary>
 	<h3>includedStations</h3>
 	<p>Das ist eine Liste mit Verknüpfungen von Stationen.<br>
@@ -178,7 +178,7 @@
 	Um die Verknüpfungen zu ändern, muss die Liste neu erstellt werden. Dazu gibt es zum Glück <a href="#converters" class="int">Hilfskonverter</a>.
 	</details>
 
-<details class="card" id="combinedStations">
+<details class="summary" id="combinedStations">
 	<summary class="summary-title">Verknüpfte Stationen</summary>
 	<h3>combinedStations</h3>
 	<p>Das ist eine Liste mit Verknüpfungen von Stationen. Gründe für Verknüpfungen können ganz unterschiedlich sein. In der Regel handelt es sich um Haltestellen in der Nähe oder Alternativhaltestellen.<br>
@@ -191,7 +191,7 @@
 	<p><strong>JA!</strong> Mach eine Liste an den zu verknüpfenden Stationen. Das verpflichtende Format findest du im <a href="https://wiki.oev-ansagen.ch/NOWE" class="oeva">Wiki</a>. Kontribuiere anschliessend auf <a href="#github" class="int">GitHub.</a></p>
 </details>
 
-<details class="card" id="webconverters">
+<details class="summary" id="webconverters">
 	<summary class="summary-title">Webkonverter</summary>
 	<p>Es gibt Webkonverter, mit denen man die includedStations und combinedStations erstellen kann, damit NOWE sie lesen kann. Denn NOWE braucht die IDs. Wir erstellen die Listen jedoch mit den tatsächlichen Namen. Im Zusammenspiel mit den <span style="font-family: monospace">dienststellen-gemass-opentransportdataswiss.csv</span> werden die IDs zugeordnet.<br>
 	<ul>
@@ -202,26 +202,26 @@
 </details>
 
 <details class="card" id="sjyid">
-<summary class="summary-title">Swiss Journey ID</summary>
-	<p>In der Ansicht der <a href="#demo" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
-	<p>Für Abfrage eines <a href="#trip" class="int">Trips</a> wird die SJYID zwingend benötigt. Eine Suche nach Fahrtnummern/Zugnummern ist nicht möglich.</p>
+	<summary class="summary-title">Swiss Journey ID</summary>
+		<p>In der Ansicht der <a href="#demo" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
+		<p>Für Abfrage eines <a href="#trip" class="int">Trips</a> wird die SJYID zwingend benötigt. Eine Suche nach Fahrtnummern/Zugnummern ist nicht möglich.</p>
 </details>
 
-<details class="card" id="formation">
-<summary class="summary-title">Formation</summary>
-<p>Die Formationsanzeige ist erreichbar über <a href="./formation" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/formation</a>. Die Eingabe des EVU ist nicht unbedingt nötig. Es werden automatisch die verfügbaren EVUs durchgerechnet.</p>
-<p>Mit der Ergänzung <span style="font-family: monospace; color: var(--pifas-searchbar)">?train=1234</span> kann auch direkt über die URL eine Zugsformation abgefragt werden.</p>
-<ul>
-<li>EVU: Eingabe des EVU-spezifischen Kürzels (optional)</li>
-<li>Zugnummer: Eingabe der Zugnummer</li>
-<li>Eingabe eines anderen Datums (optional)</li>
-</ul>
-<div class="box">
-		Die Formationsanzeige funktioniert derzeit lediglich <span style="font-style: italic;">as it is</span>. Es ist jedoch angedacht, diese Funktion irgendwann einmal noch zu überarbeiten.
-	</div>
+<details class="summary" id="formation">
+	<summary class="summary-title">Formation</summary>
+	<p>Die Formationsanzeige ist erreichbar über <a href="./formation" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/formation</a>. Die Eingabe des EVU ist nicht unbedingt nötig. Es werden automatisch die verfügbaren EVUs durchgerechnet.</p>
+	<p>Mit der Ergänzung <span style="font-family: monospace; color: var(--pifas-searchbar)">?train=1234</span> kann auch direkt über die URL eine Zugsformation abgefragt werden.</p>
+	<ul>
+		<li>EVU: Eingabe des EVU-spezifischen Kürzels (optional)</li>
+		<li>Zugnummer: Eingabe der Zugnummer</li>
+		<li>Eingabe eines anderen Datums (optional)</li>
+	</ul>
+	<div class="box">
+			Die Formationsanzeige funktioniert derzeit lediglich <span style="font-style: italic;">as it is</span>. Es ist jedoch angedacht, diese Funktion irgendwann einmal noch zu überarbeiten.
+		</div>
 </details>
 
-<details class="card" id="trip">
+<details class="summary" id="trip">
 	<summary class="summary-title">Trip</summary>
 	<p>Die Trip-Ansicht ist erreichbar über <a href="./trip" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/trip</a>. Dort kann die SJYID eingegeben werden, um die Trip-Ansicht zu sehen.</p>
 	<h3>BehiG-Konformität</h3>
