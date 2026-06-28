@@ -118,7 +118,7 @@ a.ext{
 	display: none;
 }
 
-.summary, .card li, ol {
+.summary, .card, li, ol {
 	list-style-position: inside;
 }
 
