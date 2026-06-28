@@ -104,6 +104,11 @@ a.ext{
   font-weight: bold;
 }
 
+summary.summary-title {
+  margin: -1.2rem -1.2rem;
+	padding: 1.2rem 1.2rem;
+  cursor: pointer;
+}
 .summary-title {
 	font-size: 22px;
   font-weight: bold;
