@@ -93,13 +93,13 @@ a {
 	text-decoration: none;
 }
 /* Verschiedene Klassen für Links (verschiedene Farben) */
-a.int{
+a.int, span.int {
 	color: var(--night-gold);
 }
-a.oeva{
+a.oeva, span.oeva {
 	color: var(--sbb-red);
 }
-a.ext{
+a.ext, span.ext {
 	color: var(--sob-green);
   font-weight: bold;
 }
