@@ -1,7 +1,7 @@
 :root {
     --sbb-red:    #eb0000;
     --sbb-blue:   #2d327d;
-	  --sbb-orange: #E84E10;
+    --sbb-orange: #E84E10;
     --sob-green:  #7BA55B;
     --sob-blue:   #1A527F;
     --board-bg:   #0a1a4a;
@@ -18,14 +18,14 @@
     --pifas-searchbar: #d7d7d7;
     --pifas-timenav: #eef;
     --live-red:   #ff3b30;
-	  --plat-change:#fcbb00;
+    --plat-change:#fcbb00;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html {
 	scroll-behavior: smooth;
-  scroll-padding-top: 55px;
+  scroll-padding-top: 60px;
 	scrollbar-gutter: stable;
 	line-height: 1.5rem;
 }
@@ -48,16 +48,19 @@ p {
   padding-top: 10px;
 }
 
+hr {
+  margin: 0.75rem 0rem;
+}
+
 .content { 
 	background: var(--board-row); 
 	border: 0.5px solid rgba(255,255,255,0.1); 
 	border-radius: 8px; 
 	padding: 1.5rem; 
-	margin-bottom: 1.5rem; 
 }
 
 /* MOBILE */
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 599px) {
   .content {
     padding: 0.5rem;
   }
@@ -80,8 +83,9 @@ p {
 	background: var(--board-alt); 
 	border: 0.5px solid rgba(255,255,255,0.1); 
 	border-radius: 8px; 
-	padding: 1.2rem; 
-	margin-bottom: 1.5rem;
+	padding: 1.2rem;
+  margin-top: 0.75rem;
+	margin-bottom: 0.75rem;
 	position: inside;
 }
 
@@ -89,17 +93,22 @@ a {
 	text-decoration: none;
 }
 /* Verschiedene Klassen für Links (verschiedene Farben) */
-a.int{
+a.int, span.int {
 	color: var(--night-gold);
 }
-a.oeva{
+a.oeva, span.oeva {
 	color: var(--sbb-red);
 }
-a.ext{
+a.ext, span.ext {
 	color: var(--sob-green);
   font-weight: bold;
 }
 
+summary.summary-title {
+  margin: -1.2rem -1.2rem;
+	padding: 1.2rem 1.2rem;
+  cursor: pointer;
+}
 .summary-title {
 	font-size: 22px;
   font-weight: bold;
@@ -113,7 +122,7 @@ a.ext{
 	display: none;
 }
 
-.summary, .card li, ol {
+.summary, .card, li, ol {
 	list-style-position: inside;
 }
 

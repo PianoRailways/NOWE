@@ -25,14 +25,18 @@
 	</header>
 <div class="content" id="top">
 <div class="card summary-title">NOWE stellt Abfahrtstabellen für den Schweizer öV bereit mit Anzeige der aktuellen IST-Daten von Opentransportdata.</div>
-<details open class="card">
+<details class="summary">
 	<summary class="summary-title">Allgemeines</summary>
+		<h3>Begriffe und Definitionen</h3>
 		<ul>
-			<li>Begriffe und Definitionen</li>
-			<br>
-			<h2>Namensherkunft</h2>
-			<p>Die Urpsrungsidee war, eine Abfahrtstabelle von JETZT (engl. NOW) zu haben. Da <i>NOW</i> alleine eher nach einem Zeitserver o.ä. klingt und Namen mit zwei Silben aber nur vier Buchstaben durchaus cool klingen, habe ich mich anschliessend für <i>NOWE</i> entschieden. Der Name kann auch als <strong>NO</strong>ie <strong>WE</strong>rsion eines frühren Projekts (<a href="https://pifas.stellwerksim.ch/" class="oeva">pifas.stellwerksim.ch</a>) gedeutet werden.</p>
+			<li>Fahrt: In unserem Fall die Auflistung aller Stationen vom Start- bis zum Zielpunkt.</li>
+			<li>Fahrtnummer: Eine meist zwei- bis fünfstellige Zahl, die einnerhalb eines Transportunternehmens die Farten zuordbar macht.</li>
+			<li>Gattung: Verschiedene Kategorien wie Schiff, Bus, Tram, InterRegio etc. Nicht zu verwechseln mit der Kategorie.</li>
+			<li>Kategorie: Sammelbegriff für mehrere Gattungen (Fernverkehr: IR, IC, EC; Regionalverkehr: R, RE, S; Nahverkehr: T, B, etc.</li>
+			<li>Weiteres siehe bei den <a href="#table" class="int">wichtigen Begriffen</a></li>
 		</ul>
+		<h3>Namensherkunft</h3>
+		<p>Die Urpsrungsidee war, eine Abfahrtstabelle von JETZT (engl. NOW) zu haben. Da <i>NOW</i> alleine eher nach einem Zeitserver o.ä. klingt und Namen mit zwei Silben aber nur vier Buchstaben durchaus cool klingen, habe ich mich anschliessend für <i>NOWE</i> entschieden. Der Name kann auch als <strong>NO</strong>ie <strong>WE</strong>rsion eines frühren Projekts (<a href="https://pifas.stellwerksim.ch/" class="oeva">pifas.stellwerksim.ch</a>) gedeutet werden.</p>
 </details>
 <details class="summary">
 	<summary class="summary-title" id="ausgangslage">Ausgangslage und Ziele</summary>
@@ -62,7 +66,7 @@
 		<p>Bitte gib doch rasch dem <a href="#autor" class="int">Autor</a> Bescheid, wenn du das Tool jemandem weiterempfiehlst. Falls das Interesse sehr gross wird, könnte es zu einem späteren Zeitpunkt eine Überlegung wert sein, eine Lösung zur Überwindung der Limits zu finden.</p>
 </details>
 <hr>
-<details class="card">
+<details class="summary">
 	<summary class="summary-title" id="start">Hauptseite NOWE</summary>
 		<ul>
 			<li>Schaltflächen</li>
@@ -71,16 +75,15 @@
 					<li>Home-Button mit leerem Eingabefeld</li>
 					<li><a href="#schalt-fav" class="int">Favoriten</a></li>
 			<li>Suche</li>
-			<li><a href="#filter" class="int">Filter</li>
+			<li><a href="#filter" class="int">Filter</a></li>
 		</ul>
 		<p>Weiter unten gibt es Screenshots: Siehe <a href="#demo" class="int">Demo</a></p>
 </details>
 
 <details class="summary" id="suche">
 	<summary class="summary-title">Suchfeld</summary>
-	<h2>Suchfeld</h2>
 	<p>Das Suchfeld ist das zentrale Element der Hauptseite. Es ermöglicht die Suche nach einer Station, um die Abfahrtstabelle dieser Station zu sehen.</p>
-	<h2>Abkürzungen</h2>
+	<h3>Abkürzungen</h3>
 	<p>Folgende Eingaben sind möglich:</p>
 		<ul>
 			<li>SLOID</li>
@@ -142,14 +145,14 @@
 		</ul>
 </details>
 
-<div class="card" id="converters">
-	<h2>Die verschiedenen Hilfskonverter</h2>
+<details class="summary" id="converters">
+	<summary class="summary-title">Die verschiedenen Hilfskonverter</summary>
 	<p>Da das Backend ein bestimmtes Format benötigt, um Stationen miteinander verknüpfen zu können, existieren verschiedene Hilfskonverter. Neben den auf GitHub verfügbaren Quellfiles, in welchen die zu verknüpfenden Stationen intuitiver erfasst werden können, wird zusätzlich noch die DiDok.csv Datei benötigt. Letztere stellen wir nicht bereit, da sich diese erstens von Zeit zu Zeit durch Opentransportdata ändern kann und zweitens relativ gross ist.</p>
 	<ul>
 		<li><a href="#includedStations" class="oeva">includedStations</a></li>
 		<li><a href="#combinedStations" class="oeva">combinedStations</a></li>
 	</ul>
-</div>
+</details>
 
 <details class="summary">
 	<summary class="summary-title" id="schalt-fav">Favoriten</summary>
@@ -168,24 +171,18 @@
 			<li>löschen bestätigen</li>
 			Alternativ kann auch lange auf den Favorit-Button gedrückt werden. (Langes Drücken funktioniert nur auf Desktopgeräten.)
 		</ol></p>
-		<details><summary>Bild anzeigen</summary>
-		<figure>
-			<img src="/img/fav-del-confirm.png" alt="Bestätigung" class="clickable-preview" tabindex="0"></img>
-			<figcaption>Man sieht, dass der Button des angewählten Favorits nun "Löschen?" fragt.</figcaption>
-		</figure>
-		</details>
 </details>
 
-<div class="card" id="includedStations">
-	<h2>Inkludierte Stationen</h2>
+<details class="summary" id="includedStations">
+	<summary class="summary-title">Inkludierte Stationen</summary>
 	<h3>includedStations</h3>
 	<p>Das ist eine Liste mit Verknüpfungen von Stationen.<br>
 	Diese Liste beinhaltet vor allem die Verknüpfung von Bahnhöfen und der dazugehörenden Haltestelle "Bahnhof" (frz. "gare", rumantsch "staziun", it. "stazione").<br>
 	Um die Verknüpfungen zu ändern, muss die Liste neu erstellt werden. Dazu gibt es zum Glück <a href="#converters" class="int">Hilfskonverter</a>.
-</div>
+	</details>
 
-<div class="card" id="combinedStations">
-	<h2>Verknüpfte Stationen</h2>
+<details class="summary" id="combinedStations">
+	<summary class="summary-title">Verknüpfte Stationen</summary>
 	<h3>combinedStations</h3>
 	<p>Das ist eine Liste mit Verknüpfungen von Stationen. Gründe für Verknüpfungen können ganz unterschiedlich sein. In der Regel handelt es sich um Haltestellen in der Nähe oder Alternativhaltestellen.<br>
 	<p>Ein Beispiel von <a href="#kastanienbaum" class="int">Kastanienbaum</a> ist weiter unten bei den Screenshots ersichtlich.</p>
@@ -195,40 +192,40 @@
 	<hr>
 	<h3>Kann ich mithelfen?</h3>
 	<p><strong>JA!</strong> Mach eine Liste an den zu verknüpfenden Stationen. Das verpflichtende Format findest du im <a href="https://wiki.oev-ansagen.ch/NOWE" class="oeva">Wiki</a>. Kontribuiere anschliessend auf <a href="#github" class="int">GitHub.</a></p>
-</div>
+</details>
 
-<div class="card" id="webconverters">
-	<h2>Webkonverter</h2>
+<details class="summary" id="webconverters">
+	<summary class="summary-title">Webkonverter</summary>
 	<p>Es gibt Webkonverter, mit denen man die includedStations und combinedStations erstellen kann, damit NOWE sie lesen kann. Denn NOWE braucht die IDs. Wir erstellen die Listen jedoch mit den tatsächlichen Namen. Im Zusammenspiel mit den <span style="font-family: monospace">dienststellen-gemass-opentransportdataswiss.csv</span> werden die IDs zugeordnet.<br>
 	<ul>
 		<li><a href="./combined_stations_converter_web.html" class="oeva" style="font-family: monospace";>combinedStations.html</a></li>
 		<li><a href="./included_stations_converter_web.html" class="oeva" style="font-family: monospace";>includedStations.html</a></li>
 	</ul>
 	</p>
-</div>
+</details>
 
-<div class="card" id="sjyid">
-<h2>Swiss Journey ID</h2>
-	<p>In der Ansicht der <a href="#demo" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
-	<p>Für Abfrage eines <a href="#trip" class="int">Trips</a> wird die SJYID zwingend benötigt. Eine Suche nach Fahrtnummern/Zugnummern ist nicht möglich.</p>
-</div>
+<details class="card" id="sjyid">
+	<summary class="summary-title">Swiss Journey ID</summary>
+		<p>In der Ansicht der <a href="#demo" class="int">Chain</a> wird u.a. die Swiss Journey ID angezeigt. Mit einem Klick darauf wird sie in die Zwischenablage kopiert.</p>
+		<p>Für Abfrage eines <a href="#trip" class="int">Trips</a> wird die SJYID zwingend benötigt. Eine Suche nach Fahrtnummern/Zugnummern ist nicht möglich.</p>
+</details>
 
-<div class="card" id="formation">
-<h2>Formation</h2>
-<p>Die Formationsanzeige ist erreichbar über <a href="./formation" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/formation</a>. Die Eingabe des EVU ist nicht unbedingt nötig. Es werden automatisch die verfügbaren EVUs durchgerechnet.</p>
-<p>Mit der Ergänzung <span style="font-family: monospace; color: var(--pifas-searchbar)">?train=1234</span> kann auch direkt über die URL eine Zugsformation abgefragt werden.</p>
-<ul>
-<li>EVU: Eingabe des EVU-spezifischen Kürzels (optional)</li>
-<li>Zugnummer: Eingabe der Zugnummer</li>
-<li>Eingabe eines anderen Datums (optional)</li>
-</ul>
-<div class="box">
-		Die Formationsanzeige funktioniert derzeit lediglich <span style="font-style: italic;">as it is</span>. Es ist jedoch angedacht, diese Funktion irgendwann einmal noch zu überarbeiten.
-	</div>
-</div>
+<details class="summary" id="formation">
+	<summary class="summary-title">Formation</summary>
+	<p>Die Formationsanzeige ist erreichbar über <a href="./formation" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/formation</a>. Die Eingabe des EVU ist nicht unbedingt nötig. Es werden automatisch die verfügbaren EVUs durchgerechnet.</p>
+	<p>Mit der Ergänzung <span style="font-family: monospace; color: var(--pifas-searchbar)">?train=1234</span> kann auch direkt über die URL eine Zugsformation abgefragt werden.</p>
+	<ul>
+		<li>EVU: Eingabe des EVU-spezifischen Kürzels (optional)</li>
+		<li>Zugnummer: Eingabe der Zugnummer</li>
+		<li>Eingabe eines anderen Datums (optional)</li>
+	</ul>
+	<div class="box">
+			Die Formationsanzeige funktioniert derzeit lediglich <span style="font-style: italic;">as it is</span>. Es ist jedoch angedacht, diese Funktion irgendwann einmal noch zu überarbeiten.
+		</div>
+</details>
 
-<div class="card" id="trip">
-	<h2>Trip</h2>
+<details class="summary" id="trip">
+	<summary class="summary-title">Trip</summary>
 	<p>Die Trip-Ansicht ist erreichbar über <a href="./trip" class="oeva" style="font-family: monospace";>nowe.stellwerksim.ch/trip</a>. Dort kann die SJYID eingegeben werden, um die Trip-Ansicht zu sehen.</p>
 	<h3>BehiG-Konformität</h3>
 	<table style="background-color: var(--board-row);">
@@ -243,7 +240,7 @@
 	<p>Verspätungen sind <span style="color: var(--sbb-red); font-weight: bold;">rot</span>, Verfrühungen haben einen <span style="background-color: rgba(79, 195, 247, 0.9); color: white; font-weight: bold;">blauen Hintergrund</span><br>
 	Auch hier werden die Verspätungen sekundengenau angezeigt.</p>
 	<center><img src="/img/trip-behig-symbols.png" usemap="#trip-map"></center>
-</div>
+	</details>
 	
 <div class="card" id="table">
 	<div class="table">
@@ -303,14 +300,12 @@
 	</div>
 </div>
 
-<div class="card">
-	<div id="filter">
-		<h2>Filter</h2>
+<details class="card" id="filter">
+	<summary class="summary-title">Filter</summary>
 		<p>Die Filter können angewählt oder abgewählt werden. Einzelne Kategorien auszuschliessen geht nicht mit einem Klick, sondern man muss alle anwählen, und das gewünschte wieder abwählen.</p>
 		<p>Filter: <span class="filter-demo-active">Alle</span> <span class="filter-demo">Fernverkehr</span> <span class="filter-demo">Regional</span> <span class="filter-demo">S-Bahn</span> <span class="filter-demo">Tram</span> <span class="filter-demo">Bus</span> <span class="filter-demo">Spezial</span> <span class="filter-demo">Schiff</span> <span class="filter-demo">Bergbahn</span> <span class="filter-demo">Sonstiges</span></p><br>
 		<p>Es kann sein, dass nicht alle Kategorien erfasst sind. Solltest du Kategorien unter <code>Sonstiges</code> finden, die einsortiert werden sollten, erstelle eine Fehlermeldung auf Github. Mehr dazu unter <a href="#github" class="int">#Github</a></p>
-	</div>
-</div>
+</details>
 
 <div class="card">
 <h2>Screenshots</h2>
@@ -359,6 +354,19 @@
 	<center><img src="/img/platform-change.png" usemap="#base-map"></center>
 	</div>
 </div>
+
+<details class="summary" id="colorconcept">
+	<summary class="summary-title">Farbkonzept</summary>
+		<p>Das Farbschema von NOWE basiert auf einem angenehmen Blauton, inspiriert durch das Blau der SBB.</p>
+		<h2>Links</h2>
+		<ul>
+			<li>Ankerlinks auf der gleichen Seite sind <span class="int">gelb</span></li>
+			<li>Verweise auf andere Projekte sind <span class="oeva">rot</span></li>
+			<li>Links zu externen Seiten sind <span class="ext">grün ud fett</span></li>
+		</ul>
+		<div class="box">Infoboxen haben einen gelben Rahmen und erstrecken sich über die ganze Breite.</div>
+		Der restliche Text ist weiss und somit auf dem blauen Hintergrund gut lesbar.
+</details>
 
 <div class="card">
 	<div id="github">

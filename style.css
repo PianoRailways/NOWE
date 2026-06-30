@@ -327,7 +327,7 @@ body {
     gap: 10px;
     flex-wrap: wrap;
 }
-}
+
 #filter-bar::-webkit-scrollbar { display: none; }
 
 .filter-label {
@@ -510,6 +510,7 @@ body {
 .line-badge[data-type="B"] { background-color: var(--sbb-blue); color: white }
 .line-badge[data-type="EV"] { background-color: var(--sbb-orange); color: #000; }
 .line-badge[data-type="M"] { background-color: #005198; color: #fff }
+.line-badge[data-type="CAR"] { background-color: #7A6F53; color: #1A2E50 }
 /* Nacht */
 .line-badge[data-type="SN"]  { border: 1px solid #000; background-color: #000; color: #fcbb00; }
 .line-badge[data-type="BN"] { border: 1px solid #fcbb00; background-color: #000; color: #fff; }
@@ -792,7 +793,7 @@ a:visited {
 	top: 50px;
 	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 	font-size: 0.85em;
-	white-space: normal;"
+	white-space: normal;
 }
 
 /* ─── OperatingDays Badge ────────────────────────────────────────────────────*/
