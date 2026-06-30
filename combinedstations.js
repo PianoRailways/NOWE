@@ -10,6 +10,8 @@ window.combinedStations = {
     'Basel SBB': ['Basel SBB', 'Basel, Bahnhof SBB', 'Basel, Bhfeingang Gundeldingen'],
     'Basel, Bahnhof SBB': ['Basel SBB', 'Basel, Bahnhof SBB'],
     'Basel, Bhfeingang Gundeldingen': ['Basel SBB', 'Basel, Bhfeingang Gundeldingen'],
+	'Basel Bad Bf': ['Basel Bad Bf', 'Basel, Badischer Bahnhof'],
+	'Basel, Badischer Bahnhof': ['Basel Bad Bf', 'Basel, Badischer Bahnhof'],
     'Langenthal': ['Langenthal', 'Langenthal, Bahnhof'],
 	'Herzogenbuchsee': ['Herzogenbuchsee', 'Herzogenbuchsee, Bahnhof'],
 	'Aeschi SO, Bolkenstrasse': ['Aeschi SO, Bolkenstrasse', 'Aeschi SO, Kirche'],
