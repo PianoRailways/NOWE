@@ -408,7 +408,7 @@ function renderBoard(departures) {
             // VBZ: data-type="VBZ-17" (statt "T")
             lineType = `VBZ-${dep.line}`;
         } else if (dep.operatorName === '801') {
-            lineType = `PAG-${dep.line}`;
+            lineType = `PAG`;
         } else {
             // Andere Operatoren: bisherige Logik
             lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
