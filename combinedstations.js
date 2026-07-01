@@ -189,7 +189,10 @@ window.combinedStations = {
 	'Biel Mett': ['Biel/Bienne,Bf Mett/gare Mâche', 'Biel Mett'],
 	'Biel/Bienne,Bf Mett/gare Mâche': ['Biel/Bienne,Bf Mett/gare Mâche', 'Biel Mett'],
 	'Brig': ['Brig', 'Brig Bahnhofplatz', 'Brig, Bahnhof', 'Brig, Bahnhofplatz'],
-	'Brig Bahnhofplatz': ['Brig', 'Brig Bahnhofplatz', 'Brig, Bahnhof', 'Brig, Bahnhofplatz'],
+	'Brig Bahnhofplatz': ['Brig', 'Brig Bahnhofplatz', 'Brig, Bahnhof'],
+	'Iselle, stazione': ['Iselle, stazione', 'Iselle di Trasquera'],
+	'Iselle di Trasquera': ['Iselle, stazione', 'Iselle di Trasquera'],
+
 	
 	'Samnaun-Ravaisch, Bergbahnen': ['Samnaun-Ravaisch, Bergbahnen', 'Samnaun-Ravaisch (Bergbahn)'],
 	'Samnaun-Ravaisch (Bergbahn)': ['Samnaun-Ravaisch, Bergbahnen', 'Samnaun-Ravaisch (Bergbahn)'],
