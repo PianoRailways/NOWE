@@ -900,7 +900,7 @@ function updateViaButtonState(btn) {
         btn.textContent = '✓ Ein';
     } else {
         btn.classList.remove('active');
-        btn.textContent = '✗ Aus';
+        btn.textContent = 'x';
     }
 }
 
