@@ -524,15 +524,17 @@ body {
 .line-badge[data-type="GB"]  { background: #7f7d32; }
 .line-badge[data-type="PB"]  { background: #2e7d32; }
 
-
-.line-badge[data-type="VBZ-50"], .line-badge[data-type="VBZ-7"], .line-badge[data-type="VBZ-51"] { background: black; color: white; }
-.line-badge[data-type="VBZ-2"] { background: red; color: white; }
-.line-badge[data-type="VBZ-3"], .line-badge[data-type="VBZ-11"] { background: #009A38; color: white; }
-.line-badge[data-type="VBZ-4"], .line-badge[data-type="VBZ-9"] { background: #46398e; color: white; }
-.line-badge[data-type="VBZ-5"] { background: #955b29; color: white;}
+.line-badge[data-type="VBZ-50"], .line-badge[data-type="VBZ-51"] { background: black; color: white; }
+.line-badge[data-type="VBZ-2"] { background: #e7000e; color: white; }
+.line-badge[data-type="VBZ-3"] { background: #009A38; color: white; }
+.line-badge[data-type="VBZ-4"] { background: #46398e; color: white; }
+.line-badge[data-type="VBZ-5"] { background: #955b29; color: white; }
 .line-badge[data-type="VBZ-6"] { background: #d89d3e; color: white; }
+.line-badge[data-type="VBZ-7"] { background: black; color: white; }
 .line-badge[data-type="VBZ-8"] { background: #A6C700; color: black; }
+.line-badge[data-type="VBZ-9"] { background: #46398e; color: white; }
 .line-badge[data-type="VBZ-10"] { background: #e82788; color: white; }
+.line-badge[data-type="VBZ-11"] { background: #009A38; color: white; }
 .line-badge[data-type="VBZ-12"] { background: #85cfe0; color: black; }
 .line-badge[data-type="VBZ-13"] { background: #ffd200; color: black; }
 .line-badge[data-type="VBZ-14"] { background: #00A1E5; color: white; }
@@ -549,6 +551,19 @@ body {
 .line-badge[data-type="VBZ-72"] { background: #D8AA99; color: black; }
 .line-badge[data-type="VBZ-80"] { background: #CDD7BB; color: black; }
 .line-badge[data-type="VBZ-89"] { background: #D0C4B6; color: black; }
+
+.line-badge[data-type="VBZ-301"] { background: #A6C700; color: black; }
+.line-badge[data-type="VBZ-302"] { background: #009A38; color: white; }
+.line-badge[data-type="VBZ-303"] { background: #46398e; color: white; }
+.line-badge[data-type="VBZ-304"] { background: #e7000e; color: white; }
+.line-badge[data-type="VBZ-305"] { background: #955b29; color: white; }
+.line-badge[data-type="VBZ-306"] { background: #ffd200; color: black; }
+.line-badge[data-type="VBZ-307"] { background: #d89d3e; color: white; }
+.line-badge[data-type="VBZ-308"] { background: #e82788; color: white; }
+.line-badge[data-type="VBZ-309"] { background: #00A1E5; color: white; }
+.line-badge[data-type="VBZ-314"] { background: #f37b72; color: white; }
+.line-badge[data-type="VBZ-317"] { background: #46398e; color: white; }
+.line-badge[data-type="VBZ-325"] { background: #e82788; color: white; }
 
 .line-badge[data-type="VBZ"] { background: white; color: black; }
 .line-badge[data-type="VBZ-18"] { background: #E94F35; color: white; }
