@@ -557,7 +557,7 @@ body {
 
 .journey-num, .journey-num a {
     font-size: 0.8em;
-    color: var(--text-dim);
+    color: white;
     font-family: monospace;
     text-align: center;
     letter-spacing: 0.04em;
