@@ -402,15 +402,28 @@ function renderBoard(departures) {
             fullLine = `${dep.cat}${dep.line}`;
         }
 
-        // ✅ VBZ-spezifische data-type: "VBZ-{Liniennummer}", sonst Kategoriekürzel
+        // ✅ VBZ-spezifische data-type Logik mit gezielter Bus-Whitelist
         let lineType;
-        if (dep.operatorName === '3849') {
-            // VBZ: data-type="VBZ-17" (statt "T")
-            lineType = `VBZ-${dep.line}`;
+
+        if (dep.operatorName === '3849' || dep.operatorName === '849') {
+            const cleanCat = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
+            
+            // Liste der Buslinien, für die du spezifische Farben definiert hast
+            const coloredBuses = ['31', '32', '46', '72', '61']; // Hier einfach deine Linien als Strings eintragen
+
+            if (cleanCat === 'T') {
+                // Trams bekommen immer die spezifische Kennung
+                lineType = `VBZ-${dep.line}`;
+            } else if (cleanCat === 'B' && coloredBuses.includes(String(dep.line))) {
+                // Busse nur, wenn sie in der Whitelist stehen
+                lineType = `VBZ-${dep.line}`;
+            } else {
+                // Fallback für alle anderen Busse und VBZ-Verkehrsmittel
+                lineType = 'VBZ';
+            }
         } else if (dep.operatorName === '801') {
-            lineType = `PAG`;
+            lineType = 'PAG';
         } else {
-            // Andere Operatoren: bisherige Logik
             lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
         }
 
