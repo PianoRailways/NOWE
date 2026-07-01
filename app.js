@@ -409,7 +409,7 @@ function renderBoard(departures) {
             const cleanCat = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
             
             // Liste der Buslinien, für die du spezifische Farben definiert hast
-            const coloredBuses = ['31', '32', '46', '72', '61']; // Hier einfach deine Linien als Strings eintragen
+            const coloredBuses = ['31', '32', '33', '46', '61', '62', '72', '80', '89']; // Hier einfach deine Linien als Strings eintragen
 
             if (cleanCat === 'T') {
                 // Trams bekommen immer die spezifische Kennung
