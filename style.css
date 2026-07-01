@@ -568,7 +568,7 @@ body {
 .line-badge[data-type="VBZ"] { background: white; color: black; }
 .line-badge[data-type="VBZ-18"] { background: #E94F35; color: white; }
 
-.line-badge[data-type="PAG"] { background: #ffcc00; color: white; }
+.line-badge[data-type="PAG"] { background: #ffcc00; color: black; }
 
 
 .journey-num, .journey-num a {
