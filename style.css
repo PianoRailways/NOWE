@@ -525,7 +525,7 @@ body {
 .line-badge[data-type="PB"]  { background: #2e7d32; }
 
 .journey-num, .journey-num a {
-    font-size: 0.78em;
+    font-size: 0.8em;
     color: var(--text-dim);
     font-family: monospace;
     text-align: center;
