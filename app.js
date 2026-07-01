@@ -404,7 +404,7 @@ function renderBoard(departures) {
 
         // ✅ VBZ-spezifische data-type: "VBZ-{Liniennummer}", sonst Kategoriekürzel
         let lineType;
-        if (dep.operatorId === '3849') {
+        if (dep.operatorName === '3849') {
             // VBZ: data-type="VBZ-17" (statt "T")
             lineType = `VBZ-${dep.line}`;
         } else {
