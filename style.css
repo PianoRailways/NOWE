@@ -549,7 +549,7 @@ body {
 .line-badge[data-type="VBZ-72"] { background: #D8AA99; color: black; }
 .line-badge[data-type="VBZ-89"] { background: #D0C4B6; color: black; }
 
-.line-badge[data-type="VBZ"] { background: #82bfe7; color: black; }
+.line-badge[data-type="VBZ"] { background: white; color: black; }
 .line-badge[data-type="FB"] { background: #E94F35; color: white; }
 
 .line-badge[data-type="PAG"] { background: #ffcc00; color: white; }
