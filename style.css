@@ -528,7 +528,7 @@ body {
 .line-badge[data-type="VBZ-50"], .line-badge[data-type="VBZ-7"], .line-badge[data-type="VBZ-51"] { background: black; color: white; }
 .line-badge[data-type="VBZ-2"] { background: red; color: white; }
 .line-badge[data-type="VBZ-3"], .line-badge[data-type="VBZ-11"] { background: #009A38; color: white; }
-.line-badge[data-type="VBZ-4"] { background: #46398e; color: white; }
+.line-badge[data-type="VBZ-4"], .line-badge[data-type="VBZ-9"] { background: #46398e; color: white; }
 .line-badge[data-type="VBZ-6"] { background: #d89d3e; color: black; }
 .line-badge[data-type="VBZ-8"] { background: #A6C700; color: black; }
 .line-badge[data-type="VBZ-10"] { background: #e82788; color: white; }
