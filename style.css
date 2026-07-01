@@ -524,6 +524,28 @@ body {
 .line-badge[data-type="GB"]  { background: #7f7d32; }
 .line-badge[data-type="PB"]  { background: #2e7d32; }
 
+
+.line-badge[data-type="VBZ-50"], .line-badge[data-type="VBZ-7"], .line-badge[data-type="VBZ-51"] { background: black; color: white; }
+.line-badge[data-type="VBZ-2"] { background: red; color: white; }
+.line-badge[data-type="VBZ-3"], .line-badge[data-type="VBZ-11"] { background: #009A38; color: white; }
+.line-badge[data-type="VBZ-4"] { background: #46398e; color: white; }
+.line-badge[data-type="VBZ-6"] { background: #d89d3e; color: black; }
+.line-badge[data-type="VBZ-10"] { background: #e82788; color: white; }
+.line-badge[data-type="VBZ-13"] { background: #ffd200; color: black; }
+.line-badge[data-type="VBZ-46"] { background: #c5dfa5; color: black; }
+.line-badge[data-type="VBZ-8"] { background: #A6C700; color: black; }
+.line-badge[data-type="VBZ-14"] { background: #00A1E5; color: white; }
+.line-badge[data-type="VBZ-15"] { background: #e7000e; color: white; }
+.line-badge[data-type="VBZ-17"] { background: #9e1762; color: white; }
+.line-badge[data-type="VBZ-31"] { background: #9fa3cd; color: white; }
+.line-badge[data-type="VBZ-32"] { background: #dab2d2; color: black; }
+.line-badge[data-type="VBZ-61"] { background: #a29a91; color: black; }
+.line-badge[data-type="VBZ-72"] { background: #D8AA99; color: black; }
+.line-badge[data-type="VBZ"] { background: #82bfe7; color: black; }
+
+.line-badge[data-type="PAG"] { background: #ffcc00; color: white; }
+
+
 .journey-num, .journey-num a {
     font-size: 0.8em;
     color: var(--text-dim);
