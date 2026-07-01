@@ -433,7 +433,7 @@ function renderBoard(departures) {
         // Formation-Link nur anzeigen, wenn der Betreiber in betreiber.txt gelistet ist
         const journeyNumHtml = dep.journeyNumber
             ? (hasFormationSupport(dep)
-                ? `<div class="journey-num" style="${unplannedStyle}"><a href="/formation/?train=${dep.journeyNumber}">${dep.journeyNumber}</a></div>`
+                ? `<div class="journey-num" style="${unplannedStyle}"><a href="/formation/?train=${dep.journeyNumber}" class="journey-num">${dep.journeyNumber}</a></div>`
                 : `<div class="journey-num" style="${unplannedStyle}">${dep.journeyNumber}</div>`)
             : '';
 
