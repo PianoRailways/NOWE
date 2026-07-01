@@ -410,8 +410,10 @@ function renderBoard(departures) {
             
             // Liste der Buslinien, für die du spezifische Farben definiert hast
             const coloredBuses = ['31', '32', '33', '46', '61', '62', '72', '80', '89']; // Hier einfach deine Linien als Strings eintragen
-
             if (cleanCat === 'T') {
+                if (dep.line === '18') {
+                    fullLine = `S18`;
+                }
                 // Trams bekommen immer die spezifische Kennung
                 lineType = `VBZ-${dep.line}`;
             } else if (cleanCat === 'B' && coloredBuses.includes(String(dep.line))) {
