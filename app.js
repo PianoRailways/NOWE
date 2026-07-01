@@ -25,6 +25,28 @@ function getCategory(departure) {
     return 'sonstige';
 }
 
+// ─── Formation-fähige Betreiber (siehe /formation/betreiber.txt) ────────────
+// Der Formation-Link ("Wagen"-Nummer klickbar) wird nur angezeigt, wenn der
+// Betreiber der Abfahrt (operatorRef) in dieser Liste vorkommt. Sowohl der
+// EVU-Kürzel (z.B. "SBBP") als auch die numerische Business-Org-ID (z.B. "11")
+// werden akzeptiert, da OJP je nach Betreiber unterschiedliche Werte liefert.
+const FORMATION_OPERATORS = new Set([
+    'blsp', '33',
+    'sbbp', '11',
+    'sob', '82',
+    'zb', '86',
+    'tpf', '53',
+    'rhb', '72',
+    'thurbo', '65',
+    'trn', '73',
+]);
+
+function hasFormationSupport(dep) {
+    const ref = (dep.operatorRef ?? '').toString().trim();
+    if (!ref) return false;
+    return FORMATION_OPERATORS.has(ref.toLowerCase());
+}
+
 // ─── Favoriten ───────────────────────────────────────────────────────────────
 // Initiales Laden aus dem Speicher oder Standardwerte
 function loadFavorites() {
@@ -408,6 +430,13 @@ function renderBoard(departures) {
             ? 'background-color: #00cc44; color: #000; border-radius: 3px; padding: 1px 5px; display: inline-block; border: 1px solid #009933; font-weight: bold;'
             : '';
 
+        // Formation-Link nur anzeigen, wenn der Betreiber in betreiber.txt gelistet ist
+        const journeyNumHtml = dep.journeyNumber
+            ? (hasFormationSupport(dep)
+                ? `<div class="journey-num" style="${unplannedStyle}"><a href="/formation/?train=${dep.journeyNumber}">${dep.journeyNumber}</a></div>`
+                : `<div class="journey-num" style="${unplannedStyle}">${dep.journeyNumber}</div>`)
+            : '';
+
         // Ereigniszeile
         let situationRowHtml = '';
         let infoBtn = '';
@@ -447,7 +476,7 @@ function renderBoard(departures) {
                 <td class="col-line">
                     <div class="line-container">
                         <a href="/trip/?sjyid=${dep.journeyRef}"><span class="line-badge" data-type="${lineType}">${fullLine}</span></a>
-                        ${dep.journeyNumber ? `<div class="journey-num" style="${unplannedStyle}"><a href="/formation/?train=${dep.journeyNumber}">${dep.journeyNumber}</a></div>` : ''}
+                        ${journeyNumHtml}
                     </div>
                 </td>
                 <td class="col-dest">
