@@ -529,7 +529,8 @@ body {
 .line-badge[data-type="VBZ-2"] { background: red; color: white; }
 .line-badge[data-type="VBZ-3"], .line-badge[data-type="VBZ-11"] { background: #009A38; color: white; }
 .line-badge[data-type="VBZ-4"], .line-badge[data-type="VBZ-9"] { background: #46398e; color: white; }
-.line-badge[data-type="VBZ-6"] { background: #d89d3e; color: black; }
+.line-badge[data-type="VBZ-5"] { background: #955b29; color: white;}
+.line-badge[data-type="VBZ-6"] { background: #d89d3e; color: white; }
 .line-badge[data-type="VBZ-8"] { background: #A6C700; color: black; }
 .line-badge[data-type="VBZ-10"] { background: #e82788; color: white; }
 .line-badge[data-type="VBZ-12"] { background: #85cfe0; color: black; }
@@ -543,11 +544,13 @@ body {
 .line-badge[data-type="VBZ-32"] { background: #dab2d2; color: black; }
 .line-badge[data-type="VBZ-33"] { background: #e9e6a5; color: black; }
 .line-badge[data-type="VBZ-46"] { background: #c5dfa5; color: black; }
-.line-badge[data-type="VBZ-61"] { background: #a29a91; color: black; }
+.line-badge[data-type="VBZ-61"] { background: #98908A; color: white; }
+.line-badge[data-type="VBZ-62"] { background: #D0C4B6; color: black; }
 .line-badge[data-type="VBZ-72"] { background: #D8AA99; color: black; }
-.line-badge[data-type="VBZ-89"] { background: #d7ccbc; color: black; }
+.line-badge[data-type="VBZ-89"] { background: #D0C4B6; color: black; }
 
 .line-badge[data-type="VBZ"] { background: #82bfe7; color: black; }
+.line-badge[data-type="FB"] { background: #E94F35; color: white; }
 
 .line-badge[data-type="PAG"] { background: #ffcc00; color: white; }
 
