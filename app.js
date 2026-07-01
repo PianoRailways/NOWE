@@ -405,7 +405,7 @@ function renderBoard(departures) {
         // ✅ VBZ-spezifische data-type Logik mit gezielter Bus-Whitelist
         let lineType;
 
-        if (dep.operatorName === '3849' || dep.operatorName === '849') {
+        if (dep.operatorName === '3849' || dep.operatorName === '849' || dep.operatorName === '46' ) {
             const cleanCat = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
             
             // Liste der Buslinien, für die du spezifische Farben definiert hast
