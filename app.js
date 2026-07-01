@@ -159,6 +159,7 @@ let QUERY_TIME   = urlParams.get('time')   ?? '';
 let ACTIVE_CAT = new Set(['all']); 
 let ALL_DEPS     = [];
 let searchDebounce = null;
+let VIA_VISIBLE  = localStorage.getItem('via_visible') !== 'false'; // Standardmäßig sichtbar
 
 const REFRESH_MS = 120_000;
 let   refreshTimer = null;
@@ -441,8 +442,9 @@ function renderBoard(departures) {
             timeCell = `<span style="color:red; font-weight:bold; text-decoration:line-through;">${dep.time}</span><br><span style="color:red; font-size: 0.85em;">Ausfall</span>`;
         }
 
+        const viaClass = VIA_VISIBLE ? '' : 'hidden';
         const viaHtml = dep.vias.length > 0
-            ? `<span class="via">via ${dep.vias.join(' · ')}</span>`
+            ? `<span class="via ${viaClass}">via ${dep.vias.join(' · ')}</span>`
             : '';
 
         // StationHint: Zeigt den Bahnhofsnamen nur bei kombinierten Ansichten an
@@ -876,6 +878,30 @@ function initFilterBar() {
             renderBoard(ALL_DEPS);
         });
     });
+
+    // ─── Via-Toggle-Button ───────────────────────────────────────────────────
+    const toggleViaBtn = document.getElementById('btn-toggle-via');
+    if (toggleViaBtn) {
+        // Setze initial den Status basierend auf VIA_VISIBLE
+        updateViaButtonState(toggleViaBtn);
+
+        toggleViaBtn.addEventListener('click', () => {
+            VIA_VISIBLE = !VIA_VISIBLE;
+            localStorage.setItem('via_visible', VIA_VISIBLE);
+            updateViaButtonState(toggleViaBtn);
+            renderBoard(ALL_DEPS);
+        });
+    }
+}
+
+function updateViaButtonState(btn) {
+    if (VIA_VISIBLE) {
+        btn.classList.add('active');
+        btn.textContent = '✓ Ein';
+    } else {
+        btn.classList.remove('active');
+        btn.textContent = '✗ Aus';
+    }
 }
 
 // ─── Stop-Autocomplete ────────────────────────────────────────────────────────

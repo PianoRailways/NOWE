@@ -360,6 +360,28 @@ body {
     border-color: rgba(255,255,255,0.3);
 }
 
+.toggle-via-btn {
+    background: rgba(255,255,255,0.07);
+    color: var(--text-via);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 4px 11px;
+    border-radius: 2px;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 0.78em;
+    letter-spacing: 0.02em;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+.toggle-via-btn:hover { background: rgba(255,255,255,0.14); color: white; }
+.toggle-via-btn.active {
+    background: rgba(255,255,255,0.22);
+    color: white;
+    border-color: rgba(255,255,255,0.3);
+}
+
+.via.hidden { display: none !important; }
+
 .time-controls {
     background: var(--pifas-timenav);
 	display: flex;
@@ -476,7 +498,7 @@ body {
     border: 1px solid #000;
     font-style: normal;
 }
-/* Fernverkehr â€“ rot */
+/* Fernverkehr – rot */
 .line-badge[data-type="ICE"], .line-badge[data-type="EXT"] { background: var(--sbb-red); font-style: italic; font-weight: 400;}
 .line-badge[data-type="IC"],
 .line-badge[data-type="IR"],
@@ -494,10 +516,10 @@ body {
 .line-badge[data-type="IRLEX"],
 .line-badge[data-type="IRLIX"],
 .line-badge[data-type="GPX"] { background: var(--sbb-red); font-style: italic; }
-/* Regional â€“ weiss/rot */
+/* Regional – weiß/rot */
 .line-badge[data-type="RE"],
 .line-badge[data-type="IRE"] { background: white; color: var(--sbb-red); }
-/* S-Bahn â€“ weiss/schwarz */
+/* S-Bahn – weiß/schwarz */
 .line-badge[data-type="S"],
 .line-badge[data-type="R"],
 .line-badge[data-type="RB"],
@@ -685,7 +707,7 @@ a:visited {
     z-index: 2;
 }
 
-/* â”€â”€â”€ Linie zwischen zwei Stationen â”€â”€â”€ */
+/* ─── Linie zwischen zwei Stationen ─── */
 .chain-line-wrapper {
     position: relative;
     width: 2px;
@@ -730,7 +752,7 @@ a:visited {
     100% { box-shadow: 0 0 4px rgba(255, 59, 48, 0.9), 0 0 8px rgba(255, 59, 48, 0.4); }
 }
 
-/* â”€â”€â”€ Zeitspalte in der Perlschnur â”€â”€â”€ */
+/* ─── Zeitspalte in der Perlschnur ─── */
 .chain-times {
     width: 68px;
     flex-shrink: 0;
@@ -753,13 +775,13 @@ a:visited {
     width: 14px;
 }
 
-/* VerspÃ¤tete Zeit in der Perlschnur */
+/* Verspätete Zeit in der Perlschnur */
 .time-delayed {
     color: var(--sbb-red);
     font-weight: 600;
 }
 
-/* VerspÃ¤tungs-Badge in der Perlschnur */
+/* Verspätungs-Badge in der Perlschnur */
 .chain-delay {
     font-size: 0.82em;
     color: var(--sbb-red);
@@ -771,7 +793,7 @@ a:visited {
 .chain-delay-early { color: #1e88e5; } /* Blau */
 .chain-delay-minor { color: #43a047; } /* Grün */
 
-/* â”€â”€â”€ Info-Spalte â”€â”€â”€ */
+/* ─── Info-Spalte ─── */
 .chain-info {
     display: flex;
     flex-direction: column;
