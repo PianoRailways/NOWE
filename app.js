@@ -402,7 +402,16 @@ function renderBoard(departures) {
             fullLine = `${dep.cat}${dep.line}`;
         }
 
-        const lineType = dep.cat.replace(/[0-9\s]/g, '').trim();
+        // ✅ VBZ-spezifische data-type: "VBZ-{Liniennummer}", sonst Kategoriekürzel
+        let lineType;
+        if (dep.operatorId === '3849') {
+            // VBZ: data-type="VBZ-17" (statt "T")
+            lineType = `VBZ-${dep.line}`;
+        } else {
+            // Andere Operatoren: bisherige Logik
+            lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
+        }
+
         const isCancelledAtCurrent = dep.calls.current?.cancelled;
 
         // Zeit & Verspätung
