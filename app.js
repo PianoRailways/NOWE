@@ -409,7 +409,7 @@ function renderBoard(departures) {
             const cleanCat = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
             
             // Liste der Buslinien, für die du spezifische Farben definiert hast
-            const coloredBuses = ['31', '32', '33', '46', '61', '62', '72', '80', '89']; // Hier einfach deine Linien als Strings eintragen
+            const coloredBuses = ['31', '32', '33', '46', '61', '62', '72', '80', '89', '301', '302', '303', '304', '305', '306', '307', '308', '309', '314', '317', '325']; // Hier einfach deine Linien als Strings eintragen
             if (cleanCat === 'T') {
                 if (dep.line === '18') {
                     fullLine = `S18`;
