@@ -531,6 +531,7 @@ body {
 .line-badge[data-type="VBZ-4"] { background: #46398e; color: white; }
 .line-badge[data-type="VBZ-6"] { background: #d89d3e; color: black; }
 .line-badge[data-type="VBZ-10"] { background: #e82788; color: white; }
+.line-badge[data-type="VBZ-12"] { background: #85cfe0; color: black; }
 .line-badge[data-type="VBZ-13"] { background: #ffd200; color: black; }
 .line-badge[data-type="VBZ-8"] { background: #A6C700; color: black; }
 .line-badge[data-type="VBZ-14"] { background: #00A1E5; color: white; }
