@@ -1,7 +1,7 @@
 :root {
     --sbb-red:    #eb0000;
     --sbb-blue:   #2d327d;
-	--sbb-orange: #E84E10;
+    --sbb-orange: #E84E10;
     --sob-green:  #7BA55B;
     --sob-blue:   #1A527F;
     --board-bg:   #0a1a4a;
@@ -18,7 +18,7 @@
     --pifas-searchbar: #d7d7d7;
     --pifas-timenav: #eef;
     --live-red:   #ff3b30;
-	--plat-change:#fcbb00;
+    --plat-change:#fcbb00;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
