@@ -406,7 +406,7 @@ function renderBoard(departures) {
         // ✅ VBZ-spezifische data-type Logik mit gezielter Bus-Whitelist
         let lineType;
 
-        if (dep.operatorName === '3849' || dep.operatorName === '849' || dep.operatorName === '46' ) {
+        if (dep.operatorName === '3849' || dep.operatorName === '849' || dep.operatorName === '46' || dep.operatorName === '41' ) {
             const cleanCat = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
             
             // Liste der Buslinien, für die du spezifische Farben definiert hast
@@ -420,13 +420,18 @@ function renderBoard(departures) {
             } else if (cleanCat === 'B' && coloredBuses.includes(String(dep.line))) {
                 // Busse nur, wenn sie in der Whitelist stehen
                 lineType = `VBZ-${dep.line}`;
-            } else {
+            } else if (cleanCat === 'T' && dep.line === '20' ) {
+                lineType = `VBZ-${dep.line}`;
+            }
+            
+            else {
                 // Fallback für alle anderen Busse und VBZ-Verkehrsmittel
                 lineType = 'VBZ';
             }
-        } else if (dep.operatorName === '801') {
-            lineType = 'PAG';
-        } else {
+        }
+            else if (dep.operatorName === '801') { lineType = 'PAG'; }
+        
+            else {
             lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
         }
 
