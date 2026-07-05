@@ -397,6 +397,10 @@ function renderBoard(departures) {
 	
     visible.forEach((dep, index) => {
         depRowCount++; // ← Inkrementieren für jede echte Abfahrtszeile
+        
+        // ← Vias als komma-separierter String für Zielfilter vorbereiten
+        const viasStr = dep.vias ? dep.vias.join(' · ') : '';
+
     	const bgClass = depRowCount % 2 === 1 ? 'row-odd' : 'row-even'; // ← Neue CSS-Klassen
         let fullLine = dep.line;
         if (dep.cat && !dep.line.startsWith(dep.cat)) {
@@ -504,7 +508,10 @@ function renderBoard(departures) {
         const platClass = dep.platformChanged ? 'plat-change' : '';
 
         html += `
-            <tr class="dep-row ${bgClass} ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}" data-index="${index}">
+            <tr class="dep-row ${bgClass} ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}" 
+                data-index="${index}"
+                data-dest="${dep.destination || ''}"
+                data-vias="${viasStr}">
                 <td class="col-time">${timeCell}</td>
                 <td class="col-line">
                     <div class="line-container">
@@ -617,8 +624,6 @@ function computeTrainPosition(dep, allStops) {
     }
     return { state: 'unknown' };
 }
-
-// ─── Perlschnur aufbauen ─────────────────────────────────────────────────────
 
 // ─── Perlschnur aufbauen ─────────────────────────────────────────────────────
 
@@ -1088,8 +1093,6 @@ function updateClock() {
 }
 // ─── Zeit-Controlls ───────────────────────────────────────────────────────
 
-// ─── Zeit-Controlls ───────────────────────────────────────────────────────
-
 function offsetTime(minutes) {
     const now = new Date();
     
@@ -1154,6 +1157,47 @@ window.addEventListener('popstate', () => {
     syncInputsFromState();
     if (STOP_ID) loadBoard();
 });
+
+// ─── ZIELFILTER ──────────────────────────────────────────────────────────────
+
+/**
+ * Initialisiert den Zielfilter Input und registriert Event-Listener
+ */
+function initDestFilter() {
+    const destFilterEl = document.getElementById('destFilter');
+    if (!destFilterEl) return;
+    
+    destFilterEl.addEventListener('input', () => {
+        applyDestFilter();
+    });
+}
+
+/**
+ * Wendet den Zielfilter auf die angezeigten Abfahrten an
+ * Filtert nach Ziel ODER Vias (case-insensitive substring match)
+ */
+function applyDestFilter() {
+    const destFilterEl = document.getElementById('destFilter');
+    if (!destFilterEl) return;
+    
+    const query = destFilterEl.value.trim().toLowerCase();
+
+    document.querySelectorAll('.dep-row').forEach(tr => {
+        const dest = (tr.dataset.dest || '').toLowerCase();
+        const vias = (tr.dataset.vias || '').toLowerCase();
+        
+        // Wenn kein Filter, zeige alles
+        if (!query) {
+            tr.classList.remove('filtered-dest');
+            return;
+        }
+        
+        // Prüfe ob Query in Ziel ODER in Vias vorkommt
+        const matches = dest.includes(query) || vias.includes(query);
+        
+        tr.classList.toggle('filtered-dest', !matches);
+    });
+}
 
 // ─── DOMContentLoaded ────────────────────────────────────────────────────────
 
@@ -1239,4 +1283,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				}
 			});
 		}
+
+    // Aufrufen am Ende der existierenden Event-Listener
+    initDestFilter();
 });
