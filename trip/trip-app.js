@@ -5,7 +5,7 @@ const $ = (id) => document.getElementById(id);
 
 // ─── Uhr ──────────────────────────────────────────────────────────────────────
 function updateClock() {
-    
+    const el = $('live-clock'); // Diese Zeile muss existieren
     if (!el) return;
     const now = new Date();
     el.textContent =
@@ -79,8 +79,20 @@ async function loadTrip() {
             showStatus('Keine Fahrtdaten gefunden.', 'error');
             return;
         }
+        
         renderTrip(trip);
         showStatus(`${trip.category} ${trip.line}  ·  Fahrtnummer ${trip.trainNumber}  ·  ${trip.stops.length} Halte`, 'success');
+
+        // URL in der Adresszeile aktualisieren, ohne die Seite neu zu laden
+        const url = new URL(window.location.href);
+        url.searchParams.set('sjyid', journeyId);
+        if (operatingDay) {
+            url.searchParams.set('date', operatingDay);
+        } else {
+            url.searchParams.delete('date');
+        }
+        window.history.replaceState({}, '', url.toString());
+
     } catch (err) {
         showStatus(`Fehler: ${err.message}`, 'error');
         console.error(err);
@@ -284,5 +296,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     $('btn-home')?.addEventListener('click', () => {
         window.location.href = '../';
+    });
+    // Aktualisiert die URL live, wenn das Datum im Webinterface geändert wird
+    $('trip-date')?.addEventListener('change', (e) => {
+        const journeyId = $('trip-input')?.value.trim();
+        const url = new URL(window.location.href);
+        
+        if (e.target.value) {
+            url.searchParams.set('date', e.target.value);
+        } else {
+            url.searchParams.delete('date');
+        }
+        
+        // Falls schon eine ID eingetragen ist, diese ebenfalls synchron halten
+        if (journeyId) {
+            url.searchParams.set('sjyid', journeyId);
+        }
+
+        window.history.replaceState({}, '', url.toString());
     });
 });
