@@ -171,10 +171,10 @@ body {
 }
 
 #stop-dropdown .dd-code-center {
-    flex: 0 0 60px;           /* Feste Breite, damit es exakt zentriert bleibt */
-    text-align: center;
+    flex: 1;           /* Feste Breite, damit es exakt zentriert bleibt */
+    text-align: left;
     font-weight: bold;
-    color: var(--sbb-red);    /* Nutzt dein SBB-Rot aus den CSS-Variablen */
+    color: var(--text-dim);    /* Nutzt dein SBB-Rot aus den CSS-Variablen */
     font-family: monospace;
 }
 
