@@ -506,6 +506,7 @@ function renderBoard(departures) {
 
         const chainHtml = buildChain(dep);
         const platClass = dep.platformChanged ? 'plat-change' : '';
+        const operatingDay = dep.timetabledIso ? dep.timetabledIso.slice(0, 10) : QUERY_DATE;
 
         html += `
             <tr class="dep-row ${bgClass} ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}" 
@@ -515,7 +516,7 @@ function renderBoard(departures) {
                 <td class="col-time">${timeCell}</td>
                 <td class="col-line">
                     <div class="line-container">
-                        <a href="/trip/?sjyid=${dep.journeyRef}"><span class="line-badge" data-type="${lineType}">${fullLine}</span></a>
+                        <a href="/trip/?sjyid=${encodeURIComponent(dep.journeyRef)}&date=${encodeURIComponent(operatingDay)}"><span class="line-badge" data-type="${lineType}">${fullLine}</span></a>
                         ${journeyNumHtml}
                     </div>
                 </td>
