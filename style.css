@@ -166,7 +166,7 @@ body {
     flex: 1;                  /* Nimmt den restlichen Platz links ein */
     text-align: left;
     white-space: nowrap;
-    overflow: hidden;
+    overflow: visible;
     text-overflow: ellipsis;
 }
 
