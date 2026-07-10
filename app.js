@@ -1039,7 +1039,7 @@ function initStopSearch() {
                     return `
                         <li data-id="${r.ref}" data-name="${r.name}">
                             <span class="dd-name">${r.name}</span>
-                            <span class="dd-code-center">${shortcut}</span>
+                            <span class="dd-code-center">${shortcut ? `(${shortcut})` : ''}</span>
                             <span class="dd-id">${r.ref}</span>
                         </li>
                     `;
