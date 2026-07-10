@@ -133,9 +133,9 @@ body {
 #stop-dropdown {
     position: absolute;
     top: 125px;
-	padding: 10px 0;
-	left: 10px;
-	right: 10px;
+    padding: 10px 0;
+    left: 10px;
+    right: 10px;
     min-width: 90%;
     background: var(--board-bg);
     border: 1px solid rgba(255,255,255,0.18);
@@ -147,6 +147,7 @@ body {
     overflow-y: auto;
 }
 #stop-dropdown.hidden { display: none; }
+
 #stop-dropdown li {
     padding: 8px 12px;
     cursor: pointer;
@@ -159,11 +160,31 @@ body {
 }
 #stop-dropdown li:last-child { border-bottom: none; }
 #stop-dropdown li:hover { background: rgba(255,255,255,0.1); }
-.dd-id {
+
+/* Drei-Spalten-Aufteilung für das didok-match Design */
+#stop-dropdown .dd-name {
+    flex: 1;                  /* Nimmt den restlichen Platz links ein */
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#stop-dropdown .dd-code-center {
+    flex: 0 0 60px;           /* Feste Breite, damit es exakt zentriert bleibt */
+    text-align: center;
+    font-weight: bold;
+    color: var(--sbb-red);    /* Nutzt dein SBB-Rot aus den CSS-Variablen */
+    font-family: monospace;
+}
+
+#stop-dropdown .dd-id {
+    flex: 0 0 auto;           /* ID bleibt rechtsbündig */
+    text-align: right;
     font-size: 0.78em;
     color: var(--text-dim);
     font-family: monospace;
-    flex-shrink: 0;
+    margin-left: 8px;
 }
 
 /* Datum + Zeit Picker */

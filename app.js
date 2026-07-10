@@ -975,24 +975,26 @@ function initStopSearch() {
 
         searchDebounce = setTimeout(async () => {
             try {
-                // 1. Zuerst in didokmapping prüfen
+                // 1. Zuerst in didokmapping prüfen (Exakter Match für Kürzel/Nummer)
                 const didokResult = checkDidokMapping(q);
                 
                 if (didokResult) {
                     console.log(`✓ didokmapping Match: "${q}" → "${didokResult.name}" (ID: ${didokResult.id})`);
-                    // Zeige nur das didokmapping-Ergebnis
+                    // Bei direktem Match ist die Eingabe oft das Kürzel selbst
+                    const displayCode = q.toUpperCase() !== didokResult.id.toUpperCase() ? q.toUpperCase() : '';
+                    
                     dropdown.innerHTML = `
                         <li data-id="${didokResult.id}" data-name="${didokResult.name}" class="didok-match">
                             <span class="dd-name">${didokResult.name}</span>
+                            <span class="dd-code-center">${displayCode}</span>
                             <span class="dd-id">${didokResult.id}</span>
-                            <span style="font-size: 0.75em; color: #666; margin-left: 4px;">(Didok)</span>
                         </li>
                     `;
                     dropdown.classList.remove('hidden');
                     return;
                 }
                 
-                // 2. Falls kein didokmapping-Match: API-Suche
+                // 2. Falls kein direkter Match: API-Suche mit DiDok-Ergänzung
                 console.log(`✗ didokmapping kein Match, frage API…`);
                 const results = await searchStops(q);
 
@@ -1002,12 +1004,46 @@ function initStopSearch() {
                     return;
                 }
 
-                dropdown.innerHTML = results.map(r => `
-                    <li data-id="${r.ref}" data-name="${r.name}">
-                        <span class="dd-name">${r.name}</span>
-                        <span class="dd-id">${r.ref}</span>
-                    </li>
-                `).join('');
+                // Generiere Dropdown-Liste und suche für jeden API-Treffer das Kürzel
+                dropdown.innerHTML = results.map(r => {
+                    let shortcut = '';
+                    
+                    if (window.didokMapping) {
+                        // Extrahiere numerische ID aus SLOID (z.B. ch:1:sloid:218 -> 218 oder ch:1:sloid:8502182 -> 8502182)
+                        const numericMatch = r.ref.match(/ch:1:sloid:(\d+)/);
+                        let lookupId = numericMatch ? numericMatch[1] : r.ref;
+                        
+                        // Falls die extrahierte ID 5-stellig ist, ergänzen wir das SBB-Präfix 85 für die Suche im Mapping
+                        if (/^\d{5}$/.test(lookupId)) {
+                            lookupId = `85${lookupId}`;
+                        }
+                        
+                        // Finde das Kürzel anhand der numerischen ID im Mapping
+                        // Da das Mapping { KÜRZEL: "Name" } oder { NUMMER: "Name" } aufgebaut ist, 
+                        // suchen wir den Key, dessen Wert mit dem API-Namen übereinstimmt ODER dessen Key die ID ist.
+                        const foundEntry = Object.entries(window.didokMapping).find(([key, val]) => {
+                            return key === lookupId && !/^\d+$/.test(key); 
+                        });
+                        
+                        // Alternativ-Suche über den Namen, falls im Mapping das Kürzel als Key genutzt wird
+                        if (!foundEntry) {
+                            const codeKey = Object.keys(window.didokMapping).find(key => 
+                                window.didokMapping[key] === r.name && !/^\d+$/.test(key)
+                            );
+                            if (codeKey) shortcut = codeKey;
+                        } else {
+                            shortcut = foundEntry[0];
+                        }
+                    }
+
+                    return `
+                        <li data-id="${r.ref}" data-name="${r.name}">
+                            <span class="dd-name">${r.name}</span>
+                            <span class="dd-code-center">${shortcut}</span>
+                            <span class="dd-id">${r.ref}</span>
+                        </li>
+                    `;
+                }).join('');
 
                 dropdown.classList.remove('hidden');
             } catch (err) {
