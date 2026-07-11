@@ -325,7 +325,7 @@ body {
     gap: 10px;
     flex-wrap: wrap;
 }
-}
+
 #filter-bar::-webkit-scrollbar { display: none; }
 
 .filter-label {
@@ -815,7 +815,7 @@ tr.dep-row.filtered-dest + tr.chain-row {
 	top: 50px;
 	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 	font-size: 0.85em;
-	white-space: normal;"
+	white-space: normal;
 }
 
 .page-footer {
