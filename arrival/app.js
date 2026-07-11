@@ -11,13 +11,12 @@ const CAT = {
     schiff:      ['BAT','FAE'],
     bergbahn:    ['FUN','ASC','PB','CC'],
 };
+
 function getCategory(departure) {
-    // Nutze zuerst das 'cat'-Feld (der ShortName von der API)
     const code = (departure.cat || '').toUpperCase();
     for (const [cat, codes] of Object.entries(CAT)) {
         if (codes.includes(code)) return cat;
     }
-    // Fallback auf 'line', falls cat nicht hilfreich ist
     const lineCode = (departure.line || '').replace(/\s*\d+.*$/, '').trim().toUpperCase();
     for (const [cat, codes] of Object.entries(CAT)) {
         if (codes.includes(lineCode)) return cat;
@@ -25,21 +24,37 @@ function getCategory(departure) {
     return 'sonstige';
 }
 
+// ─── Formation-fähige Betreiber ────────────────────────────────────────────────
+const FORMATION_OPERATORS = new Set([
+    'blsp', '33',
+    'sbbp', '11',
+    'sob', '82',
+    'zb', '86',
+    'tpf', '53',
+    'rhb', '72',
+    'thurbo', '65',
+    'trn', '73',
+]);
+
+function hasFormationSupport(dep) {
+    const ref = (dep.operatorRef ?? '').toString().trim();
+    if (!ref) return false;
+    return FORMATION_OPERATORS.has(ref.toLowerCase());
+}
+
 // ─── Favoriten ───────────────────────────────────────────────────────────────
-// Initiales Laden aus dem Speicher oder Standardwerte
 function loadFavorites() {
     const saved = localStorage.getItem('ojp_favs');
     return saved ? JSON.parse(saved) : [
-        { name: 'Zürich HB', id: '8503000' },
-        { name: 'Bern', id: '8507000' },
-        { name: 'Olten', id: '8500218' },
-        { name: 'Biel/Bienne', id: '8504300' },
-        { name: 'Basel SBB', id: '8500010' },
-        { name: 'Luzern', id: '8505000' },
-        { name: 'Spiez', id: '8507483' },
-        { name: 'Langenthal', id: '8508100' },
-        { name: 'Bellinzona', id: '8505213' },
-
+        { name: 'Zürich HB', id: 'ch:1:sloid:3000' },
+        { name: 'Bern', id: 'ch:1:sloid:7000' },
+        { name: 'Olten', id: 'ch:1:sloid:218' },
+        { name: 'Biel/Bienne', id: 'ch:1:sloid:4300' },
+        { name: 'Basel SBB', id: 'ch:1:sloid:10' },
+        { name: 'Luzern', id: 'ch:1:sloid:5000' },
+        { name: 'Spiez', id: 'ch:1:sloid:7483' },
+        { name: 'Langenthal', id: 'ch:1:sloid:8100' },
+        { name: 'Bellinzona', id: 'ch:1:sloid:5213' },
     ];
 }
 
@@ -49,19 +64,6 @@ function saveToStorage() {
     localStorage.setItem('ojp_favs', JSON.stringify(FAVORITES));
 }
 
-function addCurrentToFavs() {
-    const name = DOM.stopInput().value;
-    if (!STOP_ID || !name) return;
-
-    if (!FAVORITES.find(f => f.id === STOP_ID)) {
-        FAVORITES.push({ name: name, id: STOP_ID });
-        saveToStorage();
-        renderFavBar();
-        showStatus('Favorit hinzugefügt', 'success');
-    }
-}
-
-// ─── Favoriten-Highlight aktualisieren ────────────────────────────────────
 function updateFavHighlight() {
     const bar = DOM.favBar();
     if (!bar) return;
@@ -69,41 +71,20 @@ function updateFavHighlight() {
     bar.querySelectorAll('.fav-btn').forEach(btn => {
         const isActive = STOP_ID === btn.dataset.id;
         btn.classList.toggle('active', isActive);
-        btn.dataset.confirm = "false"; // Reset Lösch-Modus
+        btn.dataset.confirm = "false";
         btn.innerText = FAVORITES.find(f => f.id === btn.dataset.id)?.name || '';
     });
 }
 
-// ─── Es beginnt mit COMBINED_STATIONS... -────────────────────────────────────
-
 const COMBINED_STATIONS = {
-    // Beispiel: Bahnhof X mit IDs für verschiedene Bereiche
-    '8508100': ['8508100', '8576937'],
-	//'8507000': ['8576937'],
-    //'8576937': ['8508100', '8576937'], 
-    // Du kannst hier beliebig viele Gruppen hinzufügen
+    'ch:1:sloid:8508100': ['ch:1:sloid:8508100', 'ch:1:sloid:8576937'],
 };
 
-// Hilfsfunktion, um die Gruppe zu finden
-function getStationGroup(idOrName) {
-    // Suche zuerst als exakter Key im COMBINED_STATIONS
-    if (COMBINED_STATIONS[idOrName]) {
-        return COMBINED_STATIONS[idOrName];
-    }
-    // Fallback: Nur die ID/Name selbst zurückgeben
-    return [idOrName];
-}
-
-
-
-// Hilfsfunktion, um die Gruppe basierend auf dem Namen zu finden
 function getStationGroupByName(stationName) {
-    // Zuerst im COMBINED_STATIONS nach dem Namen als Key suchen
     if (COMBINED_STATIONS[stationName]) {
         return COMBINED_STATIONS[stationName];
     }
     
-    // Dann in window.combinedStations suchen (externe Daten)
     if (!window.combinedStations) return null;
     
     if (window.combinedStations[stationName]) {
@@ -112,9 +93,6 @@ function getStationGroupByName(stationName) {
     
     return null;
 }
-
-
-
 
 // ─── DOM-Refs ────────────────────────────────────────────────────────────────
 const DOM = {
@@ -136,14 +114,15 @@ const urlParams  = new URLSearchParams(window.location.search);
 let STOP_ID      = urlParams.get('stop')   ?? '';
 let QUERY_DATE   = urlParams.get('date')   ?? '';
 let QUERY_TIME   = urlParams.get('time')   ?? '';
-let ACTIVE_CAT = new Set(['all']); 
+let ACTIVE_CAT   = new Set(['all']); 
 let ALL_DEPS     = [];
 let searchDebounce = null;
+let VIA_VISIBLE  = localStorage.getItem('via_visible') !== 'false';
 
 const REFRESH_MS = 120_000;
 let   refreshTimer = null;
 
-// ─── Hilfsfunktionen Zeit/Datum ───────────────────────────────────────────────
+// ─── Zeit-Hilfsfunktionen ────────────────────────────────────────────────────
 
 function todayISO() {
     const d = new Date();
@@ -202,18 +181,15 @@ function syncInputsFromState() {
     if (ti) ti.value = QUERY_TIME;
 }
 
-// ─── Station Name → ID Mapping (lazy loading) ────────────────────────────
+// ─── Station Name → ID Mapping ────────────────────────────────────────────────
 const STATION_NAME_TO_ID = {};
-const MAPPING_CACHE = {}; // Verhindert doppeltes Abfragen
+const MAPPING_CACHE = {};
 
-// Nur mappen, wenn wir eine spezifische Station brauchen
 async function mapStationNameToId(stationName) {
-    // Wenn schon gecacht, gib es zurück
     if (STATION_NAME_TO_ID[stationName]) {
         return STATION_NAME_TO_ID[stationName];
     }
     
-    // Wenn wir gerade versucht haben diese zu suchen, skippe
     if (MAPPING_CACHE[stationName] === 'pending') return null;
     if (MAPPING_CACHE[stationName] === 'failed') return null;
     
@@ -238,59 +214,28 @@ async function mapStationNameToId(stationName) {
     }
 }
 
-// ─── Hilfsfunktion: Stationsnamen zu IDs konvertieren (mit lazy loading) ────
-async function getStationIdsByName(stationName) {
-    if (!window.combinedStations) return null;
-    
-    // Suche in window.combinedStations
-    for (const groupKey in window.combinedStations) {
-        const group = window.combinedStations[groupKey];
-        if (group.includes(stationName) || groupKey === stationName) {
-            // Konvertiere Namen zu IDs (lazy: nur wenn nötig)
-            const ids = [];
-            for (const name of group) {
-                let id = STATION_NAME_TO_ID[name];
-                if (!id) {
-                    id = await mapStationNameToId(name);
-                }
-                if (id) ids.push(id);
-            }
-            return ids.length > 0 ? ids : null;
-        }
-    }
-    return null;
-}
-
 // ─── Board laden ──────────────────────────────────────────────────────────────
 
 async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME) {
     if (!stopId) return;
     let idsToFetch = [stopId];
     
-    // 1. Versuche, nach ID zu suchen (EINSEITIG: nur wenn stopId ein Key ist)
     if (COMBINED_STATIONS[stopId]) {
         console.log(`✓ Gefunden in COMBINED_STATIONS: ${stopId}`);
         idsToFetch = COMBINED_STATIONS[stopId];
     } 
-    // 2. Wenn stopId eine ID ist und nicht als Key existiert, versuche in window.combinedStations zu suchen
     else if (window.combinedStations && window.combinedStations[stopId]) {
         console.log(`✓ Gefunden in window.combinedStations: ${stopId}`);
         idsToFetch = window.combinedStations[stopId];
     }
-    
-        // 2.1. Wenn stopId eine ID ist und nicht als Key existiert, versuche in window.includedStations zu suchen
     else if (window.includedStations && window.includedStations[stopId]) {
         console.log(`✓ Gefunden in window.includedStations: ${stopId}`);
         idsToFetch = window.includedStations[stopId];
     }
-    
-
-    // 3. Falls stopId ein Name ist (nicht numerisch), versuche zu mappen
-    else if (!/^\d{7,8}$/.test(stopId) && window.combinedStations) {
+    else if (!/^(ch:1:sloid:\d+|\d{7,8}|[A-Z0-9]+[_:].+)$/.test(stopId) && window.combinedStations) {
         const group = getStationGroupByName(stopId);
         if (group) {
             console.log(`✓ Gefunden als Gruppenschlüssel: ${stopId}`, group);
-            // Konvertiere Namen zu IDs (lazy: nur wenn nötig)
             const ids = [];
             for (const name of group) {
                 let id = STATION_NAME_TO_ID[name];
@@ -306,7 +251,7 @@ async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME)
     }
     
     try {
-        showStatus('Lade kombinierte Fahrplandaten…', 'info');
+        showStatus('Lade Fahrplandaten…', 'info');
         const isoTime = buildISO(date, time);
         const requests = idsToFetch.map(id => fetchDepartures(id, isoTime));
         const results = await Promise.all(requests);
@@ -331,24 +276,25 @@ async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME)
     }
 }
 
+function getDelayClass(delayMinutes) {
+    if (delayMinutes < 0) return 'chain-delay-early';
+    if (delayMinutes < 1) return 'chain-delay-minor';
+    return '';
+}
 
 function renderBoard(departures) {
-	//console.log("Sichtbare Stationen:", departures.map(d => d.stopName));
-    // 1. Filtern der Abfahrten (Unterstützt Multi-Select Sets)
-    
     const visible = ACTIVE_CAT.has('all')
     	? departures
-    	: departures.filter(d => ACTIVE_CAT.has(getCategory(d))); // ← Ganzes Objekt übergeben!
+    	: departures.filter(d => ACTIVE_CAT.has(getCategory(d)));
     
     const board = DOM.board();
     if (!board) return;
 
     if (visible.length === 0) {
-        board.innerHTML = '<p class="empty">Keine Abfahrten für diesen Filter gefunden.</p>';
+        board.innerHTML = '<p class="empty">Keine Ankünfte für diesen Filter gefunden.</p>';
         return;
     }
 
-    // Prüfen, ob wir Daten von verschiedenen Stationen haben (für den StationHint)
     const distinctStations = new Set(visible.map(d => d.stopName));
     const showStationHint = distinctStations.size > 1;
 
@@ -365,20 +311,46 @@ function renderBoard(departures) {
             <tbody>
     `;
 
-	let depRowCount = 0; // ← Neuer Counter
+	let depRowCount = 0;
 	
     visible.forEach((dep, index) => {
-        depRowCount++; // ← Inkrementieren für jede echte Abfahrtszeile
-    	const bgClass = depRowCount % 2 === 1 ? 'row-odd' : 'row-even'; // ← Neue CSS-Klassen
+        depRowCount++;
+        
+        const viasStr = dep.vias ? dep.vias.join(' · ') : '';
+
+    	const bgClass = depRowCount % 2 === 1 ? 'row-odd' : 'row-even';
         let fullLine = dep.line;
         if (dep.cat && !dep.line.startsWith(dep.cat)) {
             fullLine = `${dep.cat}${dep.line}`;
         }
 
-        const lineType = dep.cat.replace(/[0-9\s]/g, '').trim();
+        let lineType;
+
+        if (dep.operatorName === '3849' || dep.operatorName === '849' || dep.operatorName === '46' || dep.operatorName === '41' ) {
+            const cleanCat = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
+            
+            const coloredBuses = ['31', '32', '33', '46', '61', '62', '72', '80', '89', '301', '302', '303', '304', '305', '306', '307', '308', '309', '314', '317', '325'];
+            if (cleanCat === 'T') {
+                if (dep.line === '18') {
+                    fullLine = `S18`;
+                }
+                lineType = `VBZ-${dep.line}`;
+            } else if (cleanCat === 'B' && coloredBuses.includes(String(dep.line))) {
+                lineType = `VBZ-${dep.line}`;
+            } else if (cleanCat === 'T' && dep.line === '20' ) {
+                lineType = `VBZ-${dep.line}`;
+            }
+            else {
+                lineType = 'VBZ';
+            }
+        }
+        else if (dep.operatorName === '801') { lineType = 'PAG'; }
+        else {
+            lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
+        }
+
         const isCancelledAtCurrent = dep.calls.current?.cancelled;
 
-        // Zeit & Verspätung
         const delayBadge = (dep.delayed && dep.delayMinutes > 0.9)
             ? `<span class="delay-badge">${dep.delayDisplay}</span>`
             : '';
@@ -388,29 +360,29 @@ function renderBoard(departures) {
             timeCell = `<span style="color:red; font-weight:bold; text-decoration:line-through;">${dep.time}</span><br><span style="color:red; font-size: 0.85em;">Ausfall</span>`;
         }
 
+        const viaClass = VIA_VISIBLE ? '' : 'hidden';
         const viaHtml = dep.vias.length > 0
-            ? `<span class="via">von ${dep.vias.join(' · ')}</span>`
+            ? `<span class="via ${viaClass}">von ${dep.vias.join(' · ')}</span>`
             : '';
 
         const onwardviaHtml = dep.onwardvias.length > 0
-            ? `<span class="via">nach ${dep.onwardvias.join(' · ')}</span>`
+            ? `<span class="via ${viaClass}">nach ${dep.onwardvias.join(' · ')}</span>`
             : '';
-            
-            
 
-
-        // StationHint: Zeigt den Bahnhofsnamen nur bei kombinierten Ansichten an
         const stationHint = showStationHint && dep.stopName
-            ? `<div class="station-hint">ab ${dep.stopName}</div>` 
+            ? `<div class="station-hint">an ${dep.stopName}</div>` 
             : '';
-			
 
-        // Ersatzzug Style
         const unplannedStyle = dep.unplanned
             ? 'background-color: #00cc44; color: #000; border-radius: 3px; padding: 1px 5px; display: inline-block; border: 1px solid #009933; font-weight: bold;'
             : '';
 
-        // Ereigniszeile
+        const journeyNumHtml = dep.journeyNumber
+            ? (hasFormationSupport(dep)
+                ? `<div class="journey-num" style="${unplannedStyle}"><a href="/formation/?train=${dep.journeyNumber}" class="journey-num">${dep.journeyNumber}</a></div>`
+                : `<div class="journey-num" style="${unplannedStyle}">${dep.journeyNumber}</div>`)
+            : '';
+
         let situationRowHtml = '';
         let infoBtn = '';
 
@@ -442,14 +414,18 @@ function renderBoard(departures) {
 
         const chainHtml = buildChain(dep);
         const platClass = dep.platformChanged ? 'plat-change' : '';
+        const operatingDay = dep.timetabledIso ? dep.timetabledIso.slice(0, 10) : QUERY_DATE;
 
         html += `
-            <tr class="dep-row ${bgClass} ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}" data-index="${index}">
+            <tr class="dep-row ${bgClass} ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}" 
+                data-index="${index}"
+                data-dest="${dep.destination || ''}"
+                data-vias="${viasStr}">
                 <td class="col-time">${timeCell}</td>
                 <td class="col-line">
-					<div class="line-container">
-                        <a href="/trip/?sjyid=${dep.journeyRef}"><span class="line-badge" data-type="${lineType}">${fullLine}</span></a>
-                        ${dep.journeyNumber ? `<div class="journey-num" style="${unplannedStyle}"><a href="/formation/?train=${dep.journeyNumber}">${dep.journeyNumber}</a></div>` : ''}
+                    <div class="line-container">
+                        <a href="/trip/?sjyid=${encodeURIComponent(dep.journeyRef)}&date=${encodeURIComponent(operatingDay)}"><span class="line-badge" data-type="${lineType}">${fullLine}</span></a>
+                        ${journeyNumHtml}
                     </div>
                 </td>
                 <td class="col-dest">
@@ -472,7 +448,6 @@ function renderBoard(departures) {
     html += '</tbody></table>';
     board.innerHTML = html;
 
-    // Event-Listener
     document.querySelectorAll('.dep-row').forEach(row => {
         row.addEventListener('click', () => {
             const idx = row.dataset.index;
@@ -510,12 +485,10 @@ function renderBoard(departures) {
             DOM.stopInput().value = stopName || stopRef;
             QUERY_DATE = arrivalIso ? isoToDate(arrivalIso) : (QUERY_DATE || todayISO());
             QUERY_TIME = arrivalIso ? isoToTime(arrivalIso) : QUERY_TIME;
-            // Date/Time Inputs aktualisieren
             const di = DOM.dateInput();
             if (di) di.value = QUERY_DATE;
             const ti = DOM.timeInput();
             if (ti) ti.value = QUERY_TIME;
-            // Nicht syncInputsFromState() aufrufen, weil das den Namen überschreiben würde!
             updateUrlParams();
             loadBoard(STOP_ID, QUERY_DATE, QUERY_TIME);
             startAutoRefresh();
@@ -523,9 +496,7 @@ function renderBoard(departures) {
     });
 }
 
-// ─── Live-Position berechnen ─────────────────────────────────────────────────
 function computeTrainPosition(dep, allStops) {
-    // ✅ IMMER echte Zeit nutzen (nicht QUERY_DATE/QUERY_TIME)
     const d = new Date();
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, '0');
@@ -556,10 +527,6 @@ function computeTrainPosition(dep, allStops) {
     }
     return { state: 'unknown' };
 }
-
-// ─── Perlschnur aufbauen ─────────────────────────────────────────────────────
-
-// ─── Perlschnur aufbauen ─────────────────────────────────────────────────────
 
 function buildChain(dep) {
     const calls = dep.calls;
@@ -592,12 +559,11 @@ function buildChain(dep) {
         const arrTime   = fmt(stop.arrivalTime);
         const depTime   = fmt(stop.departureTime);
 
-        // Verspätungs-Badges für An/Abfahrt
-        const arrDelayHtml = (stop.arrivalDelayed && stop.arrivalDelayMinutes > 0)
-            ? `<span class="chain-delay">${stop.arrivalDelayDisplay}</span>`
+        const arrDelayHtml = stop.arrivalDelayMinutes !== 0
+            ? `<span class="chain-delay ${getDelayClass(stop.arrivalDelayMinutes)}">${stop.arrivalDelayDisplay}</span>`
             : '';
-        const depDelayHtml = (stop.departureDelayed && stop.departureDelayMinutes > 0)
-            ? `<span class="chain-delay">${stop.departureDelayDisplay}</span>`
+        const depDelayHtml = stop.departureDelayMinutes !== 0
+            ? `<span class="chain-delay ${getDelayClass(stop.departureDelayMinutes)}">${stop.departureDelayDisplay}</span>`
             : '';
 
         const arrDisplay = arrTime || '';
@@ -606,12 +572,10 @@ function buildChain(dep) {
         const isTrainHere  = pos.state === 'at-stop'  && pos.stopIndex  === i;
         const isTrainAfter = pos.state === 'between'   && pos.fromIndex  === i;
 
-        // ✅ FIX #1: Gleisänderung in Perlschnur - KORREKTE Property-Namen
         const platHtml = stop.platformChanged
             ? `<del style="margin-right:4px;">${stop.plannedPlatform}</del><strong>${stop.estimatedPlatform}</strong>`
             : (stop.platform || '');
 
-        // ✅ FIX #2: Ausfall-Status Rendering
         const stopNameStyle = stop.cancelled 
             ? 'text-decoration: line-through; color: #666;' 
             : '';
@@ -619,13 +583,15 @@ function buildChain(dep) {
             ? '<span style="background:#e60000; color:#fff; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">Ausfall</span>'
             : '';
 
-        // ✅ FIX #3: Diensthalt-Status (NoBoardingAtStop && NoAlightingAtStop)
         const isServiceStop = stop.noBoardingAtStop && stop.noAlightingAtStop;
         const serviceStopBadge = isServiceStop
             ? '<span style="background:#000; color:#aaa; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">Diensthalt</span>'
             : '';
 
-        // Dot-Farbe: ausgefallene Halte grau, Diensthalte schwarz
+        const requestStopBadge = stop.requestStop
+            ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>'
+            : '';
+
         const dotStyle = stop.cancelled 
             ? ' style="background:#555;"' 
             : isServiceStop 
@@ -663,7 +629,7 @@ function buildChain(dep) {
                 </div>
 
                 <div class="chain-info">
-                    <div class="chain-name" style="${stopNameStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}</div>
+                    <div class="chain-name" style="${stopNameStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}${requestStopBadge}</div>
                     ${platHtml ? `<div class="chain-platform">Gl. ${platHtml}</div>` : ''}
                 </div>
             </div>
@@ -689,8 +655,6 @@ function buildChain(dep) {
     return html;
 }
 
-// ─── Status ───────────────────────────────────────────────────────────────────
-
 function showStatus(msg, type) {
     const el = DOM.status();
     if (el) {
@@ -698,8 +662,6 @@ function showStatus(msg, type) {
         el.className   = `status-${type}`;
     }
 }
-
-// ─── Auto-Refresh ─────────────────────────────────────────────────────────────
 
 function startAutoRefresh() {
     stopAutoRefresh();
@@ -712,15 +674,12 @@ function stopAutoRefresh() {
     if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
 }
 
-// ─── Favoritenleiste rendern ──────────────────────────────────────────────────
-
 function renderFavBar() {
     const bar = DOM.favBar();
     if (!bar) return;
 
     bar.innerHTML = FAVORITES.map(fav => {
         const isActive = STOP_ID === fav.id;
-        // Wir fügen eine CSS-Klasse hinzu, wenn er "bereit zum Löschen" ist
         return `<button class="fav-btn${isActive ? ' active' : ''}" 
                         data-id="${fav.id}" 
                         data-confirm="false">
@@ -734,7 +693,6 @@ function renderFavBar() {
             const isCurrentlyActive = (STOP_ID === id);
             const isConfirming = btn.dataset.confirm === "true";
 
-            // FALL 1: Normaler Klick auf einen inaktiven Favoriten
             if (!isCurrentlyActive) {
                 STOP_ID = id;
                 DOM.stopInput().value = btn.innerText;
@@ -744,21 +702,18 @@ function renderFavBar() {
                 return;
             }
 
-            // FALL 2: Klick auf den bereits aktiven Favoriten (Lösch-Modus aktivieren)
             if (isCurrentlyActive && !isConfirming) {
-                // Alle anderen Buttons zurücksetzen, falls da noch einer im Lösch-Modus war
                 bar.querySelectorAll('.fav-btn').forEach(b => {
                     b.dataset.confirm = "false";
                     b.innerText = FAVORITES.find(f => f.id === b.dataset.id).name;
                 });
 
                 btn.dataset.confirm = "true";
-                btn.innerText = "Löschen?"; // Text ändert sich zur Bestätigung
-                btn.style.backgroundColor = "#e60000"; // Signalfarbe Rot
+                btn.innerText = "Löschen?";
+                btn.style.backgroundColor = "#e60000";
                 return;
             }
 
-            // FALL 3: Zweiter Klick zur Bestätigung (Endgültig löschen)
             if (isCurrentlyActive && isConfirming) {
                 FAVORITES = FAVORITES.filter(f => f.id !== id);
                 saveToStorage();
@@ -767,7 +722,6 @@ function renderFavBar() {
             }
         });
 
-        // Falls du den Rechtsklick für Desktop trotzdem behalten willst:
         btn.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             FAVORITES = FAVORITES.filter(f => f.id !== btn.dataset.id);
@@ -776,8 +730,6 @@ function renderFavBar() {
         });
     });
 }
-
-// ─── Filterleiste ─────────────────────────────────────────────────────────────
 
 function initFilterBar() {
     const bar = DOM.filterBar();
@@ -788,27 +740,22 @@ function initFilterBar() {
             const cat = btn.dataset.cat;
 
             if (cat === 'all') {
-                // Wenn "Alle" geklickt wird: Alles andere abwählen
                 ACTIVE_CAT.clear();
                 ACTIVE_CAT.add('all');
             } else {
-                // "Alle" entfernen, wenn eine spezifische Kategorie gewählt wird
                 ACTIVE_CAT.delete('all');
 
-                // Toggle-Logik: Wenn schon drin, dann raus. Wenn nicht drin, dann rein.
                 if (ACTIVE_CAT.has(cat)) {
                     ACTIVE_CAT.delete(cat);
                 } else {
                     ACTIVE_CAT.add(cat);
                 }
 
-                // Falls am Ende gar nichts mehr angewählt ist, automatisch wieder auf "Alle"
                 if (ACTIVE_CAT.size === 0) {
                     ACTIVE_CAT.add('all');
                 }
             }
 
-            // Visuelles Update: Alle Buttons, deren Kategorie im Set ist, werden "active"
             bar.querySelectorAll('.filter-btn').forEach(b => {
                 b.classList.toggle('active', ACTIVE_CAT.has(b.dataset.cat));
             });
@@ -816,37 +763,53 @@ function initFilterBar() {
             renderBoard(ALL_DEPS);
         });
     });
+
+    const toggleViaBtn = document.getElementById('btn-toggle-via');
+    if (toggleViaBtn) {
+        updateViaButtonState(toggleViaBtn);
+
+        toggleViaBtn.addEventListener('click', () => {
+            VIA_VISIBLE = !VIA_VISIBLE;
+            localStorage.setItem('via_visible', VIA_VISIBLE);
+            updateViaButtonState(toggleViaBtn);
+            renderBoard(ALL_DEPS);
+        });
+    }
 }
 
-// ─── Stop-Autocomplete ────────────────────────────────────────────────────────
+function updateViaButtonState(btn) {
+    if (VIA_VISIBLE) {
+        btn.classList.add('active');
+        btn.textContent = '✓ Ein';
+    } else {
+        btn.classList.remove('active');
+        btn.textContent = 'x';
+    }
+}
 
-/**
- * Prüft, ob ein Query in didokmapping vorhanden ist.
- * Gibt ein Objekt { id, name } zurück oder null.
- */
 function checkDidokMapping(query) {
     if (!window.didokMapping) return null;
     
     const q = query.trim().toUpperCase();
     
-    // 1. Direkte Suche (Key ist exakt oder in Großbuchstaben)
     if (window.didokMapping[q]) {
         const name = window.didokMapping[q];
         return { id: q, name, isDidokMatch: true };
     }
     
-    // 2. Fallback: Alle Keys durchsuchen (Case-insensitive)
     for (const [key, value] of Object.entries(window.didokMapping)) {
         if (key.toUpperCase() === q) {
             return { id: key, name: value, isDidokMatch: true };
         }
     }
     
-    // 3. Numerische ID: Suche ob diese ID im didokmapping vorhanden ist
     if (/^\d{7,8}$/.test(q)) {
         if (window.didokMapping[q]) {
             const name = window.didokMapping[q];
-            return { id: q, name, isDidokMatch: true };
+            const sloidId = /^85\d{5}$/.test(q) 
+                ? `ch:1:sloid:${q.substring(2)}`
+                : q;
+            return { id: sloidId, name, isDidokMatch: true };
         }
     }
     
@@ -874,24 +837,23 @@ function initStopSearch() {
 
         searchDebounce = setTimeout(async () => {
             try {
-                // 1. Zuerst in didokmapping prüfen
                 const didokResult = checkDidokMapping(q);
                 
                 if (didokResult) {
                     console.log(`✓ didokmapping Match: "${q}" → "${didokResult.name}" (ID: ${didokResult.id})`);
-                    // Zeige nur das didokmapping-Ergebnis
+                    const displayCode = q.toUpperCase() !== didokResult.id.toUpperCase() ? q.toUpperCase() : '';
+                    
                     dropdown.innerHTML = `
                         <li data-id="${didokResult.id}" data-name="${didokResult.name}" class="didok-match">
                             <span class="dd-name">${didokResult.name}</span>
+                            <span class="dd-code-center">${displayCode}</span>
                             <span class="dd-id">${didokResult.id}</span>
-                            <span style="font-size: 0.75em; color: #666; margin-left: 4px;">(Didok)</span>
                         </li>
                     `;
                     dropdown.classList.remove('hidden');
                     return;
                 }
                 
-                // 2. Falls kein didokmapping-Match: API-Suche
                 console.log(`✗ didokmapping kein Match, frage API…`);
                 const results = await searchStops(q);
 
@@ -901,12 +863,39 @@ function initStopSearch() {
                     return;
                 }
 
-                dropdown.innerHTML = results.map(r => `
-                    <li data-id="${r.ref}" data-name="${r.name}">
-                        <span class="dd-name">${r.name}</span>
-                        <span class="dd-id">${r.ref}</span>
-                    </li>
-                `).join('');
+                dropdown.innerHTML = results.map(r => {
+                    let shortcut = '';
+                    
+                    if (window.didokMapping) {
+                        const numericMatch = r.ref.match(/ch:1:sloid:(\d+)/);
+                        let lookupId = numericMatch ? numericMatch[1] : r.ref;
+                        
+                        if (/^\d{5}$/.test(lookupId)) {
+                            lookupId = `85${lookupId}`;
+                        }
+                        
+                        const foundEntry = Object.entries(window.didokMapping).find(([key, val]) => {
+                            return key === lookupId && !/^\d+$/.test(key); 
+                        });
+                        
+                        if (!foundEntry) {
+                            const codeKey = Object.keys(window.didokMapping).find(key => 
+                                window.didokMapping[key] === r.name && !/^\d+$/.test(key)
+                            );
+                            if (codeKey) shortcut = codeKey;
+                        } else {
+                            shortcut = foundEntry[0];
+                        }
+                    }
+
+                    return `
+                        <li data-id="${r.ref}" data-name="${r.name}">
+                            <span class="dd-name">${r.name}</span>
+                            <span class="dd-code-center">${shortcut ? `(${shortcut})` : ''}</span>
+                            <span class="dd-id">${r.ref}</span>
+                        </li>
+                    `;
+                }).join('');
 
                 dropdown.classList.remove('hidden');
             } catch (err) {
@@ -939,13 +928,16 @@ function initStopSearch() {
                 closeDropdown();
             } else {
                 const v = input.value.trim();
-                // Erst didokmapping prüfen
                 const didokResult = checkDidokMapping(v);
                 if (didokResult) {
                     STOP_ID = didokResult.id;
                     input.value = didokResult.name;
                 } else if (/^\d{7,8}$/.test(v)) {
-                    STOP_ID = v;
+                    if (/^85\d{5}$/.test(v)) {
+                        STOP_ID = `ch:1:sloid:${v.substring(2)}`;
+                    } else {
+                        STOP_ID = v;
+                    }
                 }
             }
 
@@ -974,8 +966,6 @@ function closeDropdown() {
     if (dd) { dd.innerHTML = ''; dd.classList.add('hidden'); }
 }
 
-// ─── Uhr ──────────────────────────────────────────────────────────────────────
-
 function updateClock() {
     const el = document.getElementById('live-clock');
     if (!el) return;
@@ -985,28 +975,21 @@ function updateClock() {
         String(now.getMinutes()).padStart(2,'0') + ':' +
         String(now.getSeconds()).padStart(2,'0');
 }
-// ─── Zeit-Controlls ───────────────────────────────────────────────────────
-
-// ─── Zeit-Controlls ───────────────────────────────────────────────────────
 
 function offsetTime(minutes) {
     const now = new Date();
     
-    // Nutze deine bestehenden State-Variablen QUERY_DATE und QUERY_TIME
     const baseDate = QUERY_DATE || todayISO();
     const baseTime = QUERY_TIME || now.toTimeString().substring(0, 5);
     
-    // Erzeuge ein Date-Objekt für die Berechnung
     let dateObj = new Date(`${baseDate}T${baseTime}:00`);
     
-    // Minuten addieren oder subtrahieren
     dateObj.setMinutes(dateObj.getMinutes() + minutes);
     
-    // Neue Werte für den State formatieren
+    const offset = dateObj.getTimezoneOffset() * 60000;
     QUERY_TIME = dateObj.toTimeString().substring(0, 5);
-    QUERY_DATE = dateObj.toISOString().split('T')[0];
+    QUERY_DATE = (new Date(dateObj - offset)).toISOString().slice(0, 10);
     
-    // Nur Date/Time Inputs aktualisieren, nicht das Stop-Feld
     const di = DOM.dateInput();
     if (di) di.value = QUERY_DATE;
     const ti = DOM.timeInput();
@@ -1014,7 +997,6 @@ function offsetTime(minutes) {
     updateUrlParams();
     loadBoard();
     
-    // Auto-Refresh stoppen, wenn wir in der Zukunft/Vergangenheit suchen
     stopAutoRefresh();
 }
 
@@ -1030,19 +1012,16 @@ document.addEventListener('DOMContentLoaded', () => {
         btnNow.onclick = () => {
             QUERY_DATE = '';
             QUERY_TIME = '';
-            // Nur Date/Time Inputs aktualisieren, nicht das Stop-Feld
             const di = DOM.dateInput();
             if (di) di.value = '';
             const ti = DOM.timeInput();
             if (ti) ti.value = '';
             updateUrlParams();
             loadBoard();
-            startAutoRefresh(); // Zurück im "Live"-Modus
+            startAutoRefresh();
         };
     }
 });
-
-// ─── Browser-Navigation ───────────────────────────────────────────────────────
 
 window.addEventListener('popstate', () => {
     const p   = new URLSearchParams(window.location.search);
@@ -1052,6 +1031,37 @@ window.addEventListener('popstate', () => {
     syncInputsFromState();
     if (STOP_ID) loadBoard();
 });
+
+// ─── ZIELFILTER ──────────────────────────────────────────────────────────────
+
+function initDestFilter() {
+    const destFilterEl = document.getElementById('destFilter');
+    if (!destFilterEl) return;
+    
+    destFilterEl.addEventListener('input', () => {
+        applyDestFilter();
+    });
+}
+
+function applyDestFilter() {
+    const destFilterEl = document.getElementById('destFilter');
+    if (!destFilterEl) return;
+    
+    const query = destFilterEl.value.trim().toLowerCase();
+
+    document.querySelectorAll('.dep-row').forEach(tr => {
+        const dest = (tr.dataset.dest || '').toLowerCase();
+        const vias = (tr.dataset.vias || '').toLowerCase();
+        
+        if (!query) {
+            tr.classList.remove('filtered-dest');
+            return;
+        }
+        
+        const matches = dest.includes(query) || vias.includes(query);
+        tr.classList.toggle('filtered-dest', !matches);
+    });
+}
 
 // ─── DOMContentLoaded ────────────────────────────────────────────────────────
 
@@ -1064,9 +1074,8 @@ document.addEventListener('DOMContentLoaded', () => {
     updateClock();
     setInterval(updateClock, 1000);
     
-
     DOM.homeBtn()?.addEventListener('click', () => {
-        STOP_ID    = '8582597';
+        STOP_ID    = 'ch:1:sloid:8582597';
         QUERY_DATE = '';
         QUERY_TIME = '';
         ALL_DEPS   = [];
@@ -1095,17 +1104,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     DOM.dtClearBtn()?.addEventListener('click', () => {
         const now = new Date();
-        // Formatiere aktuelles Datum und Zeit
-        QUERY_DATE = now.toISOString().split('T')[0];
+        const offset = now.getTimezoneOffset() * 60000;
+        QUERY_DATE = (new Date(now - offset)).toISOString().slice(0, 10);
         QUERY_TIME = now.toTimeString().substring(0, 5);
-        // Aktualisiere die Input-Felder
         const di = DOM.dateInput();
         if (di) di.value = QUERY_DATE;
         const ti = DOM.timeInput();
         if (ti) ti.value = QUERY_TIME;
         updateUrlParams();
         if (STOP_ID) loadBoard();
-        stopAutoRefresh(); // Auto-Refresh stoppen, da wir jetzt ein fixes Datum haben
+        stopAutoRefresh();
     });
 
     DOM.refreshBtn()?.addEventListener('click', () => {
@@ -1116,24 +1124,23 @@ document.addEventListener('DOMContentLoaded', () => {
         loadBoard();
         startAutoRefresh();
     }
-	// In deinen Event-Listenern (DOMContentLoaded)
+    
 	const addFavBtn = document.getElementById('btn-add-fav');
-		if (addFavBtn) {
-			addFavBtn.addEventListener('click', () => {
-				const name = DOM.stopInput().value;
-				// Nur speichern, wenn eine ID vorhanden ist und der Name nicht "Suchen..." oder leer ist
-				if (STOP_ID && name && name !== 'Suchen...') {
-					
-					// Prüfen, ob die ID schon existiert
-					if (!FAVORITES.find(f => f.id === STOP_ID)) {
-						FAVORITES.push({ name: name, id: STOP_ID });
-						saveToStorage(); // Speichert in den LocalStorage
-						renderFavBar();  // Aktualisiert die Anzeige oben
-						showStatus(`${name} gespeichert`, 'success');
-					} else {
-						showStatus('Bereits in Favoriten', 'info');
-					}
+	if (addFavBtn) {
+		addFavBtn.addEventListener('click', () => {
+			const name = DOM.stopInput().value;
+			if (STOP_ID && name && name !== 'Suchen...') {
+				if (!FAVORITES.find(f => f.id === STOP_ID)) {
+					FAVORITES.push({ name: name, id: STOP_ID });
+					saveToStorage();
+					renderFavBar();
+					showStatus(`${name} gespeichert`, 'success');
+				} else {
+					showStatus('Bereits in Favoriten', 'info');
 				}
-			});
-		}
+			}
+		});
+	}
+
+    initDestFilter();
 });

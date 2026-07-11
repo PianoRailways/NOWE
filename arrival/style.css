@@ -528,7 +528,40 @@ body {
 	text-decoration: none;
 }
 
+/* ─── ZIELFILTER-BAR ─────────────────────────────────────────────────── */
+#dest-filter-bar {
+    padding: 8px 14px;
+    background: var(--board-head);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+}
 
+#destFilter {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #888;
+    font-size: 1rem;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.05);
+    color: var(--text-main);
+}
+
+#destFilter::placeholder {
+    color: rgba(0,0,0,0.35);
+}
+
+#destFilter:focus {
+    outline: none;
+    border-color: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.08);
+}
+
+/* Versteckte Zeilen durch Zielfilter */
+tr.dep-row.filtered-dest,
+tr.dep-row.filtered-dest + tr.chain-row {
+    display: none !important;
+}
 
 /* Zielspalte */
 .destination {

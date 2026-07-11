@@ -42,10 +42,9 @@
             <!-- Datum + Zeit Picker -->
             <div id="datetime-picker">
                 <input id="date-input" type="date" title="Datum wählen" />
-                <input id="time-input" type="time" title="Abfahrtszeit wählen" />
+                <input id="time-input" type="time" title="Ankunftszeit wählen" />
                 <button id="btn-datetime-clear" title="Auf jetzt zurücksetzen">JETZT</button>
 				<button id="btn-refresh" title="Aktualisieren">GO</button>
-				<!--//<button id="btn-refresh" title="Aktualisieren">&#8635;</button>-->
             </div>
 
     
@@ -63,12 +62,26 @@
         <button class="filter-btn" data-cat="schiff">Schiff</button>
         <button class="filter-btn" data-cat="bergbahn">Bergbahn</button>
         <button class="filter-btn" data-cat="sonstige">Sonstiges</button>
+        <span style="margin-left: auto; display: flex; align-items: center; gap: 8px;">
+            <span class="filter-label">Vias</span>
+            <button id="btn-toggle-via" class="toggle-via-btn active" title="Vias?">on</button>
+        </span>
+    </div>
+
+    <!-- ═══════════════ ZIELFILTER ═══════════════ -->
+    <div id="dest-filter-bar">
+        <input type="text" id="destFilter" placeholder="Nach Herkunft filtern (z.B. Basel, Zürich)…" autocomplete="off">
+    </div>
+
+    <!-- ═══════════════ ZIELFILTER ═══════════════ -->
+    <div id="dest-filter-bar">
+        <input type="text" id="destFilter" placeholder="Nach Herkunft filtern (z.B. Basel, Zürich)…" autocomplete="off">
     </div>
 
     <!-- ═══════════════ STATUS ═══════════════ -->
     <div id="status-message"></div>
 
-    <!-- ═══════════════ ABFAHRTSTAFEL ═══════════════ -->
+    <!-- ═══════════════ ANKUNFTSTAFEL ═══════════════ -->
 	<div class="time-controls"><button id="btn-time-prev">↑ Früher (20')</button></div> 
     <main id="board-container">
         <div id="departure-board"></div>
