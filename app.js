@@ -435,6 +435,7 @@ function renderBoard(departures) {
         }
             else if (dep.operatorName === '801' && dep.cat === 'RUB') { lineType = 'RUB-PAG'; }
             else if (dep.operatorName === '801') { lineType = 'PAG'; }
+            else if (dep.operatorName === '865') { lineType = 'RhB'; }
         
             else {
             lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
