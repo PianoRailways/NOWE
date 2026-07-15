@@ -433,6 +433,7 @@ function renderBoard(departures) {
                 lineType = 'VBZ';
             }
         }
+            else if (dep.operatorName === '801' && dep.cat === 'RUB') { lineType = 'RUB-PAG'; }
             else if (dep.operatorName === '801') { lineType = 'PAG'; }
         
             else {
