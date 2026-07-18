@@ -291,4 +291,8 @@ window.combinedStations = {
 	'Rorschach, Signalstrasse': ['Rorschach Hafen (See)', 'Rorschach, Signalstrasse', 'Rorschach, Rathaus', 'Rorschach Hafen'],
 	'Rorschach, Rathaus': ['Rorschach Hafen (See)', 'Rorschach, Signalstrasse', 'Rorschach, Rathaus', 'Rorschach Hafen'],
 	'Rorschach Hafen': ['Rorschach Hafen (See)', 'Rorschach, Signalstrasse', 'Rorschach, Rathaus', 'Rorschach Hafen'],
+	'Dieni' : ['Dieni', 'Dieni, Pendicularas'],
+	'Dieni, Pendicularas' : ['Dieni', 'Dieni, Pendicularas'],
+	'Tschamut, Via Alpsu': ['Tschamut-Selva', 'Tschamut, Via Alpsu'],
+	'Tschamut-Selva': ['Tschamut-Selva', 'Tschamut, Via Alpsu'],
 	};
