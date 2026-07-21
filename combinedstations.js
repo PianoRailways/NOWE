@@ -318,4 +318,8 @@ window.combinedStations = {
 	'Unterseen (Unterseen) (See)': ['Unterseen, Neuhaus', 'Neuhaus (Unterseen) (See)'],
 	'Sundlauenen, Pilgerweg': ['Beatushöhlen-Sundlauenen', 'Sundlauenen, Pilgerweg'],
 	'Beatushöhlen-Sundlauenen': ['Beatushöhlen-Sundlauenen', 'Sundlauenen, Pilgerweg'],
+	'Dieni' : ['Dieni', 'Dieni, Pendicularas'],
+	'Dieni, Pendicularas' : ['Dieni', 'Dieni, Pendicularas'],
+	'Tschamut, Via Alpsu': ['Tschamut-Selva', 'Tschamut, Via Alpsu'],
+	'Tschamut-Selva': ['Tschamut-Selva', 'Tschamut, Via Alpsu'],
 	};
