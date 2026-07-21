@@ -291,4 +291,7 @@ window.combinedStations = {
 	'Rorschach, Signalstrasse': ['Rorschach Hafen (See)', 'Rorschach, Signalstrasse', 'Rorschach, Rathaus', 'Rorschach Hafen'],
 	'Rorschach, Rathaus': ['Rorschach Hafen (See)', 'Rorschach, Signalstrasse', 'Rorschach, Rathaus', 'Rorschach Hafen'],
 	'Rorschach Hafen': ['Rorschach Hafen (See)', 'Rorschach, Signalstrasse', 'Rorschach, Rathaus', 'Rorschach Hafen'],
+	'Gümligen': ['Gümligen', 'Gümligen, Bahnhof (Bus)', 'Gümligen, Bahnhof (Tram)'],
+	'Gümligen, Bahnhof (Bus)': ['Gümligen', 'Gümligen, Bahnhof (Bus)', 'Gümligen, Bahnhof (Tram)'],
+	'Gümligen, Bahnhof (Tram)': ['Gümligen', 'Gümligen, Bahnhof (Bus)', 'Gümligen, Bahnhof (Tram)'],
 	};
