@@ -433,7 +433,9 @@ function renderBoard(departures) {
                 lineType = 'VBZ';
             }
         }
+            else if (dep.operatorName === '801' && dep.cat === 'RUB') { lineType = 'RUB-PAG'; }
             else if (dep.operatorName === '801') { lineType = 'PAG'; }
+            else if (dep.operatorName === '865') { lineType = 'RhB'; }
         
             else {
             lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
@@ -692,11 +694,25 @@ function buildChain(dep) {
             ? '<span style="background:#000; color:#aaa; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">Diensthalt</span>'
             : '';
 
-
         // ✅ FIX #4: Request-Stop (Halt auf Verlangen)
         const requestStopBadge = stop.requestStop
             ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>'
             : '';
+
+        // ✅ FIX #5: Ausserordentlicher Halt (UnplannedStop) — ROTE SCHRIFT
+        const unplannedStopStyle = stop.unplannedStop 
+            ? 'color: #e60000; font-weight: bold;'
+            : '';
+
+        // ✅ FIX #6: Halt nur zum Aussteigen (SD) oder nur zum Einsteigen (SM)
+        let boardingBadge = '';
+        if (stop.noBoardingAtStop && !stop.noAlightingAtStop) {
+            // Nur Aussteigen erlaubt
+            boardingBadge = '<span style="border:1.5px solid #0066cc; color:#0066cc; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">SD</span>';
+        } else if (stop.noAlightingAtStop && !stop.noBoardingAtStop) {
+            // Nur Einsteigen erlaubt
+            boardingBadge = '<span style="border:1.5px solid #0066cc; color:#0066cc; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">SM</span>';
+        }
 
         // Dot-Farbe: ausgefallene Halte grau, Diensthalte schwarz
         const dotStyle = stop.cancelled 
@@ -736,7 +752,7 @@ function buildChain(dep) {
                 </div>
 
                 <div class="chain-info">
-                    <div class="chain-name" style="${stopNameStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}${requestStopBadge}</div>
+                    <div class="chain-name" style="${stopNameStyle}${unplannedStopStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}${requestStopBadge}${boardingBadge}${stop.unplannedStop ? '<span style="color:#e60000; font-size:0.72em; margin-left:6px; font-weight:bold;"> (Zusatz)</span>' : ''}</div>
                     ${platHtml ? `<div class="chain-platform">Gl. ${platHtml}</div>` : ''}
                 </div>
             </div>
@@ -755,6 +771,13 @@ function buildChain(dep) {
             </span>`);
     }
     if (dep.operatorName) metaParts.push(`<span class="meta-operator">Betreiber: ${dep.operatorName}</span>`);
+    
+    // ✅ NEW: Service-Attribute anzeigen (Fahrplanänderung, Niederflur, etc.)
+    if (dep.serviceAttributes && dep.serviceAttributes.length > 0) {
+        const attrTexts = dep.serviceAttributes.map(attr => attr.text).join(', ');
+        metaParts.push(`<span class="meta-attributes">Attribute: ${attrTexts}</span>`);
+    }
+    
     if (metaParts.length > 0) {
         html += `<div class="chain-meta-footer">${metaParts.join('<span class="meta-sep"> | </span>')}</div>`;
     }
@@ -1128,7 +1151,7 @@ function updateClock() {
         String(now.getMinutes()).padStart(2,'0') + ':' +
         String(now.getSeconds()).padStart(2,'0');
 }
-// ─── Zeit-Controlls ───────────────────────────────────────────────────────
+// ─── Zeit-Controlls ───────────────────────────────────────────────────
 
 function offsetTime(minutes) {
     const now = new Date();

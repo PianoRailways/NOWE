@@ -439,6 +439,7 @@ function parseOJPResponse(xmlString) {
             const noBoardingAtStop = call.getElementsByTagName('NoBoardingAtStop')[0]?.textContent === 'true';
             const noAlightingAtStop = call.getElementsByTagName('NoAlightingAtStop')[0]?.textContent === 'true';
             const isRequestStop = call.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
+            const unplannedStop = call.getElementsByTagName('UnplannedStop')[0]?.textContent === 'true';
             
             previous.push({
                 name,
@@ -457,6 +458,7 @@ function parseOJPResponse(xmlString) {
                 estimatedPlatform:    q.estimated,
                 platformChanged:      q.isChanged,
                 cancelled:            isCancelled,
+                unplannedStop,
                 noBoardingAtStop,
                 noAlightingAtStop,
                 requestStop:          isRequestStop,
@@ -471,6 +473,7 @@ function parseOJPResponse(xmlString) {
             const dep = getTimeInfo(thisCallNode, 'ServiceDeparture');
             const isCancelled = thisCallNode.getElementsByTagName('NotServicedStop')[0]?.textContent === 'true';
             const isRequestStop = thisCallNode.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
+            const unplannedStop = thisCallNode.getElementsByTagName('UnplannedStop')[0]?.textContent === 'true';
             return {
                 name:                 getStopName(thisCallNode) ?? currentName,
                 arrivalTime:          arr.timetabled,
@@ -488,6 +491,7 @@ function parseOJPResponse(xmlString) {
                 estimatedPlatform:    q.estimated,
                 platformChanged:      q.isChanged,
                 cancelled:            isCancelled,
+                unplannedStop,
                 requestStop:          isRequestStop,
                 stopRef:              null
             };
@@ -506,6 +510,7 @@ function parseOJPResponse(xmlString) {
             const noBoardingAtStop = call.getElementsByTagName('NoBoardingAtStop')[0]?.textContent === 'true';
             const noAlightingAtStop = call.getElementsByTagName('NoAlightingAtStop')[0]?.textContent === 'true';
             const isRequestStop = call.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
+            const unplannedStop = call.getElementsByTagName('UnplannedStop')[0]?.textContent === 'true';
             
             onward.push({
                 name,
@@ -524,6 +529,7 @@ function parseOJPResponse(xmlString) {
                 estimatedPlatform:    q.estimated,
                 platformChanged:      q.isChanged,
                 cancelled:            isCancelled,
+                unplannedStop,
                 noBoardingAtStop,
                 noAlightingAtStop,
                 requestStop:          isRequestStop,
@@ -539,6 +545,24 @@ function parseOJPResponse(xmlString) {
         if (!el) return null;
         const textNode = el.getElementsByTagName('Text')[0];
         return textNode ? textNode.textContent.trim() : el.textContent.trim();
+    }
+
+    // ─── Service-Attribute extrahieren ──────────────────────────────────────────
+    function getServiceAttributes(service) {
+        const attributes = [];
+        const attrElems = service.getElementsByTagName('Attribute');
+        for (const attr of attrElems) {
+            const userTextEl = attr.getElementsByTagName('UserText')[0];
+            const textEl = userTextEl?.getElementsByTagName('Text')[0];
+            const codeEl = attr.getElementsByTagName('Code')[0];
+            
+            if (textEl) {
+                const text = textEl.textContent.trim();
+                const code = codeEl?.textContent?.trim() ?? '';
+                attributes.push({ text, code });
+            }
+        }
+        return attributes;
     }
 
     // --- Hauptverarbeitung ---
@@ -643,6 +667,9 @@ function parseOJPResponse(xmlString) {
             }
         }
 
+        // ─── Service-Attribute extrahieren ──────────────────────────────────────
+        const serviceAttributes = getServiceAttributes(service);
+
         departures.push({
 			stopName,
             cat: getText(service, 'ShortName') ?? '??',
@@ -665,9 +692,15 @@ function parseOJPResponse(xmlString) {
             journeyRef,
             operatorRef,
             operatorName,
-            operatingDays
+            operatingDays,
+            serviceAttributes
         });
     }
 
 	return deduplicateDepartures(departures);
 }
+
+export default {
+    fetchDepartures,
+    searchStops
+};
