@@ -322,4 +322,10 @@ window.combinedStations = {
 	'Dieni, Pendicularas' : ['Dieni', 'Dieni, Pendicularas'],
 	'Tschamut, Via Alpsu': ['Tschamut-Selva', 'Tschamut, Via Alpsu'],
 	'Tschamut-Selva': ['Tschamut-Selva', 'Tschamut, Via Alpsu'],
+	'Romanshorn Autoquai': ['Romanshorn Autoquai', 'Romanshorn', 'Romanshorn, Bahnhof', 'Romanshorn (See)'],
+	'Romanshorn': ['Romanshorn Autoquai', 'Romanshorn', 'Romanshorn, Bahnhof', 'Romanshorn (See)'],
+	'Romanshorn, Bahnhof': ['Romanshorn Autoquai', 'Romanshorn', 'Romanshorn, Bahnhof', 'Romanshorn (See)'],
+	'Romanshorn (See)': ['Romanshorn Autoquai', 'Romanshorn', 'Romanshorn, Bahnhof', 'Romanshorn (See)'],
+	'Friedrichshafen-Hafen': ['Friedrichshafen-Hafen', 'Friedrichshafen Fähre'],
+	'Friedrichshafen Fähre': ['Friedrichshafen-Hafen', 'Friedrichshafen Fähre'],
 	};
