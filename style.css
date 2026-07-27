@@ -613,6 +613,9 @@ body {
 .line-badge[data-type="VBZ"] { background: white; color: black; }
 .line-badge[data-type="VBZ-18"] { background: #E94F35; color: white; }
 
+.line-badge[data-type="RUB"] { background: #006d68; color: white; }
+.line-badge[data-type="RUB-PAG"] { background: #006d68; color: #ffcc00; }
+.line-badge[data-type="RhB"] { background: #e2001a; color: white; }
 .line-badge[data-type="PAG"] { background: #ffcc00; color: black; }
 
 
@@ -856,6 +859,7 @@ tr.dep-row.filtered-dest + tr.chain-row {
     display: flex;
     flex-direction: column;
     padding-bottom: 10px;
+	padding-left: 10px;
     margin-left: 1px;
     flex: 1;
 }
