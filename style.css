@@ -859,6 +859,7 @@ tr.dep-row.filtered-dest + tr.chain-row {
     display: flex;
     flex-direction: column;
     padding-bottom: 10px;
+	padding-left: 10px;
     margin-left: 1px;
     flex: 1;
 }
