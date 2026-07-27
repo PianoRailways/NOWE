@@ -701,7 +701,7 @@ function buildChain(dep) {
 
         // ✅ FIX #5: Ausserordentlicher Halt (UnplannedStop) — ROTE SCHRIFT
         const unplannedStopStyle = stop.unplannedStop 
-            ? 'color: #e60000; font-weight: bold;'
+            ? 'color: #a20013; font-weight: normal'
             : '';
 
         // ✅ FIX #6: Halt nur zum Aussteigen (SD) oder nur zum Einsteigen (SM)
@@ -752,7 +752,7 @@ function buildChain(dep) {
                 </div>
 
                 <div class="chain-info">
-                    <div class="chain-name" style="${stopNameStyle}${unplannedStopStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}${requestStopBadge}${boardingBadge}${stop.unplannedStop ? '<span style="color:#e60000; font-size:0.72em; margin-left:6px; font-weight:bold;"> (Zusatz)</span>' : ''}</div>
+                    <div class="chain-name" style="${stopNameStyle}${unplannedStopStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}${requestStopBadge}${boardingBadge}${stop.unplannedStop ? '<span style="color:#e60000; font-size:0.72em; margin-left:6px;"></span>' : ''}</div>
                     ${platHtml ? `<div class="chain-platform">Gl. ${platHtml}</div>` : ''}
                 </div>
             </div>
