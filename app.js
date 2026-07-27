@@ -708,10 +708,10 @@ function buildChain(dep) {
         let boardingBadge = '';
         if (stop.noBoardingAtStop && !stop.noAlightingAtStop) {
             // Nur Aussteigen erlaubt
-            boardingBadge = '<span style="border:1.5px solid #0066cc; color:#0066cc; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">SD</span>';
+            boardingBadge = '<span style="color: #91a7bd; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">SD</span>';
         } else if (stop.noAlightingAtStop && !stop.noBoardingAtStop) {
             // Nur Einsteigen erlaubt
-            boardingBadge = '<span style="border:1.5px solid #0066cc; color:#0066cc; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">SM</span>';
+            boardingBadge = '<span style="color: #91a7bd; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">SM</span>';
         }
 
         // Dot-Farbe: ausgefallene Halte grau, Diensthalte schwarz
