@@ -120,7 +120,7 @@ window.combinedStations = {
 	'Basel, Bahnhof St. Johann': ['Basel St. Johann', 'Basel, Bahnhof St. Johann'],
 	'Olten, Leberngasse': ['Olten, Leberngasse', 'Olten, Schützenmatt'],
 	'Olten, Schützenmatt': ['Olten, Leberngasse', 'Olten, Schützenmatt'],
-	'Balsthal, Thalbrücke': ['Balsthal, Thalbrücke'],
+	'Balsthal, Thalbrücke': ['Balsthal, Thalbrücke', 'Thalbrücke'],
 	'Thalbrücke': ['Balsthal, Thalbrücke', 'Thalbrücke'],
 	'Vignogn': ['Vignogn, vitg', 'Vignogn, Baselgia'],
 	'Bern, Postautostation ': ['Bern, Hauptbahnhof'],
