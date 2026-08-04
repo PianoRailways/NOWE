@@ -30,6 +30,8 @@ window.combinedStations = {
     'Sursee, Bahnhof': ['Sursee', 'Sursee, Bahnhof', 'Sursee, Schnydermatt'],
 	'Sursee': ['Sursee', 'Sursee, Schnydermatt', 'Sursee, Bahnhof'],
 	'Sursee, Schnydermatt': ['Sursee', 'Sursee, Schnydermatt', 'Sursee, Bahnhof'],
+	'Strengelbach, Gemeindehaus': ['Strengelbach, Gemeindhaus', 'Strengelbach, Kreuzplatz'],
+	'Strengelbach, Kreuzplatz': ['Strengelbach, Gemeindhaus', 'Strengelbach, Kreuzplatz'],
 	'Küngoldingen': ['Küngoldingen', 'Küngoldingen, Post'],
 	'Küngoldingen, Post': ['Küngoldingen', 'Küngoldingen, Post'],
 	'Oberentfelden': ['Oberentfelden', 'Oberentfelden, Engelplatz'],
