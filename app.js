@@ -410,7 +410,7 @@ function renderBoard(departures) {
         // ✅ VBZ-spezifische data-type Logik mit gezielter Bus-Whitelist
         let lineType;
 
-        if (dep.operatorName === '3849' || dep.operatorName === '849' || dep.operatorName === '46' || dep.operatorName === '41' ) {
+        if (dep.operatorName === 'ojp:3849' || dep.operatorName === 'ojp:849' || dep.operatorName === 'ojp:46' || dep.operatorName === 'ojp:41' ) {
             const cleanCat = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
             
             // Liste der Buslinien, für die du spezifische Farben definiert hast
@@ -433,9 +433,9 @@ function renderBoard(departures) {
                 lineType = 'VBZ';
             }
         }
-            else if (dep.operatorName === '801' && dep.cat === 'RUB') { lineType = 'RUB-PAG'; }
-            else if (dep.operatorName === '801') { lineType = 'PAG'; }
-            else if (dep.operatorName === '865') { lineType = 'RhB'; }
+            else if (dep.operatorName === 'ojp:801' && dep.cat === 'RUB') { lineType = 'RUB-PAG'; }
+            else if (dep.operatorName === 'ojp:801') { lineType = 'PAG'; }
+            else if (dep.operatorName === 'ojp:865') { lineType = 'RhB'; }
         
             else {
             lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
