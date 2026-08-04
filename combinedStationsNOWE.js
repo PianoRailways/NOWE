@@ -36,6 +36,8 @@ window.combinedStations = {
     'ch:1:sloid:2998': ['ch:1:sloid:2007', 'ch:1:sloid:2998', 'ch:1:sloid:11908'],
     'ch:1:sloid:2007': ['ch:1:sloid:2007', 'ch:1:sloid:11908', 'ch:1:sloid:2998'],
     'ch:1:sloid:11908': ['ch:1:sloid:2007', 'ch:1:sloid:11908', 'ch:1:sloid:2998'],
+    'ch:1:sloid:72722': ['Strengelbach, Gemeindhaus', 'ch:1:sloid:2891'],
+    'ch:1:sloid:2891': ['Strengelbach, Gemeindhaus', 'ch:1:sloid:2891'],
     'ch:1:sloid:2120': ['ch:1:sloid:2120', 'ch:1:sloid:72680'],
     'ch:1:sloid:72680': ['ch:1:sloid:2120', 'ch:1:sloid:72680'],
     'ch:1:sloid:2102': ['ch:1:sloid:2102', 'ch:1:sloid:10268'],
