@@ -514,7 +514,12 @@ function renderBoard(departures) {
             <tr class="dep-row ${bgClass} ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}" 
                 data-index="${index}"
                 data-dest="${dep.destination || ''}"
-                data-vias="${viasStr}">
+                data-vias="${viasStr}"
+                data-line="${dep.line || ''}"
+                data-trip="${dep.journeyNumber || ''}"
+                data-cat="${dep.cat || ''}"
+                data-operator-name="${dep.operatorName || ''}"
+                data-operator-ref="${dep.operatorRef || ''}">
                 <td class="col-time">${timeCell}</td>
                 <td class="col-line">
                     <div class="line-container">
@@ -1236,6 +1241,7 @@ function initDestFilter() {
  * Wendet den Zielfilter auf die angezeigten Abfahrten an
  * Filtert nach Ziel ODER Vias (case-insensitive substring match)
  */
+
 function applyDestFilter() {
     const destFilterEl = document.getElementById('destFilter');
     if (!destFilterEl) return;
@@ -1245,6 +1251,11 @@ function applyDestFilter() {
     document.querySelectorAll('.dep-row').forEach(tr => {
         const dest = (tr.dataset.dest || '').toLowerCase();
         const vias = (tr.dataset.vias || '').toLowerCase();
+        const line = (tr.dataset.line || '').toLowerCase();       // Linie (z.B. "64")
+        const trip = (tr.dataset.trip || '').toLowerCase();       // Fahrtnummer
+        const cat = (tr.dataset.cat || '').toLowerCase();         // Kategorie/Typ (z.B. "IC", "S", "T")
+        const operatorName = (tr.dataset.operatorName || '').toLowerCase(); // Betreiber Name
+        const operatorRef = (tr.dataset.operatorRef || '').toLowerCase();   // Betreiber ID/Ref
         
         // Wenn kein Filter, zeige alles
         if (!query) {
@@ -1252,8 +1263,15 @@ function applyDestFilter() {
             return;
         }
         
-        // Prüfe ob Query in Ziel ODER in Vias vorkommt
-        const matches = dest.includes(query) || vias.includes(query);
+        // Prüfe ob Query in einem der Felder vorkommt (OR-Logik)
+        const matches = 
+            dest.includes(query) ||        // Zielbahnhof
+            vias.includes(query) ||        // Zwischenstopps
+            line.includes(query) ||        // Liniennummer (z.B. "64", "S6")
+            trip.includes(query) ||        // Fahrtnummer (z.B. "64133")
+            cat.includes(query) ||         // Kategorie (z.B. "IC", "BUS", "TRAM")
+            operatorName.includes(query) || // Betreibername (z.B. "Automobildienste")
+            operatorRef.includes(query);    // Betreiber-ID/Referenz
         
         tr.classList.toggle('filtered-dest', !matches);
     });
