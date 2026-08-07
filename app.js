@@ -31,14 +31,14 @@ function getCategory(departure) {
 // EVU-Kürzel (z.B. "SBBP") als auch die numerische Business-Org-ID (z.B. "11")
 // werden akzeptiert, da OJP je nach Betreiber unterschiedliche Werte liefert.
 const FORMATION_OPERATORS = new Set([
-    'blsp', '33',
-    'sbbp', '11',
-    'sob', '82',
-    'zb', '86',
-    'tpf', '53',
-    'rhb', '72',
-    'thurbo', '65',
-    'trn', '73',
+    'blsp', 'ojp:33',
+    'sbbp', 'ojp:11',
+    'sob', 'ojp:82',
+    'zb', 'ojp:86',
+    'tpf', 'ojp:53',
+    'rhb', 'ojp:72',
+    'thurbo', 'ojp:65',
+    'trn', 'ojp:73',
 ]);
 
 function hasFormationSupport(dep) {
