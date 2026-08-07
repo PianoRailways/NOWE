@@ -295,4 +295,6 @@ window.combinedStations = {
 	'Romanshorn (See)': ['Romanshorn Autoquai', 'Romanshorn', 'Romanshorn, Bahnhof', 'Romanshorn (See)'],
 	'8029163': ['8029163', '8011121'], //Friedrichshafen-Hafen + Fähre
 	'8011121': ['8029163', '8011121'], //Friedrichshafen-Hafen + Fähre
+	'Genève': ['Genève', 'Genève, gare Cornavin'],
+	'Genève, gare Cornavin': ['Genève', 'Genève, gare Cornavin'],
 	};
