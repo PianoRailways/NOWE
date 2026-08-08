@@ -518,7 +518,7 @@ function renderBoard(departures) {
                 <td class="col-time">${timeCell}</td>
                 <td class="col-line">
                     <div class="line-container">
-                        <a href="/trip/?sjyid=${encodeURIComponent(dep.journeyRef)}&date=${encodeURIComponent(operatingDay)}"><span class="line-badge" data-type="${lineType}">${fullLine}</span></a>
+                        <a href="/trip/?sjyid=${encodeURIComponent(dep.journeyRef)}&date=${encodeURIComponent(operatingDay)}"><span class="line-badge" data-type="${lineType}" operator="${dep.operatorName}" data-line="${dep.line}">${fullLine}</span></a>
                         ${journeyNumHtml}
                     </div>
                 </td>
