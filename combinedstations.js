@@ -297,4 +297,6 @@ window.combinedStations = {
 	'8011121': ['8029163', '8011121'], //Friedrichshafen-Hafen + Fähre
 	'Genève': ['Genève', 'Genève, gare Cornavin'],
 	'Genève, gare Cornavin': ['Genève', 'Genève, gare Cornavin'],
+	'Bern, Brunnhof': ['Bern, Brunnhof', 'Bern Kaufmännischer Verband'],
+	'Bern, Kaufmännischer Verband': ['Bern, Brunnhof', 'Bern Kaufmännischer Verband'],
 	};
