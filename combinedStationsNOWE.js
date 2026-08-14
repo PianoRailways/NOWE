@@ -123,7 +123,7 @@ window.combinedStations = {
     'ch:1:sloid:92322': ['ch:1:sloid:16', 'ch:1:sloid:92322'],
     'ch:1:sloid:95988': ['ch:1:sloid:95988', 'ch:1:sloid:90432'],
     'ch:1:sloid:90432': ['ch:1:sloid:95988', 'ch:1:sloid:90432'],
-    'ch:1:sloid:72325': ['ch:1:sloid:72325'],
+    'ch:1:sloid:72325': ['ch:1:sloid:72325', 'ch:1:sloid:293'],
     'ch:1:sloid:293': ['ch:1:sloid:72325', 'ch:1:sloid:293'],
     'Vignogn': ['ch:1:sloid:9957', 'ch:1:sloid:11979'],
     'Bern, Postautostation ': ['ch:1:sloid:7785'],
@@ -288,5 +288,9 @@ window.combinedStations = {
     'ch:1:sloid:6346': ['ch:1:sloid:6346', 'ch:1:sloid:6121', 'ch:1:sloid:87195', 'ch:1:sloid:6112'],
     'ch:1:sloid:6121': ['ch:1:sloid:6346', 'ch:1:sloid:6121', 'ch:1:sloid:87195', 'ch:1:sloid:6112'],
     'ch:1:sloid:87195': ['ch:1:sloid:6346', 'ch:1:sloid:6121', 'ch:1:sloid:87195', 'ch:1:sloid:6112'],
-    'ch:1:sloid:6112': ['ch:1:sloid:6346', 'ch:1:sloid:6121', 'ch:1:sloid:87195', 'ch:1:sloid:6112']
+    'ch:1:sloid:6112': ['ch:1:sloid:6346', 'ch:1:sloid:6121', 'ch:1:sloid:87195', 'ch:1:sloid:6112'],
+    'ch:1:sloid:1008': ['ch:1:sloid:1008', 'ch:1:sloid:87057'],
+    'ch:1:sloid:87057': ['ch:1:sloid:1008', 'ch:1:sloid:87057'],
+    'ch:1:sloid:90010': ['ch:1:sloid:90010', 'Bern Kaufmännischer Verband'],
+    'ch:1:sloid:90009': ['ch:1:sloid:90010', 'Bern Kaufmännischer Verband']
 };
