@@ -541,7 +541,7 @@ body {
 .line-badge[data-type="GPX"] { background: var(--sbb-red); font-style: italic; }
 /* Regional – weiß/rot */
 .line-badge[data-type="RE"],
-.line-badge[data-type="IRE"] { background: white; color: var(--sbb-red); }
+.line-badge[data-type="IRE"] { background: white; color: var(--sbb-red); border: solid 1px var(--sbb-red); }
 /* S-Bahn – weiß/schwarz */
 .line-badge[data-type="S"],
 .line-badge[data-type="R"],
