@@ -5,6 +5,7 @@ window.combinedStations = {
     'Zürich, Bahnhofstrasse/HB': ['Zürich HB', 'Zürich, Bahnhofstrasse/HB'],
     'Zürich, Bahnhofplatz/HB': ['Zürich HB', 'Zürich, Bahnhofplatz/HB'],
     'Zürich, Sihlpost/HB': ['Zürich HB', 'Zürich, Sihlpost/HB'],
+	'Chur, Post I/Bahnhof': ['Chur', 'Chur, Post I/Bahnhof'],
     'Basel SBB': ['Basel SBB', 'Basel, Bahnhof SBB', 'Basel, Bhfeingang Gundeldingen'],
     'Basel, Bahnhof SBB': ['Basel SBB', 'Basel, Bahnhof SBB'],
     'Basel, Bhfeingang Gundeldingen': ['Basel SBB', 'Basel, Bhfeingang Gundeldingen'],
