@@ -328,7 +328,7 @@ window.combinedStations = {
 	'Walchwil': ['Walchwil, Mütschi', 'Walchwil', 'Walchwil, Bahnhof'],
 	'Walchwil, Bahnhof': ['Walchwil, Mütschi', 'Walchwil', 'Walchwil, Bahnhof'],
 	'Walchwil, Mütschi': ['Walchwil, Mütschi', 'Walchwil', 'Walchwil, Bahnhof'],
-	'Arth-Goldau': ['Arth-Goldau', 'Arth-Goldau RB', 'Arth-Goldau, Bahnhof],
-	'Arth-Goldau RB': ['Arth-Goldau', 'Arth-Goldau RB', 'Arth-Goldau, Bahnhof],
-	'Arth-Goldau, Bahnhof': ['Arth-Goldau', 'Arth-Goldau RB', 'Arth-Goldau, Bahnhof],
+	'Arth-Goldau': ['Arth-Goldau', 'Arth-Goldau RB', 'Arth-Goldau, Bahnhof'],
+	'Arth-Goldau RB': ['Arth-Goldau', 'Arth-Goldau RB', 'Arth-Goldau, Bahnhof'],
+	'Arth-Goldau, Bahnhof': ['Arth-Goldau', 'Arth-Goldau RB', 'Arth-Goldau, Bahnhof'],
 	};
