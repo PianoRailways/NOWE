@@ -45,7 +45,6 @@ window.combinedStations = {
     'Luzern': ['Luzern', 'Luzern Bahnhofquai', 'Luzern, Bahnhof', 'Luzern, Inseliquai/Bahnhof'],
     'Luzern Bahnhofquai': ['Luzern', 'Luzern Bahnhofquai'],
     'Kastanienbaum, Schiffstation': ['Kastanienbaum, Schiffstation', 'Kastanienbaum (See)'],
-    'Münchenstein': ['Münchenstein, Bahnhof', 'Münchenstein'],
     'Dornach-Arlesheim': ['Dornach, Bahnhof', 'Dornach-Arlesheim'],
     'Dornach, Bahnhof': ['Dornach, Bahnhof', 'Dornach-Arlesheim'],
     'Basel Dreispitz': ['Basel, Dreispitz', 'Basel Dreispitz'],
