@@ -130,7 +130,7 @@ window.combinedStations = {
 	'Vignogn': ['Vignogn, vitg', 'Vignogn, Baselgia'],
 	'Bern, Postautostation ': ['Bern, Hauptbahnhof'],
 	'Fribourg/Freiburg': ['Fribourg/Freiburg', 'Fribourg/Freiburg, gare rout.', 'Fribourg/Freiburg, Pl. gare', 'Fribourg/Freiburg, Richemond/gare', 'Fribourg/Freiburg, gare/Tivoli', 'Fribourg/Freiburg, gare/Colisée'],
-	'Fribourg/Freiburg, gare rout.': ['Fribourg/Freiburg', 'Fribourg/Freiburg, Pl. gare'],
+	'Fribourg/Freiburg, gare rout.': ['Fribourg/Freiburg', 'Fribourg/Freiburg, Pl. gare', 'Fribourg/Freiburg, gare/Tivoli'],
 	'Fribourg/Freiburg, Pl. gare': ['Fribourg/Freiburg', 'Fribourg/Freiburg, gare rout.'],
 	'Lauterbrunnen (Seilbahn)': ['Lauterbrunnen', 'Lauterbrunnen, Bahnhof' , 'Lauterbrunnen (Seilbahn)'],
 	'Lauterbrunnen, Bahnhof': ['Lauterbrunnen', 'Lauterbrunnen, Bahnhof' , 'Lauterbrunnen (Seilbahn)'],
