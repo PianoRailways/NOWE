@@ -14,6 +14,15 @@ Bahnhof West
 Bahnhofplatz
 Bahnhofsplatz
 Bhf.
+Bhf
+Bhf. Ost
+Bhf. Süd
+Bhf. Nord
+Bhf. West
+Bhf Ost
+Bhf Süd
+Bhf Nord
+Bhf West
 Hauptstr./Bhf.
 Postautostation
 Abzw. Bahnhof
