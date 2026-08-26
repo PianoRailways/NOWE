@@ -153,6 +153,7 @@
             <div class="upload-section">
                 <label class="upload-label">1. DIDOK-CSV Datei (Dienststellendatei)</label>
                 <input type="file" id="didokFile" accept=".csv" />
+                <textarea id="didokInput" placeholder="Oder CSV-Inhalt hier einfügen"></textarea>
                 <div id="didokInfo"></div>
             </div>
 
@@ -178,6 +179,7 @@
         let textPreviewString = ""; 
 
         const didokFile = document.getElementById('didokFile');
+        const didokInput = document.getElementById('didokInput');
         const analyzeBtn = document.getElementById('analyzeBtn');
         const confirmBtn = document.getElementById('confirmBtn');
         const didokInfo = document.getElementById('didokInfo');
@@ -186,12 +188,8 @@
         const statusDiv = document.getElementById('status');
         const previewContainer = document.getElementById('previewContainer');
 
-        didokFile.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
+        function parseDidokText(text) {
             try {
-                const text = await file.text();
                 const lines = text.split('\n');
                 const rawList = [];
 
@@ -221,6 +219,14 @@
             } catch (err) {
                 didokInfo.innerHTML = `<div class="file-info error">✗ Fehler: ${err.message}</div>`;
             }
+        }
+
+        didokFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) parseDidokText(await file.text());
+        });
+        didokInput.addEventListener('input', () => {
+            if (didokInput.value.trim()) parseDidokText(didokInput.value);
         });
 
         // STUFE 1: Ortsbasierte Gruppierung & Text-Vorschau

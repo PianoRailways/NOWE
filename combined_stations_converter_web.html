@@ -44,6 +44,7 @@ body {
         .upload-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 0.5rem; color: var(--color-text-primary); }
         .upload-hint { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 0.75rem; }*/
         input[type="file"] { display: block; width: 100%; margin-bottom: 0.75rem; }
+        textarea { display: block; width: 100%; min-height: 120px; margin-bottom: 0.75rem; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px; border-radius: 4px; font-family: monospace; font-size: 13px; resize: vertical; }
         .file-info { font-size: 12px; padding: 0.5rem 0.75rem; background: var(--color-background-secondary); border-radius: var(--border-radius-md); margin-top: 0.5rem; }
         .file-info.success { background: var(--color-background-success); color: var(--color-text-success); }
         .file-info.error { background: var(--color-background-danger); color: var(--color-text-danger); }
@@ -170,6 +171,7 @@ a {
                 <label class="upload-label">DIDOK-CSV Datei</label>
                 <p class="upload-hint">Importiere die DiDok-Datei</p>
                 <input type="file" id="didokFile" accept=".csv" />
+                <textarea id="didokInput" placeholder="Oder CSV-Inhalt hier einfügen"></textarea>
                 <div id="didokInfo"></div>
             </div>
 
@@ -177,6 +179,7 @@ a {
                 <label class="upload-label">combinedStations.js Datei</label>
                 <p class="upload-hint">Lade deine combinedStations.js mit Stationsnamen</p>
                 <input type="file" id="csFile" accept=".js" />
+                <textarea id="csInput" placeholder="Oder combinedStations.js-Inhalt hier einfügen"></textarea>
                 <div id="csInfo"></div>
             </div>
 
@@ -198,7 +201,9 @@ a {
         let convertedResult = null;
 
         const didokFile = document.getElementById('didokFile');
+        const didokInput = document.getElementById('didokInput');
         const csFile = document.getElementById('csFile');
+        const csInput = document.getElementById('csInput');
         const convertBtn = document.getElementById('convertBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const didokInfo = document.getElementById('didokInfo');
@@ -206,12 +211,8 @@ a {
         const statusDiv = document.getElementById('status');
         const previewDiv = document.getElementById('preview');
 
-        didokFile.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
+        function parseDidokText(text) {
             try {
-                const text = await file.text();
                 const lines = text.split('\n');
                 const nameToId = {};
 
@@ -235,14 +236,18 @@ a {
             } catch (err) {
                 didokInfo.innerHTML = `<div class="file-info error">✗ Fehler beim Lesen der Datei</div>`;
             }
+        }
+
+        didokFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) parseDidokText(await file.text());
+        });
+        didokInput.addEventListener('input', () => {
+            if (didokInput.value.trim()) parseDidokText(didokInput.value);
         });
 
-        csFile.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
+        function parseCombinedText(text) {
             try {
-                const text = await file.text();
                 const match = text.match(/window\.combinedStations\s*=\s*(\{.*?\});/s);
                 if (!match) {
                     csInfo.innerHTML = `<div class="file-info error">✗ combinedStations nicht gefunden</div>`;
@@ -261,6 +266,14 @@ a {
                 csInfo.innerHTML = `<div class="file-info error">✗ Fehler beim Parsen: ${err.message}</div>`;
                 csData = null;
             }
+        }
+
+        csFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (file) parseCombinedText(await file.text());
+        });
+        csInput.addEventListener('input', () => {
+            if (csInput.value.trim()) parseCombinedText(csInput.value);
         });
 
         convertBtn.addEventListener('click', () => {
