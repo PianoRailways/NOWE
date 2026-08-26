@@ -98,6 +98,7 @@
         .button-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1.5rem; }
         button.primary { background: #3b82f6; border-color: #3b82f6; }
         button.confirm { background: var(--sbb-red); border-color: var(--sbb-red); animation: pulse 2s infinite; }
+        button.copy-final { margin-top: 10px; width: 100%; text-align: center; }
         button.download-final { background: #10b981; border-color: #10b981; font-weight: bold; margin-top: 10px; width: 100%; text-align: center; }
         
         @keyframes pulse {
@@ -177,6 +178,7 @@
         let didokRawData = null;
         let finalIdResult = null;
         let textPreviewString = ""; 
+        let finalJsOutput = "";
 
         const didokFile = document.getElementById('didokFile');
         const didokInput = document.getElementById('didokInput');
@@ -364,6 +366,7 @@
                     jsOutput += '\n';
                 });
                 jsOutput += '};\n';
+                finalJsOutput = jsOutput;
 
                 statusDiv.innerHTML = `<div class="status success">✅ IDs erfolgreich generiert! Klicke unten auf den grünen Button, um die Datei zu speichern.</div>`;
                 
@@ -373,6 +376,7 @@
                 idBox.innerHTML = `
                     <span class="preview-title" style="margin-top:15px;">Generierter JavaScript-Code (DIDOK-IDs):</span>
                     <div class="output-preview id-preview">${jsOutput.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                    <button class="copy-final" id="finalCopyBtn">Code kopieren</button>
                     <button class="download-final" id="finalDownloadBtn">⬇️ Datei herunterladen (includedStationsNOWE.js)</button>
                 `;
                 
@@ -382,9 +386,17 @@
 
                 confirmBtn.style.display = 'none';
 
-                // Event-Listener für den frisch generierten Download-Button aktivieren
+                document.getElementById('finalCopyBtn').addEventListener('click', async () => {
+                    try {
+                        await navigator.clipboard.writeText(finalJsOutput);
+                        statusDiv.innerHTML = '<div class="status success">✅ Formatierter JavaScript-Code kopiert.</div>';
+                    } catch (err) {
+                        statusDiv.innerHTML = '<div class="status error">✗ Kopieren nicht möglich. Bitte die Vorschau manuell kopieren.</div>';
+                    }
+                });
+
                 document.getElementById('finalDownloadBtn').addEventListener('click', () => {
-                    const blob = new Blob([jsOutput], { type: 'text/javascript' });
+                    const blob = new Blob([finalJsOutput], { type: 'text/javascript;charset=utf-8' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;

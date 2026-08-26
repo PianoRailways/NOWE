@@ -185,6 +185,7 @@ a {
 
             <div class="button-group">
                 <button class="primary" id="convertBtn">Konvertieren</button>
+                <button id="copyBtn" disabled>Code kopieren</button>
                 <button id="downloadBtn" disabled>Datei herunterladen</button>
             </div>
 
@@ -199,12 +200,14 @@ a {
         let didokData = null;
         let csData = null;
         let convertedResult = null;
+        let convertedOutput = '';
 
         const didokFile = document.getElementById('didokFile');
         const didokInput = document.getElementById('didokInput');
         const csFile = document.getElementById('csFile');
         const csInput = document.getElementById('csInput');
         const convertBtn = document.getElementById('convertBtn');
+        const copyBtn = document.getElementById('copyBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const didokInfo = document.getElementById('didokInfo');
         const csInfo = document.getElementById('csInfo');
@@ -321,6 +324,7 @@ a {
                 });
 
                 jsOutput += '};\n';
+                convertedOutput = jsOutput;
 
                 let message = `<div class="status success">✅ ${entries.length} Gruppen konvertiert`;
                 if (notFound.size > 0) {
@@ -333,26 +337,14 @@ a {
                 previewDiv.innerHTML = `<div><strong>Vorschau:</strong><div class="output-preview">${jsOutput.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div></div>`;
 
                 downloadBtn.disabled = false;
+                copyBtn.disabled = false;
             }, 500);
         });
 
         downloadBtn.addEventListener('click', () => {
-            if (!convertedResult) return;
+            if (!convertedOutput) return;
 
-            let jsOutput = '// ─── Es beginnt mit COMBINED_STATIONS... ─────────────────────────────────────\n';
-            jsOutput += 'window.combinedStations = {\n';
-
-            const entries = Object.entries(convertedResult);
-            entries.forEach(([key, stations], i) => {
-                const stationsStr = stations.map(s => `'${s}'`).join(', ');
-                jsOutput += `    '${key}': [${stationsStr}]`;
-                if (i < entries.length - 1) jsOutput += ',';
-                jsOutput += '\n';
-            });
-
-            jsOutput += '};\n';
-
-            const blob = new Blob([jsOutput], { type: 'text/javascript' });
+            const blob = new Blob([convertedOutput], { type: 'text/javascript;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -361,6 +353,17 @@ a {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        });
+
+        copyBtn.addEventListener('click', async () => {
+            if (!convertedOutput) return;
+
+            try {
+                await navigator.clipboard.writeText(convertedOutput);
+                statusDiv.innerHTML = '<div class="status success">✅ Formatierter JavaScript-Code kopiert.</div>';
+            } catch (err) {
+                statusDiv.innerHTML = '<div class="status error">✗ Kopieren nicht möglich. Bitte die Vorschau manuell kopieren.</div>';
+            }
         });
     </script>
 </body>
