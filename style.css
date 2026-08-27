@@ -612,6 +612,7 @@ body {
 .line-badge[data-type="VBZ-325"] { background: #e82788; color: white; }
 
 .line-badge[data-type="VBZ"] { background: white; color: black; }
+.line-badge[data-type^="VBZ"][data-line="E"] { background: rgb(144,190,227); color: black; }
 .line-badge[data-type="VBZ-18"] { background: #E94F35; color: white; }
 
 .line-badge[data-type="RUB"] { background: #006d68; color: white; }
