@@ -133,6 +133,8 @@ window.combinedStations = {
 	'Thalbrücke': ['Balsthal, Thalbrücke', 'Thalbrücke'],
 	'Vignogn': ['Vignogn, vitg', 'Vignogn, Baselgia'],
 	'Bern, Postautostation ': ['Bern, Hauptbahnhof'],
+	'Däniken SO': ['Däniken, Bahnhof', 'Däniken SO'],
+	'Däniken, Bahnhof': ['Däniken, Bahnhof', 'Däniken SO'],
 	'Fribourg/Freiburg': ['Fribourg/Freiburg', 'Fribourg/Freiburg, gare rout.', 'Fribourg/Freiburg, Pl. gare', 'Fribourg/Freiburg, Richemond/gare', 'Fribourg/Freiburg, gare/Tivoli', 'Fribourg/Freiburg, gare/Colisée'],
 	'Fribourg/Freiburg, gare rout.': ['Fribourg/Freiburg', 'Fribourg/Freiburg, Pl. gare', 'Fribourg/Freiburg, gare/Tivoli'],
 	'Fribourg/Freiburg, Pl. gare': ['Fribourg/Freiburg', 'Fribourg/Freiburg, gare rout.'],
