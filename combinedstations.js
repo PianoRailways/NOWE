@@ -182,6 +182,10 @@ window.combinedStations = {
 	'Brig Bahnhofplatz': ['Brig', 'Brig Bahnhofplatz', 'Brig, Bahnhof'],
 	'Iselle, stazione': ['Iselle, stazione', 'Iselle di Trasquera'],
 	'Iselle di Trasquera': ['Iselle, stazione', 'Iselle di Trasquera'],
+	'Sion, gare sud': ['Sion, gare sud', 'Sion','Sion, Gare Bus Sédunois','Sion, poste/gare'],
+	'Sion': ['Sion, gare sud', 'Sion','Sion, Gare Bus Sédunois','Sion, poste/gare'],
+	'Sion, poste/gare': ['Sion, gare sud', 'Sion','Sion, Gare Bus Sédunois','Sion, poste/gare'],
+	'Sion, Gare Bus Sédunois': ['Sion, gare sud', 'Sion','Sion, Gare Bus Sédunois','Sion, poste/gare'],
 
 	
 	'Samnaun-Ravaisch, Bergbahnen': ['Samnaun-Ravaisch, Bergbahnen', 'Samnaun-Ravaisch (Bergbahn)'],
