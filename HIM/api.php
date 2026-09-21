@@ -56,10 +56,21 @@ if (!file_exists(DB_FILE)) {
                 description TEXT,
                 valid_from TEXT,
                 valid_until TEXT,
-                transport_mode TEXT
+                transport_mode TEXT,
+                creation_time TEXT,
+                source_scope TEXT
             );
             CREATE INDEX IF NOT EXISTS idx_valid ON siri_events(valid_from, valid_until);
         ");
+
+        $columns = $pdo->query("PRAGMA table_info(siri_events)")->fetchAll(PDO::FETCH_ASSOC);
+        $columnNames = array_column($columns, 'name');
+        if (!in_array('creation_time', $columnNames, true)) {
+            $pdo->exec('ALTER TABLE siri_events ADD COLUMN creation_time TEXT');
+        }
+        if (!in_array('source_scope', $columnNames, true)) {
+            $pdo->exec('ALTER TABLE siri_events ADD COLUMN source_scope TEXT');
+        }
     } catch (PDOException $e) {
         sendError('Datenbankverbindung fehlgeschlagen: ' . $e->getMessage(), 500);
     }
@@ -106,13 +117,12 @@ switch ($action) {
         $params = [];
         
         // Scope-Filter
-        $now = date('Y-m-d H:i:s');
         if ($scope === 'planned') {
-            $sql .= ' AND valid_from > :now';
-            $params[':now'] = $now;
+            $sql .= ' AND source_scope = :scope';
+            $params[':scope'] = 'planned';
         } elseif ($scope === 'unplanned') {
-            $sql .= ' AND valid_until >= :now';
-            $params[':now'] = $now;
+            $sql .= ' AND source_scope = :scope';
+            $params[':scope'] = 'unplanned';
         }
         
         // Suchfilter

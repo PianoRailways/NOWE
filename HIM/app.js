@@ -35,11 +35,11 @@ async function fetchSituations(scope = 'all') {
             recommendation: '',
             duration: '',
             publishing: 'create',
-            isUnplanned: !row.valid_from || new Date(row.valid_from) <= new Date(),
+            isUnplanned: row.source_scope === 'unplanned',
             category: detectCategory(row.title + ' ' + row.description),
             affectedLines: [],
             affectedStops: [],
-            creationTime: new Date().toISOString(),
+            creationTime: row.creation_time || '',
             validFrom: row.valid_from || '',
             validTo: row.valid_until || ''
         }));

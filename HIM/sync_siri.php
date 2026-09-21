@@ -42,15 +42,26 @@ function getDbConnection(): PDO {
             description TEXT,
             valid_from TEXT,
             valid_until TEXT,
-            transport_mode TEXT
+            transport_mode TEXT,
+            creation_time TEXT,
+            source_scope TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_valid ON siri_events(valid_from, valid_until);
     ");
+
+    $columns = $pdo->query("PRAGMA table_info(siri_events)")->fetchAll(PDO::FETCH_ASSOC);
+    $columnNames = array_column($columns, 'name');
+    if (!in_array('creation_time', $columnNames, true)) {
+        $pdo->exec('ALTER TABLE siri_events ADD COLUMN creation_time TEXT');
+    }
+    if (!in_array('source_scope', $columnNames, true)) {
+        $pdo->exec('ALTER TABLE siri_events ADD COLUMN source_scope TEXT');
+    }
     
     return $pdo;
 }
 
-function importSiriXmlToSqlite(string $xmlFilePath, PDO $pdo): void {
+function importSiriXmlToSqlite(string $xmlFilePath, PDO $pdo, string $sourceScope): void {
     if (!file_exists($xmlFilePath) || filesize($xmlFilePath) === 0) {
         return;
     }
@@ -61,27 +72,43 @@ function importSiriXmlToSqlite(string $xmlFilePath, PDO $pdo): void {
     }
     
     $stmt = $pdo->prepare("
-        INSERT INTO siri_events (item_identifier, title, description, valid_from, valid_until, transport_mode) 
-        VALUES (:id, :title, :desc, :from, :until, :mode)
+        INSERT INTO siri_events (item_identifier, title, description, valid_from, valid_until, transport_mode, creation_time, source_scope) 
+        VALUES (:id, :title, :desc, :from, :until, :mode, :created, :scope)
     ");
     
     while ($reader->read()) {
         if ($reader->nodeType == XMLReader::ELEMENT && $reader->name === 'PtSituationElement') {
             $nodeXml = new SimpleXMLElement($reader->readOuterXML());
-            $nodeXml->registerXPathNamespace('siri', 'http://www.siri.org.uk/siri');
 
-            $value = static function (string $path) use ($nodeXml): string {
-                $matches = $nodeXml->xpath($path);
-                return isset($matches[0]) ? trim((string)$matches[0]) : '';
+            $value = static function (string $name, bool $german = false) use ($nodeXml): string {
+                $matches = $nodeXml->xpath('//*[local-name()="' . $name . '"]') ?: [];
+                $fallback = '';
+                foreach ($matches as $match) {
+                    $text = trim((string)$match);
+                    if ($fallback === '') {
+                        $fallback = $text;
+                    }
+                    if ($german) {
+                        $attributes = $match->attributes('http://www.w3.org/XML/1998/namespace');
+                        if ((string)($attributes['lang'] ?? '') === 'DE') {
+                            return $text;
+                        }
+                    } else {
+                        return $text;
+                    }
+                }
+                return $fallback;
             };
             
             $stmt->execute([
-                ':id' => $value('/siri:PtSituationElement/siri:SituationNumber'),
-                ':title' => $value('/siri:PtSituationElement/siri:Summary[@xml:lang="DE"][1]'),
-                ':desc' => $value('/siri:PtSituationElement/siri:Description[@xml:lang="DE"][1]'),
-                ':from' => $value('/siri:PtSituationElement/siri:ValidityPeriod/siri:StartTime'),
-                ':until' => $value('/siri:PtSituationElement/siri:ValidityPeriod/siri:EndTime'),
-                ':mode' => $value('/siri:PtSituationElement/siri:Affects/siri:Networks/siri:Network/siri:VehicleMode')
+                ':id' => $value('SituationNumber'),
+                ':title' => $value('Summary', true),
+                ':desc' => $value('Description', true),
+                ':from' => $value('StartTime'),
+                ':until' => $value('EndTime'),
+                ':mode' => $value('VehicleMode'),
+                ':created' => $value('CreationTime'),
+                ':scope' => $sourceScope
             ]);
         }
     }
@@ -95,8 +122,8 @@ function rebuildSqliteIndex(): void {
 
     try {
         $pdo->exec("DELETE FROM siri_events");
-        importSiriXmlToSqlite(FILE_UNPLANNED, $pdo);
-        importSiriXmlToSqlite(FILE_PLANNED, $pdo);
+        importSiriXmlToSqlite(FILE_UNPLANNED, $pdo, 'unplanned');
+        importSiriXmlToSqlite(FILE_PLANNED, $pdo, 'planned');
         $pdo->commit();
     } catch (Throwable $error) {
         if ($pdo->inTransaction()) {
