@@ -44,7 +44,11 @@ function getDbConnection(): PDO {
             valid_until TEXT,
             transport_mode TEXT,
             creation_time TEXT,
-            source_scope TEXT
+            source_scope TEXT,
+            reason TEXT,
+            consequence TEXT,
+            recommendation TEXT,
+            duration TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_valid ON siri_events(valid_from, valid_until);
     ");
@@ -56,6 +60,11 @@ function getDbConnection(): PDO {
     }
     if (!in_array('source_scope', $columnNames, true)) {
         $pdo->exec('ALTER TABLE siri_events ADD COLUMN source_scope TEXT');
+    }
+    foreach (['reason', 'consequence', 'recommendation', 'duration'] as $column) {
+        if (!in_array($column, $columnNames, true)) {
+            $pdo->exec("ALTER TABLE siri_events ADD COLUMN {$column} TEXT");
+        }
     }
     
     return $pdo;
@@ -72,43 +81,52 @@ function importSiriXmlToSqlite(string $xmlFilePath, PDO $pdo, string $sourceScop
     }
     
     $stmt = $pdo->prepare("
-        INSERT INTO siri_events (item_identifier, title, description, valid_from, valid_until, transport_mode, creation_time, source_scope) 
-        VALUES (:id, :title, :desc, :from, :until, :mode, :created, :scope)
+        INSERT INTO siri_events (item_identifier, title, description, valid_from, valid_until, transport_mode, creation_time, source_scope, reason, consequence, recommendation, duration) 
+        VALUES (:id, :title, :desc, :from, :until, :mode, :created, :scope, :reason, :consequence, :recommendation, :duration)
     ");
     
     while ($reader->read()) {
         if ($reader->nodeType == XMLReader::ELEMENT && $reader->name === 'PtSituationElement') {
             $nodeXml = new SimpleXMLElement($reader->readOuterXML());
 
-            $value = static function (string $name, bool $german = false) use ($nodeXml): string {
-                $matches = $nodeXml->xpath('//*[local-name()="' . $name . '"]') ?: [];
-                $fallback = '';
-                foreach ($matches as $match) {
-                    $text = trim((string)$match);
-                    if ($fallback === '') {
-                        $fallback = $text;
-                    }
-                    if ($german) {
-                        $attributes = $match->attributes('http://www.w3.org/XML/1998/namespace');
-                        if ((string)($attributes['lang'] ?? '') === 'DE') {
+            $value = static function (array $names, bool $german = false) use ($nodeXml): string {
+                foreach ($names as $name) {
+                    $matches = $nodeXml->xpath('//*[local-name()="' . $name . '"]') ?: [];
+                    $fallback = '';
+                    foreach ($matches as $match) {
+                        $text = trim((string)$match);
+                        if ($fallback === '') {
+                            $fallback = $text;
+                        }
+                        if ($german) {
+                            $attributes = $match->attributes('http://www.w3.org/XML/1998/namespace');
+                            if ((string)($attributes['lang'] ?? '') === 'DE') {
+                                return $text;
+                            }
+                        } else {
                             return $text;
                         }
-                    } else {
-                        return $text;
+                    }
+                    if ($fallback !== '') {
+                        return $fallback;
                     }
                 }
-                return $fallback;
+                return '';
             };
             
             $stmt->execute([
-                ':id' => $value('SituationNumber'),
-                ':title' => $value('Summary', true),
-                ':desc' => $value('Description', true),
-                ':from' => $value('StartTime'),
-                ':until' => $value('EndTime'),
-                ':mode' => $value('VehicleMode'),
-                ':created' => $value('CreationTime'),
-                ':scope' => $sourceScope
+                ':id' => $value(['SituationNumber']),
+                ':title' => $value(['Summary', 'SummaryText'], true),
+                ':desc' => $value(['Description', 'DescriptionText'], true),
+                ':from' => $value(['StartTime']),
+                ':until' => $value(['EndTime']),
+                ':mode' => $value(['VehicleMode']),
+                ':created' => $value(['CreationTime']),
+                ':scope' => $sourceScope,
+                ':reason' => $value(['Reason', 'ReasonText'], true),
+                ':consequence' => $value(['Consequence', 'ConsequenceText'], true),
+                ':recommendation' => $value(['Recommendation', 'RecommendationText'], true),
+                ':duration' => $value(['Duration', 'DurationText'], true)
             ]);
         }
     }

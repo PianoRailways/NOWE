@@ -58,7 +58,11 @@ if (!file_exists(DB_FILE)) {
                 valid_until TEXT,
                 transport_mode TEXT,
                 creation_time TEXT,
-                source_scope TEXT
+                source_scope TEXT,
+                reason TEXT,
+                consequence TEXT,
+                recommendation TEXT,
+                duration TEXT
             );
             CREATE INDEX IF NOT EXISTS idx_valid ON siri_events(valid_from, valid_until);
         ");
@@ -70,6 +74,11 @@ if (!file_exists(DB_FILE)) {
         }
         if (!in_array('source_scope', $columnNames, true)) {
             $pdo->exec('ALTER TABLE siri_events ADD COLUMN source_scope TEXT');
+        }
+        foreach (['reason', 'consequence', 'recommendation', 'duration'] as $column) {
+            if (!in_array($column, $columnNames, true)) {
+                $pdo->exec("ALTER TABLE siri_events ADD COLUMN {$column} TEXT");
+            }
         }
     } catch (PDOException $e) {
         sendError('Datenbankverbindung fehlgeschlagen: ' . $e->getMessage(), 500);
