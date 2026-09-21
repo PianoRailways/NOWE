@@ -1,0 +1,515 @@
+:root {
+    --sbb-red:    #eb0000;
+    --sbb-blue:   #2d327d;
+    --sbb-orange: #E84E10;
+    --sob-green:  #7BA55B;
+    --sob-blue:   #1A527F;
+    --board-bg:   #0a1a4a;
+    --board-row:  #0d2060;
+    --text-main:  #ffffff;
+    --text-via:   #a0b8d8;
+    --text-dim:   #6080a0;
+    --header-bg:  #061030;
+    --disruption-bg: rgba(235, 0, 0, 0.08);
+    --information-bg: rgba(70, 120, 200, 0.08);
+    --recommendation-bg: rgba(123, 165, 91, 0.08);
+    --unplanned-bg: rgba(255, 152, 0, 0.08);
+    --border:     rgba(200,200,200,0.09);
+}
+
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+html {
+    scrollbar-gutter: stable;
+}
+
+body {
+    font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
+    background: var(--board-bg);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ═════════════════ HEADER ═════════════════ */
+#app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 14px;
+    background: var(--header-bg);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#header-left, #header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+#btn-home, .toggle-btn, .icon-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 1.1em;
+    line-height: 1;
+    transition: background 0.15s;
+}
+
+#btn-home:hover, .toggle-btn:hover, .icon-btn:hover { 
+    background: rgba(255,255,255,0.22); 
+}
+
+.toggle-btn.active, .icon-btn.active {
+    background: var(--sob-green);
+    border-color: var(--sob-green);
+    color: #000;
+}
+
+#app-title {
+    color: white;
+    font-size: 1.05em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+#header-center {
+    flex: 1;
+    text-align: center;
+}
+
+#live-clock {
+    font-family: monospace;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* ═════════════════ FILTERLEISTE ═════════════════ */
+#filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    background: #081540;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    flex-wrap: wrap;
+}
+
+#filter-bar::-webkit-scrollbar { 
+    display: none; 
+}
+
+.filter-label {
+    font-size: 0.75em;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.scope-btn, .type-btn {
+    background: rgba(255,255,255,0.07);
+    color: var(--text-via);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 4px 11px;
+    border-radius: 2px;
+    white-space: nowrap;
+    cursor: pointer;
+    font-size: 0.78em;
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+
+.scope-btn:hover, .type-btn:hover { 
+    background: rgba(255,255,255,0.14); 
+    color: white; 
+}
+
+.scope-btn.active, .type-btn.active {
+    background: rgba(255,255,255,0.22);
+    color: white;
+    border-color: rgba(255,255,255,0.3);
+}
+
+/* ═════════════════ SUCHLEISTE ═════════════════ */
+#search-bar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 14px;
+    background: #081540;
+    border-bottom: 1px solid var(--border);
+}
+
+#search-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #888;
+    font-size: 1rem;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-main);
+}
+
+#search-input::placeholder {
+    color: rgba(255,255,255,0.35);
+}
+
+#search-input:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.08);
+}
+
+#btn-search-clear {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+#btn-search-clear:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+/* ═════════════════ STATUS ═════════════════ */
+#status-message {
+    padding: 4px 14px;
+    font-size: 0.73em;
+    color: var(--text-dim);
+    min-height: 20px;
+    letter-spacing: 0.03em;
+}
+
+.status-error { 
+    color: var(--sbb-red) !important; 
+}
+
+.status-info { 
+    color: var(--text-via) !important; 
+}
+
+.status-success {
+    color: var(--sob-green) !important;
+}
+
+/* ═════════════════ HAUPTBEREICH ═════════════════ */
+#situations-container {
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+}
+
+.situations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.empty {
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 0.9em;
+}
+
+/* ═════════════════ EREIGNISKARTE ═════════════════ */
+.situation-card {
+    background: rgba(255,255,255,0.02);
+    border-left: 4px solid var(--text-dim);
+    border-radius: 4px;
+    padding: 12px;
+    transition: background 0.15s;
+}
+
+.situation-card:hover {
+    background: rgba(255,255,255,0.04);
+}
+
+.situation-card.situation-disruption {
+    border-left-color: var(--sbb-red);
+    background: var(--disruption-bg);
+}
+
+.situation-card.situation-information {
+    border-left-color: #4678c8;
+    background: var(--information-bg);
+}
+
+.situation-card.situation-recommendation {
+    border-left-color: var(--sob-green);
+    background: var(--recommendation-bg);
+}
+
+.situation-card.unplanned {
+    background: var(--unplanned-bg);
+    border-left-color: #ff9800;
+}
+
+.situation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.situation-title {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    flex: 1;
+}
+
+.category-icon {
+    font-size: 1.2em;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.situation-title h3 {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--text-main);
+    line-height: 1.3;
+    margin: 0;
+}
+
+.situation-badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+.badge {
+    display: inline-block;
+    font-size: 0.65em;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 2px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+.badge-planned {
+    background: rgba(123, 165, 91, 0.3);
+    color: var(--sob-green);
+    border: 1px solid var(--sob-green);
+}
+
+.badge-unplanned {
+    background: rgba(255, 152, 0, 0.3);
+    color: #ff9800;
+    border: 1px solid #ff9800;
+}
+
+.badge-disruption {
+    background: rgba(235, 0, 0, 0.3);
+    color: var(--sbb-red);
+    border: 1px solid var(--sbb-red);
+}
+
+.badge-information {
+    background: rgba(70, 120, 200, 0.3);
+    color: #4678c8;
+    border: 1px solid #4678c8;
+}
+
+.badge-recommendation {
+    background: rgba(123, 165, 91, 0.3);
+    color: var(--sob-green);
+    border: 1px solid var(--sob-green);
+}
+
+.affected-lines, .affected-stops {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.affected-badge {
+    display: inline-block;
+    font-size: 0.7em;
+    padding: 3px 8px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 2px;
+    color: var(--text-via);
+    white-space: nowrap;
+}
+
+.affected-badge.affected-stop {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+}
+
+.situation-body {
+    font-size: 0.9em;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    color: rgba(255,255,255,0.85);
+}
+
+.situation-body p {
+    margin-bottom: 6px;
+}
+
+.description {
+    color: var(--text-main);
+    font-weight: 400;
+}
+
+.reason, .consequence, .recommendation, .duration {
+    font-size: 0.85em;
+    color: var(--text-via);
+}
+
+.reason strong, .consequence strong, 
+.recommendation strong, .duration strong {
+    color: rgba(255,255,255,0.7);
+    font-weight: 600;
+}
+
+.validity {
+    font-size: 0.8em;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.04);
+    padding: 6px 8px;
+    border-radius: 2px;
+    margin-bottom: 8px;
+    border-left: 2px solid rgba(255,255,255,0.1);
+}
+
+.validity strong {
+    color: rgba(255,255,255,0.6);
+}
+
+.situation-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7em;
+    color: var(--text-dim);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 6px;
+}
+
+.footer-time {
+    flex: 1;
+}
+
+.footer-id {
+    font-family: monospace;
+    font-size: 0.75em;
+}
+
+/* ═════════════════ FOOTER ═════════════════ */
+.page-footer {
+    padding: 12px 14px;
+    margin-top: auto;
+    border-top: 1px solid var(--border);
+    background: var(--header-bg);
+    font-size: 0.75em;
+    color: var(--text-dim);
+}
+
+.page-footer a {
+    color: var(--sbb-red);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.page-footer a:hover {
+    color: #ff6666;
+}
+
+/* ═════════════════ RESPONSIVE ═════════════════ */
+@media (max-width: 768px) {
+    #app-header {
+        flex-direction: column;
+        gap: 6px;
+    }
+    
+    #header-center {
+        order: -1;
+        width: 100%;
+    }
+    
+    .situation-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .situation-badges {
+        width: 100%;
+    }
+    
+    .situation-footer {
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+    }
+    
+    #situations-container {
+        padding: 8px;
+    }
+    
+    .situation-card {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    #filter-bar {
+        font-size: 0.85em;
+        gap: 6px;
+        padding: 6px 10px;
+    }
+    
+    .filter-label {
+        font-size: 0.7em;
+    }
+    
+    .scope-btn, .type-btn {
+        padding: 3px 8px;
+        font-size: 0.7em;
+    }
+    
+    #search-input {
+        font-size: 14px;
+    }
+    
+    .situation-title h3 {
+        font-size: 0.95em;
+    }
+    
+    .affected-badge {
+        font-size: 0.65em;
+        padding: 2px 6px;
+    }
+}

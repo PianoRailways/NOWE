@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="de" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOWE SIRI-Dispositionsmonitor</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        nowe: {
+                            blue: '#002B49',
+                            darkBlue: '#001E33',
+                            accent: '#D52B1E', // SBB/NOWE Red accent
+                            yellow: '#FFCC00',
+                            green: '#28A745',
+                            orange: '#FD7E14',
+                            grayBg: '#0F172A',
+                            cardDark: '#1E293B',
+                            cardBorder: '#334155'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Frutiger', 'Arial', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Rail Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- sql.js for parsing sqlite in browser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .mono-num {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Custom Scrollbar for Dispo UI */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-red-600 selection:text-white transition-colors duration-200">
+
+    <header class="bg-nowe-darkBlue border-b border-nowe-cardBorder px-4 py-3 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-nowe-accent text-white font-extrabold px-2.5 py-1 rounded text-lg tracking-wider shadow">
+                    NOWE
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight leading-tight flex items-center gap-2">
+                        <span>Dispositions- & SIRI-Monitor</span>
+                        <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700 font-mono">v2.4-CH</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Nord-West-Express • Echzeit-Soll/Ist Betriebsdaten</p>
+                </div>
+            </div>
+
+            <!-- Server Clock & Status Badges -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex flex-col items-end border-r border-slate-700 pr-4">
+                    <span class="text-xs text-slate-400 uppercase tracking-wider">Systemzeit (UTC+1)</span>
+                    <span id="server-clock" class="text-base font-bold text-slate-200 mono-num">12:00:00</span>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <span id="data-status-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        Demo-Daten aktiv
+                    </span>
+
+                    <button id="theme-toggle" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border border-slate-700" title="Design wechseln">
+                        <i class="fas fa-moon text-yellow-400"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-6">
+
+        <!-- File Import / Drag & Drop Section -->
+        <section id="upload-card" class="bg-nowe-cardDark border border-nowe-cardBorder rounded-xl p-5 shadow-sm">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <div>
+                    <h2 class="text-md font-semibold text-slate-100 flex items-center gap-2">
+                        <i class="fas fa-file-import text-nowe-accent"></i> SIRI Datenquellen importieren
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Lade `siri_planned.xml`, `siri_unplanned.xml` und `siri_index.sqlite` aus <code class="bg-slate-800 px-1 py-0.5 rounded text-red-400">./siri_data</code> hoch.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button id="load-demo-btn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-lg text-xs font-medium transition flex items-center gap-2 shadow-sm">
+                        <i class="fas fa-sync-alt text-slate-400"></i> Demo-Daten neu laden
+                    </button>
+                </div>
+            </div>
+
+            <!-- Drop Zone Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                
+                <!-- Planned XML Drop -->
+                <div id="drop-planned" class="relative group border-2 border-dashed border-slate-700 hover:border-blue-500 rounded-lg p-3 bg-slate-900/50 hover:bg-slate-800/50 transition cursor-pointer flex items-center space-x-3">
+                    <input type="file" id="file-planned" accept=".xml" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <div class="p-2.5 bg-blue-500/10 text-blue-400 rounded-lg group-hover:bg-blue-500 group-hover:text-white transition">
+                        <i class="fas fa-calendar-check text-lg"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="text-xs font-semibold text-slate-200 truncate" id="label-planned">siri_planned.xml</div>
+                        <div class="text-[11px] text-slate-400" id="status-planned">Soll-Fahrplandaten</div>
+                    </div>
+                </div>
+
+                <!-- Unplanned XML Drop -->
+                <div id="drop-unplanned" class="relative group border-2 border-dashed border-slate-700 hover:border-amber-500 rounded-lg p-3 bg-slate-900/50 hover:bg-slate-800/50 transition cursor-pointer flex items-center space-x-3">
+                    <input type="file" id="file-unplanned" accept=".xml" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-lg group-hover:bg-amber-500 group-hover:text-white transition">
+                        <i class="fas fa-exclamation-triangle text-lg"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="text-xs font-semibold text-slate-200 truncate" id="label-unplanned">siri_unplanned.xml</div>
+                        <div class="text-[11px] text-slate-400" id="status-unplanned">Ereignisse & Störungen</div>
+                    </div>
+                </div>
+
+                <!-- SQLite DB Drop -->
+                <div id="drop-db" class="relative group border-2 border-dashed border-slate-700 hover:border-emerald-500 rounded-lg p-3 bg-slate-900/50 hover:bg-slate-800/50 transition cursor-pointer flex items-center space-x-3">
+                    <input type="file" id="file-db" accept=".sqlite,.db" class="absolute inset-0 opacity-0 cursor-pointer">
+                    <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg group-hover:bg-emerald-500 group-hover:text-white transition">
+                        <i class="fas fa-database text-lg"></i>
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="text-xs font-semibold text-slate-200 truncate" id="label-db">siri_index.sqlite</div>
+                        <div class="text-[11px] text-slate-400" id="status-db">Index / Mapping DB</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-nowe-cardDark border border-nowe-cardBorder rounded-xl p-4 flex items-center space-x-3">
+                <div class="p-3 bg-slate-800 rounded-lg text-slate-300">
+                    <i class="fas fa-train text-xl"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-slate-400 font-medium">Aktive Fahrten</div>
+                    <div id="stat-total-trains" class="text-2xl font-bold text-slate-100 mono-num">0</div>
+                </div>
+            </div>
+
+            <div class="bg-nowe-cardDark border border-nowe-cardBorder rounded-xl p-4 flex items-center space-x-3">
+                <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-lg">
+                    <i class="fas fa-check-circle text-xl"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-slate-400 font-medium">Pünktlich (&lt; 3 Min)</div>
+                    <div id="stat-ontime-trains" class="text-2xl font-bold text-emerald-400 mono-num">0</div>
+                </div>
+            </div>
+
+            <div class="bg-nowe-cardDark border border-nowe-cardBorder rounded-xl p-4 flex items-center space-x-3">
+                <div class="p-3 bg-amber-500/10 text-amber-400 rounded-lg">
+                    <i class="fas fa-clock text-xl"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-slate-400 font-medium">Verspätet</div>
+                    <div id="stat-delayed-trains" class="text-2xl font-bold text-amber-400 mono-num">0</div>
+                </div>
+            </div>
+
+            <div class="bg-nowe-cardDark border border-nowe-cardBorder rounded-xl p-4 flex items-center space-x-3">
+                <div class="p-3 bg-red-500/10 text-red-400 rounded-lg">
+                    <i class="fas fa-radiation text-xl"></i>
+                </div>
+                <div>
+                    <div class="text-xs text-slate-400 font-medium">Störungen / Ausfälle</div>
+                    <div id="stat-disruptions" class="text-2xl font-bold text-red-400 mono-num">0</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-nowe-cardDark border border-nowe-cardBorder rounded-xl p-4 shadow-sm space-y-3">
+            <div class="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+                
+                <!-- Search Input -->
+                <div class="relative flex-1">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="search-input" placeholder="Suche nach Linie (z.B. IR37), Bahnhof oder Ereignis-ID..." 
+                           class="w-full bg-slate-900 border border-slate-700 text-slate-100 placeholder-slate-500 text-xs rounded-lg pl-9 pr-4 py-2.5 focus:outline-none focus:border-nowe-accent transition">
+                </div>
+
+                <!-- Filter Controls -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Type Filter -->
+                    <select id="filter-type" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:border-nowe-accent">
+                        <option value="all">Alle Kategorien</option>
+                        <option value="planned">Nur Fahrplandaten (ET)</option>
+                        <option value="unplanned">Nur Störungen / SX</option>
+                    </select>
+
+                    <!-- Status Filter -->
+                    <select id="filter-status" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:border-nowe-accent">
+                        <option value="all">Alle Status</option>
+                        <option value="ontime">Pünktlich</option>
+                        <option value="delayed">Verspätet (&ge; 3 min)</option>
+                        <option value="cancelled">Ausfall / Teilausfall</option>
+                        <option value="disruption">Aktive Störung</option>
+                    </select>
+
+                    <!-- Reset Filters Button -->
+                    <button id="reset-filters-btn" class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs transition border border-slate-700" title="Filter zurücksetzen">
+                        <i class="fas fa-undo-alt"></i>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="bg-nowe-cardDark border border-nowe-cardBorder rounded-xl overflow-hidden shadow-md">
+            
+            <div class="px-4 py-3 border-b border-nowe-cardBorder bg-slate-900/60 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                    <i class="fas fa-list-ul text-blue-400"></i> Dispositionsliste (SIRI ET / SX Monitoring)
+                </h3>
+                <span id="record-count" class="text-xs font-mono text-slate-400">0 Einträge gefunden</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-900/90 text-[11px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                            <th class="py-3 px-4">Linie / Zug</th>
+                            <th class="py-3 px-4">Betriebsstelle / Haltestelle</th>
+                            <th class="py-3 px-4 text-center">Soll-Zeit</th>
+                            <th class="py-3 px-4 text-center">Ist-Zeit</th>
+                            <th class="py-3 px-4 text-center">Abweichung</th>
+                            <th class="py-3 px-4">Status / Ereignis</th>
+                            <th class="py-3 px-4 text-right">Aktion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="siri-table-body" class="divide-y divide-slate-800/60 text-xs">
+                        <!-- Dynamic rows inserted by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State Container -->
+            <div id="empty-state" class="hidden py-12 text-center">
+                <div class="inline-flex p-4 rounded-full bg-slate-800/80 text-slate-500 mb-3">
+                    <i class="fas fa-search-minus text-2xl"></i>
+                </div>
+                <h4 class="text-sm font-medium text-slate-300">Keine SIRI-Ereignisse gefunden</h4>
+                <p class="text-xs text-slate-500 mt-1">Passe deine Such- oder Filterkriterien an.</p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <div id="detail-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-nowe-cardDark border border-nowe-cardBorder rounded-xl max-w-2xl w-full overflow-hidden shadow-2xl transition-all transform scale-95 opacity-0 duration-200" id="modal-container">
+            
+            <!-- Modal Header -->
+            <div class="px-5 py-4 border-b border-nowe-cardBorder bg-slate-900 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <span id="modal-line-badge" class="px-2.5 py-1 bg-blue-600 text-white font-bold rounded text-sm mono-num">
+                        IR 37
+                    </span>
+                    <div>
+                        <h3 id="modal-title" class="text-base font-bold text-slate-100">Details zum SIRI-Ereignis</h3>
+                        <p id="modal-subtitle" class="text-xs text-slate-400 font-mono">Ref: CH-SIRI-SX-20260920-881</p>
+                    </div>
+                </div>
+                <button id="close-modal-btn" class="text-slate-400 hover:text-white p-1 rounded-lg transition">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-5 space-y-4 max-h-[75vh] overflow-y-auto text-xs">
+                
+                <!-- Disruption Alert Box (if applicable) -->
+                <div id="modal-alert-box" class="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300 hidden">
+                    <div class="flex items-start gap-2.5">
+                        <i class="fas fa-exclamation-circle text-red-400 text-base mt-0.5"></i>
+                        <div>
+                            <div class="font-bold text-red-200 text-sm" id="modal-alert-title">Betriebsstörung</div>
+                            <div class="mt-0.5" id="modal-alert-text">Signalstörung im Streckenabschnitt.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Grid -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-800">
+                        <span class="text-slate-400 block text-[11px]">Betriebsstelle / Station</span>
+                        <span id="modal-station" class="font-semibold text-slate-200 text-sm">Basel SBB</span>
+                    </div>
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-800">
+                        <span class="text-slate-400 block text-[11px]">Gültigkeitszeitraum</span>
+                        <span id="modal-validity" class="font-mono text-slate-200 text-xs">20.09.2026 12:00 - 15:30</span>
+                    </div>
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-800">
+                        <span class="text-slate-400 block text-[11px]">Soll- / Ist-Abfahrt</span>
+                        <span id="modal-times" class="font-mono text-slate-200 text-xs">12:15 / 12:22 (+7 min)</span>
+                    </div>
+                    <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-800">
+                        <span class="text-slate-400 block text-[11px]">Ursachencode (Reason)</span>
+                        <span id="modal-reason" class="font-semibold text-amber-400 text-xs">TECHNICAL_FAILURE</span>
+                    </div>
+                </div>
+
+                <!-- Affected Sections -->
+                <div>
+                    <h4 class="font-semibold text-slate-300 mb-1.5 text-xs">Betroffener Streckenabschnitt</h4>
+                    <p id="modal-sections" class="bg-slate-900/40 p-2.5 rounded-lg border border-slate-800 text-slate-300">
+                        Olten - Liestal - Basel SBB
+                    </p>
+                </div>
+
+                <!-- Raw SIRI Payload / Inspection -->
+                <div>
+                    <h4 class="font-semibold text-slate-300 mb-1.5 text-xs flex items-center justify-between">
+                        <span>SIRI Raw-XML Fragment</span>
+                        <span class="text-[10px] text-slate-500 font-mono">SIRI-SX / SIRI-ET Data</span>
+                    </h4>
+                    <pre id="modal-raw-xml" class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-[11px] font-mono text-emerald-400 overflow-x-auto whitespace-pre-wrap max-h-40">
+                    </pre>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-5 py-3 border-t border-nowe-cardBorder bg-slate-900 flex justify-end">
+                <button id="modal-close-bottom" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium rounded-lg text-xs transition border border-slate-700">
+                    Schliessen
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        
+        // Application State
+        const state = {
+            siriRecords: [],
+            filteredRecords: [],
+            sqliteDb: null,
+            theme: 'dark',
+            filters: {
+                search: '',
+                type: 'all',
+                status: 'all'
+            }
+        };
+
+        // SIRI Mock Data (SIRI-ET & SIRI-SX)
+        const mockPlannedXML = `<?xml version="1.0" encoding="UTF-8"?>
+        <Siri xmlns="http://www.siri.org.uk/siri" version="2.0">
+            <ServiceDelivery>
+                <EstimatedTimetableDelivery>
+                    <EstimatedJourneyVersionFrame>
+                        <EstimatedVehicleJourney>
+                            <LineRef>IR 37</LineRef>
+                            <DirectionRef>1</DirectionRef>
+                            <DatedVehicleJourneyRef>NOWE-2026-3701</DatedVehicleJourneyRef>
+                            <RecordedAtTime>2026-09-20T12:00:00+01:00</RecordedAtTime>
+                            <EstimatedCalls>
+                                <EstimatedCall>
+                                    <StopPointRef>CH-8500010</StopPointRef>
+                                    <StopPointName>Basel SBB</StopPointName>
+                                    <AimedArrivalTime>2026-09-20T12:12:00+01:00</AimedArrivalTime>
+                                    <ExpectedArrivalTime>2026-09-20T12:19:00+01:00</ExpectedArrivalTime>
+                                    <AimedDepartureTime>2026-09-20T12:15:00+01:00</AimedDepartureTime>
+                                    <ExpectedDepartureTime>2026-09-20T12:22:00+01:00</ExpectedDepartureTime>
+                                </EstimatedCall>
+                                <EstimatedCall>
+                                    <StopPointRef>CH-8500020</StopPointRef>
+                                    <StopPointName>Liestal</StopPointName>
+                                    <AimedArrivalTime>2026-09-20T12:28:00+01:00</AimedArrivalTime>
+                                    <ExpectedArrivalTime>2026-09-20T12:35:00+01:00</ExpectedArrivalTime>
+                                </EstimatedCall>
+                            </EstimatedCalls>
+                        </EstimatedVehicleJourney>
+                        <EstimatedVehicleJourney>
+                            <LineRef>S 3</LineRef>
+                            <DirectionRef>2</DirectionRef>
+                            <DatedVehicleJourneyRef>NOWE-2026-10312</DatedVehicleJourneyRef>
+                            <RecordedAtTime>2026-09-20T12:05:00+01:00</RecordedAtTime>
+                            <EstimatedCalls>
+                                <EstimatedCall>
+                                    <StopPointRef>CH-8500030</StopPointRef>
+                                    <StopPointName>Olten</StopPointName>
+                                    <AimedDepartureTime>2026-09-20T12:08:00+01:00</AimedDepartureTime>
+                                    <ExpectedDepartureTime>2026-09-20T12:08:00+01:00</ExpectedDepartureTime>
+                                </EstimatedCall>
+                            </EstimatedCalls>
+                        </EstimatedVehicleJourney>
+                        <EstimatedVehicleJourney>
+                            <LineRef>IC 1</LineRef>
+                            <DirectionRef>1</DirectionRef>
+                            <DatedVehicleJourneyRef>NOWE-2026-714</DatedVehicleJourneyRef>
+                            <RecordedAtTime>2026-09-20T12:10:00+01:00</RecordedAtTime>
+                            <EstimatedCalls>
+                                <EstimatedCall>
+                                    <StopPointRef>CH-8500001</StopPointRef>
+                                    <StopPointName>Zürich HB</StopPointName>
+                                    <AimedDepartureTime>2026-09-20T12:32:00+01:00</AimedDepartureTime>
+                                    <ExpectedDepartureTime>2026-09-20T12:32:00+01:00</ExpectedDepartureTime>
+                                </EstimatedCall>
+                            </EstimatedCalls>
+                        </EstimatedVehicleJourney>
+                    </EstimatedJourneyVersionFrame>
+                </EstimatedTimetableDelivery>
+            </ServiceDelivery>
+        </Siri>`;
+
+        const mockUnplannedXML = `<?xml version="1.0" encoding="UTF-8"?>
+        <Siri xmlns="http://www.siri.org.uk/siri" version="2.0">
+            <ServiceDelivery>
+                <SituationExchangeDelivery>
+                    <Situations>
+                        <PtSituationElement>
+                            <SituationNumber>CH-SIRI-SX-20260920-881</SituationNumber>
+                            <CreationTime>2026-09-20T11:45:00+01:00</CreationTime>
+                            <ValidityPeriod>
+                                <StartTime>2026-09-20T11:45:00+01:00</StartTime>
+                                <EndTime>2026-09-20T16:00:00+01:00</EndTime>
+                            </ValidityPeriod>
+                            <Reason>TECHNICAL_FAILURE</Reason>
+                            <Summary>Störung an der Stellwerkanlage</Summary>
+                            <Description>Aufgrund einer Stellwerkanlage-Störung zwischen Olten und Liestal kommt es zu Verzögerungen und vereinzelten Zugsausfällen. Bitte beachten Sie die Lautsprecherdurchsagen.</Description>
+                            <Affects>
+                                <Networks>
+                                    <AffectedNetwork>
+                                        <LineRef>IR 37</LineRef>
+                                        <PublishedLineName>IR 37 Basel - Olten - Zürich</PublishedLineName>
+                                    </AffectedNetwork>
+                                </Networks>
+                            </Affects>
+                        </PtSituationElement>
+                        <PtSituationElement>
+                            <SituationNumber>CH-SIRI-SX-20260920-904</SituationNumber>
+                            <CreationTime>2026-09-20T12:00:00+01:00</CreationTime>
+                            <ValidityPeriod>
+                                <StartTime>2026-09-20T12:00:00+01:00</StartTime>
+                                <EndTime>2026-09-20T14:00:00+01:00</EndTime>
+                            </ValidityPeriod>
+                            <Reason>VEHICLE_BREAKDOWN</Reason>
+                            <Summary>Zugsausfall RE 4812</Summary>
+                            <Description>Fahrzeugschaden an der Triebsystematik. Der Zug RE 4812 fällt zwischen Luzern und Sursee ersatzlos aus.</Description>
+                            <Affects>
+                                <Networks>
+                                    <AffectedNetwork>
+                                        <LineRef>RE 4812</LineRef>
+                                        <PublishedLineName>RE Luzern - Olten</PublishedLineName>
+                                    </AffectedNetwork>
+                                </Networks>
+                            </Affects>
+                        </PtSituationElement>
+                    </Situations>
+                </SituationExchangeDelivery>
+            </ServiceDelivery>
+        </Siri>`;
+
+
+        // Format Time strings (HH:mm)
+        function formatTime(isoString) {
+            if (!isoString) return '--:--';
+            try {
+                const date = new Date(isoString);
+                return date.toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' });
+            } catch (e) {
+                return '--:--';
+            }
+        }
+
+        // Calculate Delay in Minutes
+        function calculateDelay(plannedIso, expectedIso) {
+            if (!plannedIso || !expectedIso) return 0;
+            try {
+                const planned = new Date(plannedIso).getTime();
+                const expected = new Date(expectedIso).getTime();
+                return Math.round((expected - planned) / 60000);
+            } catch (e) {
+                return 0;
+            }
+        }
+
+        // Parse SIRI-ET XML (Planned & Estimated)
+        function parseSiriET(xmlText) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+            const journeys = xmlDoc.querySelectorAll("EstimatedVehicleJourney");
+            const records = [];
+
+            journeys.forEach(j => {
+                const lineRef = j.querySelector("LineRef")?.textContent || "Zug";
+                const journeyRef = j.querySelector("DatedVehicleJourneyRef")?.textContent || "";
+                const calls = j.querySelectorAll("EstimatedCall");
+
+                calls.forEach(c => {
+                    const stopName = c.querySelector("StopPointName")?.textContent || "Unbekannte Haltestelle";
+                    const stopRef = c.querySelector("StopPointRef")?.textContent || "";
+                    
+                    const aimedDep = c.querySelector("AimedDepartureTime")?.textContent || c.querySelector("AimedArrivalTime")?.textContent || "";
+                    const expectedDep = c.querySelector("ExpectedDepartureTime")?.textContent || c.querySelector("ExpectedArrivalTime")?.textContent || "";
+
+                    const delayMin = calculateDelay(aimedDep, expectedDep);
+
+                    let status = "ontime";
+                    if (delayMin >= 3) status = "delayed";
+
+                    records.push({
+                        id: journeyRef + "-" + stopRef,
+                        type: "planned",
+                        line: lineRef,
+                        station: stopName,
+                        stationRef: stopRef,
+                        aimedTime: aimedDep,
+                        expectedTime: expectedDep,
+                        delayMinutes: delayMin,
+                        status: status,
+                        title: `Regelmässige Fahrt ${lineRef}`,
+                        description: `Gefahrteneinschätzung für Halt ${stopName}.`,
+                        rawXml: c.outerHTML,
+                        reason: delayMin > 0 ? "Fahrplanabweichung" : "Planmässig"
+                    });
+                });
+            });
+
+            return records;
+        }
+
+        // Parse SIRI-SX XML (Unplanned / Situations)
+        function parseSiriSX(xmlText) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+            const situations = xmlDoc.querySelectorAll("PtSituationElement");
+            const records = [];
+
+            situations.forEach(s => {
+                const situationNumber = s.querySelector("SituationNumber")?.textContent || "SIRI-SX-UNKN";
+                const lineRef = s.querySelector("LineRef")?.textContent || "Netzweit";
+                const reason = s.querySelector("Reason")?.textContent || "STÖRUNG";
+                const summary = s.querySelector("Summary")?.textContent || "Ungeplantes Ereignis";
+                const description = s.querySelector("Description")?.textContent || "";
+                const startTime = s.querySelector("StartTime")?.textContent || "";
+                const endTime = s.querySelector("EndTime")?.textContent || "";
+
+                const isCancellation = reason.includes("BREAKDOWN") || summary.includes("Ausfall");
+
+                records.push({
+                    id: situationNumber,
+                    type: "unplanned",
+                    line: lineRef,
+                    station: s.querySelector("PublishedLineName")?.textContent || "Betroffener Korridor",
+                    stationRef: "SX-AREA",
+                    aimedTime: startTime,
+                    expectedTime: endTime,
+                    delayMinutes: isCancellation ? 999 : 15,
+                    status: isCancellation ? "cancelled" : "disruption",
+                    title: summary,
+                    description: description,
+                    rawXml: s.outerHTML,
+                    reason: reason,
+                    validity: `${formatTime(startTime)} - ${formatTime(endTime)}`
+                });
+            });
+
+            return records;
+        }
+
+
+        function renderTable() {
+            const tbody = document.getElementById("siri-table-body");
+            const emptyState = document.getElementById("empty-state");
+            const recordCount = document.getElementById("record-count");
+
+            tbody.innerHTML = "";
+
+            if (state.filteredRecords.length === 0) {
+                emptyState.classList.remove("hidden");
+                recordCount.textContent = "0 Einträge";
+                return;
+            }
+
+            emptyState.classList.add("hidden");
+            recordCount.textContent = `${state.filteredRecords.length} Einträge angezeigt`;
+
+            state.filteredRecords.forEach(rec => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-800/50 transition cursor-pointer group";
+
+                // Badge for Status
+                let statusBadge = "";
+                if (rec.status === "ontime") {
+                    statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"><i class="fas fa-check text-[9px] mr-1"></i> Pünktlich</span>`;
+                } else if (rec.status === "delayed") {
+                    statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20"><i class="fas fa-clock text-[9px] mr-1"></i> +${rec.delayMinutes} Min</span>`;
+                } else if (rec.status === "cancelled") {
+                    statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-red-500/10 text-red-400 border border-red-500/20"><i class="fas fa-times-circle text-[9px] mr-1"></i> Ausfall</span>`;
+                } else {
+                    statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-nowe-accent/10 text-red-400 border border-nowe-accent/20"><i class="fas fa-exclamation-triangle text-[9px] mr-1"></i> Störung</span>`;
+                }
+
+                // Line Pill Color
+                let lineBg = "bg-blue-600";
+                if (rec.line.startsWith("S")) lineBg = "bg-sky-700";
+                if (rec.line.startsWith("IC")) lineBg = "bg-red-700";
+                if (rec.type === "unplanned") lineBg = "bg-amber-600";
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-semibold text-slate-100">
+                        <div class="flex items-center space-x-2">
+                            <span class="${lineBg} text-white px-2 py-0.5 rounded text-xs font-bold mono-num">${rec.line}</span>
+                            <span class="text-[10px] text-slate-400 uppercase font-mono">${rec.type === 'planned' ? 'ET' : 'SX'}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 text-slate-200 font-medium">
+                        <div>${rec.station}</div>
+                        <div class="text-[10px] text-slate-500 truncate max-w-xs">${rec.title}</div>
+                    </td>
+                    <td class="py-3 px-4 text-center text-slate-400 font-mono">${formatTime(rec.aimedTime)}</td>
+                    <td class="py-3 px-4 text-center font-mono ${rec.delayMinutes > 0 ? 'text-amber-400 font-bold' : 'text-slate-200'}">
+                        ${formatTime(rec.expectedTime)}
+                    </td>
+                    <td class="py-3 px-4 text-center font-mono">
+                        ${rec.type === 'unplanned' ? '<span class="text-slate-500">-</span>' : (rec.delayMinutes > 0 ? `<span class="text-amber-400 font-bold">+${rec.delayMinutes}'</span>` : '<span class="text-emerald-400">0\'</span>')}
+                    </td>
+                    <td class="py-3 px-4">${statusBadge}</td>
+                    <td class="py-3 px-4 text-right">
+                        <button onclick="openDetailModal('${rec.id}')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded text-[11px] font-medium border border-slate-700 transition">
+                            Details <i class="fas fa-chevron-right text-[9px] ml-1"></i>
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Calculate Overview Statistics
+        function updateStats() {
+            const total = state.siriRecords.length;
+            const ontime = state.siriRecords.filter(r => r.status === 'ontime').length;
+            const delayed = state.siriRecords.filter(r => r.status === 'delayed').length;
+            const disruptions = state.siriRecords.filter(r => r.status === 'cancelled' || r.status === 'disruption').length;
+
+            document.getElementById("stat-total-trains").textContent = total;
+            document.getElementById("stat-ontime-trains").textContent = ontime;
+            document.getElementById("stat-delayed-trains").textContent = delayed;
+            document.getElementById("stat-disruptions").textContent = disruptions;
+        }
+
+        // Filter Logic
+        function applyFilters() {
+            const { search, type, status } = state.filters;
+
+            state.filteredRecords = state.siriRecords.filter(rec => {
+                // Type Filter
+                if (type !== 'all' && rec.type !== type) return false;
+
+                // Status Filter
+                if (status !== 'all' && rec.status !== status) return false;
+
+                // Search Query
+                if (search.trim() !== '') {
+                    const q = search.toLowerCase();
+                    const matchLine = rec.line.toLowerCase().includes(q);
+                    const matchStation = rec.station.toLowerCase().includes(q);
+                    const matchId = rec.id.toLowerCase().includes(q);
+                    const matchTitle = rec.title.toLowerCase().includes(q);
+                    if (!matchLine && !matchStation && !matchId && !matchTitle) return false;
+                }
+
+                return true;
+            });
+
+            renderTable();
+        }
+
+
+        window.openDetailModal = function(id) {
+            const rec = state.siriRecords.find(r => r.id === id);
+            if (!rec) return;
+
+            document.getElementById("modal-line-badge").textContent = rec.line;
+            document.getElementById("modal-title").textContent = rec.title;
+            document.getElementById("modal-subtitle").textContent = `Ereignis-ID: ${rec.id}`;
+            document.getElementById("modal-station").textContent = rec.station;
+            
+            document.getElementById("modal-validity").textContent = rec.validity || `${formatTime(rec.aimedTime)} Uhr`;
+            document.getElementById("modal-times").textContent = `${formatTime(rec.aimedTime)} / ${formatTime(rec.expectedTime)} (${rec.delayMinutes > 0 ? '+' + rec.delayMinutes + ' min' : 'pünktlich'})`;
+            document.getElementById("modal-reason").textContent = rec.reason;
+            document.getElementById("modal-sections").textContent = rec.description || "Keine zusätzlichen Streckenangaben vorhanden.";
+            document.getElementById("modal-raw-xml").textContent = rec.rawXml;
+
+            const alertBox = document.getElementById("modal-alert-box");
+            if (rec.type === 'unplanned' || rec.status === 'cancelled' || rec.status === 'disruption') {
+                alertBox.classList.remove("hidden");
+                document.getElementById("modal-alert-title").textContent = rec.title;
+                document.getElementById("modal-alert-text").textContent = rec.description;
+            } else {
+                alertBox.classList.add("hidden");
+            }
+
+            const modal = document.getElementById("detail-modal");
+            const container = document.getElementById("modal-container");
+            modal.classList.remove("hidden");
+            setTimeout(() => {
+                container.classList.remove("scale-95", "opacity-0");
+                container.classList.add("scale-100", "opacity-100");
+            }, 10);
+        };
+
+        function closeModal() {
+            const modal = document.getElementById("detail-modal");
+            const container = document.getElementById("modal-container");
+            container.classList.remove("scale-100", "opacity-100");
+            container.classList.add("scale-95", "opacity-0");
+            setTimeout(() => {
+                modal.classList.add("hidden");
+            }, 200);
+        }
+
+        // Load Default Demo Dataset
+        function loadDemoData() {
+            const plannedRecords = parseSiriET(mockPlannedXML);
+            const unplannedRecords = parseSiriSX(mockUnplannedXML);
+
+            state.siriRecords = [...unplannedRecords, ...plannedRecords];
+            state.filteredRecords = [...state.siriRecords];
+
+            document.getElementById("data-status-badge").innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                SIRI Demo-Daten geladen (${state.siriRecords.length})
+            `;
+            document.getElementById("data-status-badge").className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+
+            updateStats();
+            applyFilters();
+        }
+
+
+        function setupFileHandlers() {
+            // Helper for handling drop or input
+            const handleFileSelect = (file, type) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    if (type === 'planned') {
+                        const parsed = parseSiriET(content);
+                        state.siriRecords = state.siriRecords.filter(r => r.type !== 'planned').concat(parsed);
+                        document.getElementById("label-planned").textContent = file.name;
+                        document.getElementById("status-planned").textContent = `${parsed.length} Halte importiert`;
+                    } else if (type === 'unplanned') {
+                        const parsed = parseSiriSX(content);
+                        state.siriRecords = state.siriRecords.filter(r => r.type !== 'unplanned').concat(parsed);
+                        document.getElementById("label-unplanned").textContent = file.name;
+                        document.getElementById("status-unplanned").textContent = `${parsed.length} Ereignisse importiert`;
+                    } else if (type === 'db') {
+                        // SQLite binary processing
+                        try {
+                            initSqlJs({ locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}` }).then(SQL => {
+                                const UintArray = new Uint8Array(content);
+                                state.sqliteDb = new SQL.Database(UintArray);
+                                document.getElementById("label-db").textContent = file.name;
+                                document.getElementById("status-db").textContent = "SQLite geladen & indiziert";
+                            });
+                        } catch (err) {
+                            console.error("SQLite import failed", err);
+                            document.getElementById("status-db").textContent = "Fehler beim DB-Read";
+                        }
+                    }
+
+                    state.filteredRecords = [...state.siriRecords];
+                    updateStats();
+                    applyFilters();
+
+                    document.getElementById("data-status-badge").innerHTML = `
+                        <span class="w-2 h-2 rounded-full bg-blue-400"></span>
+                        Eigene SIRI-Dateien geladen
+                    `;
+                    document.getElementById("data-status-badge").className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20";
+                };
+
+                if (type === 'db') {
+                    reader.readAsArrayBuffer(file);
+                } else {
+                    reader.readAsText(file);
+                }
+            };
+
+            // Bind inputs
+            document.getElementById("file-planned").addEventListener("change", (e) => {
+                if (e.target.files[0]) handleFileSelect(e.target.files[0], 'planned');
+            });
+            document.getElementById("file-unplanned").addEventListener("change", (e) => {
+                if (e.target.files[0]) handleFileSelect(e.target.files[0], 'unplanned');
+            });
+            document.getElementById("file-db").addEventListener("change", (e) => {
+                if (e.target.files[0]) handleFileSelect(e.target.files[0], 'db');
+            });
+        }
+
+
+        window.onload = function() {
+            // Live Server Clock
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById("server-clock").textContent = now.toLocaleTimeString('de-CH');
+            }, 1000);
+
+            // Load initial Demo Data
+            loadDemoData();
+
+            // File Handlers
+            setupFileHandlers();
+
+            // Search and Filters
+            document.getElementById("search-input").addEventListener("input", (e) => {
+                state.filters.search = e.target.value;
+                applyFilters();
+            });
+
+            document.getElementById("filter-type").addEventListener("change", (e) => {
+                state.filters.type = e.target.value;
+                applyFilters();
+            });
+
+            document.getElementById("filter-status").addEventListener("change", (e) => {
+                state.filters.status = e.target.value;
+                applyFilters();
+            });
+
+            document.getElementById("reset-filters-btn").addEventListener("click", () => {
+                state.filters.search = '';
+                state.filters.type = 'all';
+                state.filters.status = 'all';
+                document.getElementById("search-input").value = '';
+                document.getElementById("filter-type").value = 'all';
+                document.getElementById("filter-status").value = 'all';
+                applyFilters();
+            });
+
+            document.getElementById("load-demo-btn").addEventListener("click", () => {
+                loadDemoData();
+            });
+
+            // Modal Controls
+            document.getElementById("close-modal-btn").addEventListener("click", closeModal);
+            document.getElementById("modal-close-bottom").addEventListener("click", closeModal);
+            document.getElementById("detail-modal").addEventListener("click", (e) => {
+                if (e.target === document.getElementById("detail-modal")) closeModal();
+            });
+
+            // Theme Toggle
+            document.getElementById("theme-toggle").addEventListener("click", () => {
+                const html = document.documentElement;
+                const icon = document.querySelector("#theme-toggle i");
+                if (html.classList.contains("dark")) {
+                    html.classList.remove("dark");
+                    icon.className = "fas fa-sun text-amber-500";
+                    state.theme = "light";
+                } else {
+                    html.classList.add("dark");
+                    icon.className = "fas fa-moon text-yellow-400";
+                    state.theme = "dark";
+                }
+            });
+        };
+    </script>
+</body>
+</html>
