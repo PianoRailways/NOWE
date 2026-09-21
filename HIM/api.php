@@ -72,8 +72,8 @@ if (!file_exists(DB_FILE)) {
 $action = $_GET['action'] ?? 'list';
 $scope = $_GET['scope'] ?? 'all'; // 'all', 'planned', 'unplanned'
 $search = $_GET['search'] ?? '';
-$limit = (int)($_GET['limit'] ?? 100);
-$offset = (int)($_GET['offset'] ?? 0);
+$limit = max(1, min(500, (int)($_GET['limit'] ?? 100)));
+$offset = max(0, (int)($_GET['offset'] ?? 0));
 
 // ─────────────────────────────────────────────────────────────────────────
 // API-Endpunkte
@@ -122,12 +122,10 @@ switch ($action) {
         }
         
         // Sortierung und Limit
-        $sql .= ' ORDER BY valid_from DESC LIMIT :limit OFFSET :offset';
+        $sql .= " ORDER BY valid_from DESC LIMIT {$limit} OFFSET {$offset}";
         
         try {
             $stmt = $pdo->prepare($sql);
-            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             foreach ($params as $key => $val) {
                 $stmt->bindValue($key, $val);
             }
@@ -136,12 +134,10 @@ switch ($action) {
             $events = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             // Zähle Gesamtergebnisse (ohne LIMIT)
-            $countSql = str_replace('ORDER BY valid_from DESC LIMIT :limit OFFSET :offset', '', $sql);
+            $countSql = preg_replace('/ ORDER BY valid_from DESC LIMIT \d+ OFFSET \d+$/', '', $sql);
             $countSql = preg_replace('/SELECT \*/', 'SELECT COUNT(*) as total', $countSql);
             
             $countStmt = $pdo->prepare($countSql);
-            $countStmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-            $countStmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             foreach ($params as $key => $val) {
                 $countStmt->bindValue($key, $val);
             }
