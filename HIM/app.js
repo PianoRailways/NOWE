@@ -354,7 +354,7 @@ function startAutoRefresh() {
     if (!autoRefreshEnabled) return;
     
     const loadData = async () => {
-        const situations = await fetchSituations('unplanned');
+        const situations = await fetchSituations('all');
         ALL_SITUATIONS = situations;
         renderBoard();
     };

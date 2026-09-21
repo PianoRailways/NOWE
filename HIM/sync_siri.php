@@ -10,7 +10,7 @@ error_reporting(E_ALL);
 // 2. Konfiguration
 // -----------------------------------------------------------------------------
 // Füge hier deinen API-Token ein
-define('API_TOKEN', 'eyJvcmciOiI2NDA2NTFhNTIyZmEwNTAwMDEyOWJiZTEiLCJpZCI6ImViZDc5YzJlOWM1NjQ5NGZhNzY3YWU1NGIzYmNhZjhmIiwiaCI6Im11cm11cjEyOCJ9');
+define('API_TOKEN', '');
 
 // Cache-Verzeichnis relativ zum aktuellen Skript-Standort
 define('CACHE_DIR', __DIR__ . '/siri_data/');
@@ -50,19 +50,13 @@ function getDbConnection(): PDO {
     return $pdo;
 }
 
-function importSiriXmlToSqlite(string $xmlFilePath): void {
+function importSiriXmlToSqlite(string $xmlFilePath, PDO $pdo): void {
     if (!file_exists($xmlFilePath) || filesize($xmlFilePath) === 0) {
         return;
     }
 
-    $pdo = getDbConnection();
-    
-    $pdo->beginTransaction();
-    $pdo->exec("DELETE FROM siri_events");
-    
     $reader = new XMLReader();
     if (!$reader->open($xmlFilePath)) {
-        $pdo->rollBack();
         return;
     }
     
@@ -86,8 +80,24 @@ function importSiriXmlToSqlite(string $xmlFilePath): void {
         }
     }
     
-    $pdo->commit();
     $reader->close();
+}
+
+function rebuildSqliteIndex(): void {
+    $pdo = getDbConnection();
+    $pdo->beginTransaction();
+
+    try {
+        $pdo->exec("DELETE FROM siri_events");
+        importSiriXmlToSqlite(FILE_UNPLANNED, $pdo);
+        importSiriXmlToSqlite(FILE_PLANNED, $pdo);
+        $pdo->commit();
+    } catch (Throwable $error) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        throw $error;
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -178,7 +188,6 @@ function syncSiriData(string $filePath, int $ttlSeconds, string $apiUrl): void {
                 $tmpFile = $filePath . '.tmp';
                 if (file_put_contents($tmpFile, $xmlContent) !== false) {
                     rename($tmpFile, $filePath);
-                    importSiriXmlToSqlite($filePath);
                 } else {
                     echo "<p style='color:red;'><strong>Fehler:</strong> Schreibzugriff auf Temp-Datei fehlgeschlagen.</p>";
                 }
@@ -215,6 +224,7 @@ $urlUnplanned = 'https://api.opentransportdata.swiss/la/siri-sx-unplanned';
 
 syncSiriData(FILE_UNPLANNED, TTL_UNPLANNED, $urlUnplanned);
 syncSiriData(FILE_PLANNED, TTL_PLANNED, $urlPlanned);
+rebuildSqliteIndex();
 
 // -----------------------------------------------------------------------------
 // 6. Status-Ausgabe
