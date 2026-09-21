@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="icon" type="image/png" href="../nowe.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>öV NOWE HIM – Ereignisse</title>
+</head>
+<body>
+
+    <!-- ═══════════════ HEADER ═══════════════ -->
+    <header id="app-header">
+        <div id="header-left">
+            <button id="btn-home" title="Zur Abfahrtstafel">⌂ Home</button>
+            <button id="btn-sync" title="Daten jetzt synchronisieren" class="icon-btn">🔄 Sync</button>
+            <button id="btn-refresh-auto" title="Auto-Refresh An/Aus" class="toggle-btn active">↻ Auto</button>
+        </div>
+        <div id="header-center">
+            <span id="live-clock"></span>
+        </div>
+        <div id="header-right">
+            <span id="app-title">HIM – Ereignisse</span>
+        </div>
+    </header>
+
+    <!-- ═══════════════ FILTERLEISTE ═══════════════ -->
+    <div id="filter-bar">
+        <span class="filter-label">Bereich:</span>
+        <button class="scope-btn active" data-scope="all">Alle</button>
+        <button class="scope-btn" data-scope="planned">Geplant</button>
+        <button class="scope-btn" data-scope="unplanned">Ungeplant</button>
+        
+        <span class="filter-label" style="margin-left: auto;">Typ:</span>
+        <button class="type-btn active" data-type="all">Alle</button>
+        <button class="type-btn" data-type="disruption">Störung</button>
+        <button class="type-btn" data-type="information">Info</button>
+        <button class="type-btn" data-type="recommendation">Empfehlung</button>
+    </div>
+
+    <!-- ═══════════════ SUCHLEISTE ═══════════════ -->
+    <div id="search-bar">
+        <input id="search-input" type="text" placeholder="Nach Bahnhof, Linie oder Wort suchen…" autocomplete="off">
+        <button id="btn-search-clear" title="Suche löschen">✕</button>
+    </div>
+
+    <!-- ═══════════════ STATUS ═══════════════ -->
+    <div id="status-message"></div>
+
+    <!-- ═══════════════ EREIGNISLISTE ═══════════════ -->
+    <main id="situations-container">
+        <div id="situations-board"></div>
+    </main>
+
+    <script type="module" src="app.js?v=2"></script>
+
+</body>
+<footer class="page-footer">
+    <span id="footer-info"></span> | 
+    <a href="../manual.html">Manual</a> | 
+    <a href="../index.html">Abfahrten</a>
+</footer>
+</html>
