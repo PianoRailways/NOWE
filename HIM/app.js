@@ -2,7 +2,6 @@
 
 const API_CONFIG = {
     API_URL: './api.php',
-    SIRI_DATA_DIR: './siri_data/',
     REFRESH_MS: 30_000
 };
 
@@ -29,8 +28,8 @@ async function fetchSituations(scope = 'all') {
         // Konvertiere DB-Rows zu Situations-Format
         return (json.data || []).map(row => ({
             id: row.item_identifier || 'unknown',
-            summary: row.title || 'Unbekanntes Ereignis',
-            description: row.description || '',
+            summary: (row.title || '').trim() || 'Unbekanntes Ereignis',
+            description: (row.description || '').trim() || '',
             reason: '',
             consequence: '',
             recommendation: '',
@@ -63,8 +62,6 @@ function detectCategory(text) {
     return 'information';
 }
 
-
-
 // ─── DOM Refs ──────────────────────────────────────────────────────────────
 
 const DOM = {
@@ -74,7 +71,6 @@ const DOM = {
     searchInput:    () => document.getElementById('search-input'),
     searchClearBtn: () => document.getElementById('btn-search-clear'),
     refreshAutoBtn: () => document.getElementById('btn-refresh-auto'),
-    modeToggleBtn:  () => document.getElementById('btn-mode-toggle'),
     fileUploadBtn:  () => document.getElementById('btn-upload-file'),
     fileInput:      () => document.getElementById('file-input'),
     footerInfo:     () => document.getElementById('footer-info'),
@@ -258,8 +254,7 @@ function renderBoard() {
     const footerInfo = DOM.footerInfo();
     if (footerInfo) {
         const timestamp = new Date().toLocaleTimeString('de-CH');
-        const mode = USE_LOCAL_FILES ? '(lokal)' : '(API)';
-        footerInfo.textContent = `${visible.length}/${ALL_SITUATIONS.length} Ereignisse ${mode} • ${timestamp}`;
+        footerInfo.textContent = `${visible.length}/${ALL_SITUATIONS.length} Ereignisse (API) • ${timestamp}`;
     }
 }
 
@@ -346,7 +341,7 @@ function initSearchBar() {
     }
 }
 
-// ─── Auto-Refresh ────────────────────────────────────────────────────────
+// ─── Auto-Refresh ────────────────────────────────────────────────────
 
 function startAutoRefresh() {
     stopAutoRefresh();
