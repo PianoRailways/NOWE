@@ -68,14 +68,20 @@ function importSiriXmlToSqlite(string $xmlFilePath, PDO $pdo): void {
     while ($reader->read()) {
         if ($reader->nodeType == XMLReader::ELEMENT && $reader->name === 'PtSituationElement') {
             $nodeXml = new SimpleXMLElement($reader->readOuterXML());
+            $nodeXml->registerXPathNamespace('siri', 'http://www.siri.org.uk/siri');
+
+            $value = static function (string $path) use ($nodeXml): string {
+                $matches = $nodeXml->xpath($path);
+                return isset($matches[0]) ? trim((string)$matches[0]) : '';
+            };
             
             $stmt->execute([
-                ':id' => (string)($nodeXml->SituationNumber ?? ''),
-                ':title' => (string)($nodeXml->Summary ?? ''),
-                ':desc' => (string)($nodeXml->Description ?? ''),
-                ':from' => (string)($nodeXml->ValidityPeriod[0]->StartTime ?? ''),
-                ':until' => (string)($nodeXml->ValidityPeriod[0]->EndTime ?? ''),
-                ':mode' => (string)($nodeXml->Affects->Networks->Network->VehicleMode ?? '')
+                ':id' => $value('/siri:PtSituationElement/siri:SituationNumber'),
+                ':title' => $value('/siri:PtSituationElement/siri:Summary[@xml:lang="DE"][1]'),
+                ':desc' => $value('/siri:PtSituationElement/siri:Description[@xml:lang="DE"][1]'),
+                ':from' => $value('/siri:PtSituationElement/siri:ValidityPeriod/siri:StartTime'),
+                ':until' => $value('/siri:PtSituationElement/siri:ValidityPeriod/siri:EndTime'),
+                ':mode' => $value('/siri:PtSituationElement/siri:Affects/siri:Networks/siri:Network/siri:VehicleMode')
             ]);
         }
     }
