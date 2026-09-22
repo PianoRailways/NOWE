@@ -70,6 +70,8 @@ const DOM = {
     filterBar:      () => document.getElementById('filter-bar'),
     searchInput:    () => document.getElementById('search-input'),
     searchClearBtn: () => document.getElementById('btn-search-clear'),
+    dateInput:      () => document.getElementById('date-filter-input'),
+    dateClearBtn:   () => document.getElementById('btn-date-clear'),
     refreshAutoBtn: () => document.getElementById('btn-refresh-auto'),
     fileUploadBtn:  () => document.getElementById('btn-upload-file'),
     fileInput:      () => document.getElementById('file-input'),
@@ -82,6 +84,7 @@ let ALL_SITUATIONS = [];
 let ACTIVE_SCOPE = new Set(['all']);
 let ACTIVE_TYPE = new Set(['all']);
 let SEARCH_QUERY = '';
+let FILTER_DATE = '';
 
 // ─── Zeit-Hilfsfunktionen ──────────────────────────────────────────────────
 
@@ -126,6 +129,12 @@ function timeAgo(isoString) {
     }
 }
 
+function dateKey(isoString) {
+    if (!isoString) return '';
+    const match = String(isoString).match(/^(\d{4}-\d{2}-\d{2})/);
+    return match ? match[1] : '';
+}
+
 // ─── Uhr aktualisieren ─────────────────────────────────────────────────────
 
 function updateClock() {
@@ -149,6 +158,15 @@ function renderBoard() {
         
         if (!ACTIVE_TYPE.has('all')) {
             if (!ACTIVE_TYPE.has(sit.category)) return false;
+        }
+
+        if (FILTER_DATE) {
+            const validFrom = dateKey(sit.validFrom);
+            const validTo = dateKey(sit.validTo);
+            if ((validFrom && FILTER_DATE < validFrom) || (validTo && FILTER_DATE > validTo)) {
+                return false;
+            }
+            if (!validFrom && !validTo) return false;
         }
         
         if (SEARCH_QUERY) {
@@ -341,6 +359,26 @@ function initSearchBar() {
     }
 }
 
+function initDateFilter() {
+    const input = DOM.dateInput();
+    const clearBtn = DOM.dateClearBtn();
+
+    if (input) {
+        input.addEventListener('input', (event) => {
+            FILTER_DATE = event.target.value;
+            renderBoard();
+        });
+    }
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            FILTER_DATE = '';
+            if (input) input.value = '';
+            renderBoard();
+        });
+    }
+}
+
 // ─── Auto-Refresh ────────────────────────────────────────────────────
 
 function startAutoRefresh() {
@@ -415,6 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     initFilterBar();
     initSearchBar();
+    initDateFilter();
     
     const refreshBtn = DOM.refreshAutoBtn();
     if (refreshBtn) {

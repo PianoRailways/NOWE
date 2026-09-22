@@ -151,6 +151,39 @@ body {
     border-color: rgba(255,255,255,0.3);
 }
 
+.date-filter {
+    color: var(--text-dim);
+    font-size: 0.75em;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    margin-left: auto;
+}
+
+#date-filter-input {
+    color: var(--text-main);
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 2px;
+    padding: 4px 6px;
+    font: inherit;
+    color-scheme: dark;
+}
+
+.date-clear-btn {
+    background: transparent;
+    color: var(--text-via);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 2px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.date-clear-btn:hover {
+    background: rgba(255,255,255,0.14);
+    color: white;
+}
+
 /* ═════════════════ SUCHLEISTE ═════════════════ */
 #search-bar {
     display: flex;
