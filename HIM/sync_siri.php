@@ -18,7 +18,7 @@ define('CACHE_DIR', __DIR__ . '/siri_data/');
 define('FILE_PLANNED', CACHE_DIR . 'siri_planned.xml');
 define('FILE_UNPLANNED', CACHE_DIR . 'siri_unplanned.xml');
 define('DB_FILE', CACHE_DIR . 'siri_index.sqlite');
-define('DB_SCHEMA_VERSION', 2);
+define('DB_SCHEMA_VERSION', 3);
 
 define('TTL_PLANNED', 86400); // 24 Stunden
 define('TTL_UNPLANNED', 300);  // 5 Minuten
@@ -49,7 +49,14 @@ function getDbConnection(): PDO {
             reason TEXT,
             consequence TEXT,
             recommendation TEXT,
-            duration TEXT
+            duration TEXT,
+            version TEXT,
+            progress TEXT,
+            source_name TEXT,
+            publication_from TEXT,
+            publication_until TEXT,
+            affected_lines TEXT,
+            affected_stops TEXT
         );
         CREATE INDEX IF NOT EXISTS idx_valid ON siri_events(valid_from, valid_until);
     ");
@@ -63,6 +70,11 @@ function getDbConnection(): PDO {
         $pdo->exec('ALTER TABLE siri_events ADD COLUMN source_scope TEXT');
     }
     foreach (['reason', 'consequence', 'recommendation', 'duration'] as $column) {
+        if (!in_array($column, $columnNames, true)) {
+            $pdo->exec("ALTER TABLE siri_events ADD COLUMN {$column} TEXT");
+        }
+    }
+    foreach (['version', 'progress', 'source_name', 'publication_from', 'publication_until', 'affected_lines', 'affected_stops'] as $column) {
         if (!in_array($column, $columnNames, true)) {
             $pdo->exec("ALTER TABLE siri_events ADD COLUMN {$column} TEXT");
         }
@@ -82,9 +94,10 @@ function importSiriXmlToSqlite(string $xmlFilePath, PDO $pdo, string $sourceScop
     }
     
     $stmt = $pdo->prepare("
-        INSERT INTO siri_events (item_identifier, title, description, valid_from, valid_until, transport_mode, creation_time, source_scope, reason, consequence, recommendation, duration) 
-        VALUES (:id, :title, :desc, :from, :until, :mode, :created, :scope, :reason, :consequence, :recommendation, :duration)
+        INSERT INTO siri_events (item_identifier, title, description, valid_from, valid_until, transport_mode, creation_time, source_scope, reason, consequence, recommendation, duration, version, progress, source_name, publication_from, publication_until, affected_lines, affected_stops) 
+        VALUES (:id, :title, :desc, :from, :until, :mode, :created, :scope, :reason, :consequence, :recommendation, :duration, :version, :progress, :source_name, :publication_from, :publication_until, :affected_lines, :affected_stops)
     ");
+    $deleteDuplicate = $pdo->prepare('DELETE FROM siri_events WHERE item_identifier = :id AND source_scope = :scope');
     
     while ($reader->read()) {
         if ($reader->nodeType == XMLReader::ELEMENT && $reader->name === 'PtSituationElement') {
@@ -114,21 +127,62 @@ function importSiriXmlToSqlite(string $xmlFilePath, PDO $pdo, string $sourceScop
                 }
                 return '';
             };
+
+            $pathValue = static function (string $path) use ($nodeXml): string {
+                $matches = $nodeXml->xpath($path) ?: [];
+                return isset($matches[0]) ? trim((string)$matches[0]) : '';
+            };
+
+            $affectedLines = [];
+            foreach ($nodeXml->xpath('//*[local-name()="AffectedLine"]') ?: [] as $line) {
+                $name = trim((string)($line->xpath('./*[local-name()="PublishedLineName"]')[0] ?? ''));
+                $ref = trim((string)($line->xpath('./*[local-name()="LineRef"]')[0] ?? ''));
+                if ($name !== '' || $ref !== '') {
+                    $affectedLines[] = ['name' => $name !== '' ? $name : $ref, 'ref' => $ref];
+                }
+            }
+
+            $affectedStops = [];
+            foreach ($nodeXml->xpath('//*[local-name()="AffectedStopPlace" or local-name()="AffectedStopPoint"]') ?: [] as $stop) {
+                $name = trim((string)($stop->xpath('./*[local-name()="PlaceName" or local-name()="StopPointName"]')[0] ?? ''));
+                $ref = trim((string)($stop->xpath('./*[local-name()="StopPlaceRef" or local-name()="StopPointRef"]')[0] ?? ''));
+                if ($name !== '' || $ref !== '') {
+                    $affectedStops[] = ['name' => $name !== '' ? $name : $ref, 'ref' => $ref];
+                }
+            }
+
+            $uniqueByName = static function (array $items): array {
+                $unique = [];
+                foreach ($items as $item) {
+                    $key = $item['name'] . '|' . $item['ref'];
+                    $unique[$key] = $item;
+                }
+                return array_values($unique);
+            };
             
-            $stmt->execute([
+            $params = [
                 ':id' => $value(['SituationNumber']),
                 ':title' => $value(['Summary', 'SummaryText'], true),
                 ':desc' => $value(['Description', 'DescriptionText'], true),
-                ':from' => $value(['StartTime']),
-                ':until' => $value(['EndTime']),
+                ':from' => $pathValue('//*[local-name()="ValidityPeriod"]/*[local-name()="StartTime"]'),
+                ':until' => $pathValue('//*[local-name()="ValidityPeriod"]/*[local-name()="EndTime"]'),
                 ':mode' => $value(['VehicleMode']),
                 ':created' => $value(['CreationTime']),
                 ':scope' => $sourceScope,
                 ':reason' => $value(['Reason', 'ReasonText'], true),
                 ':consequence' => $value(['Consequence', 'ConsequenceText'], true),
                 ':recommendation' => $value(['Recommendation', 'RecommendationText'], true),
-                ':duration' => $value(['Duration', 'DurationText'], true)
-            ]);
+                ':duration' => $value(['Duration', 'DurationText'], true),
+                ':version' => $value(['Version']),
+                ':progress' => $value(['Progress']),
+                ':source_name' => $value(['Name']),
+                ':publication_from' => $pathValue('//*[local-name()="PublicationWindow"]/*[local-name()="StartTime"]'),
+                ':publication_until' => $pathValue('//*[local-name()="PublicationWindow"]/*[local-name()="EndTime"]'),
+                ':affected_lines' => json_encode($uniqueByName($affectedLines), JSON_UNESCAPED_UNICODE),
+                ':affected_stops' => json_encode($uniqueByName($affectedStops), JSON_UNESCAPED_UNICODE)
+            ];
+            $deleteDuplicate->execute([':id' => $params[':id'], ':scope' => $params[':scope']]);
+            $stmt->execute($params);
         }
     }
     

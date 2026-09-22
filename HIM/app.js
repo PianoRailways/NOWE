@@ -26,6 +26,15 @@ async function fetchSituations(scope = 'all') {
         }
         
         // Konvertiere DB-Rows zu Situations-Format
+        const parseList = (value) => {
+            try {
+                const parsed = JSON.parse(value || '[]');
+                return Array.isArray(parsed) ? parsed : [];
+            } catch {
+                return [];
+            }
+        };
+
         return (json.data || []).map(row => ({
             id: row.item_identifier || 'unknown',
             summary: (row.title || '').trim() || 'Unbekanntes Ereignis',
@@ -37,11 +46,16 @@ async function fetchSituations(scope = 'all') {
             publishing: 'create',
             isUnplanned: row.source_scope === 'unplanned',
             category: detectCategory(row.title + ' ' + row.description),
-            affectedLines: [],
-            affectedStops: [],
+            affectedLines: parseList(row.affected_lines),
+            affectedStops: parseList(row.affected_stops),
             creationTime: row.creation_time || '',
             validFrom: row.valid_from || '',
-            validTo: row.valid_until || ''
+            validTo: row.valid_until || '',
+            version: row.version || '',
+            progress: row.progress || '',
+            sourceName: row.source_name || '',
+            publicationFrom: row.publication_from || '',
+            publicationTo: row.publication_until || ''
         }));
     } catch (error) {
         console.error('API Fehler:', error);
@@ -204,6 +218,9 @@ function renderBoard() {
             : '<span class="badge badge-planned">Geplant</span>';
         
         const categoryBadge = `<span class="badge badge-${sit.category}">${sit.category}</span>`;
+        const progressBadge = sit.progress === 'closing'
+            ? '<span class="badge badge-closing">Aufhebung</span>'
+            : '';
         
         const linesBadges = sit.affectedLines.length > 0
             ? `<div class="affected-lines">
@@ -225,10 +242,11 @@ function renderBoard() {
         const createdTime = formatTime(sit.creationTime);
         const createdAgo = timeAgo(sit.creationTime);
         
-        const validityHtml = sit.validFrom || sit.validTo
+        const validityHtml = sit.validFrom || sit.validTo || sit.publicationFrom || sit.publicationTo
             ? `<div class="validity">
                 ${sit.validFrom ? `<strong>Von:</strong> ${formatDate(sit.validFrom)} ${formatTime(sit.validFrom)}` : ''}
                 ${sit.validTo ? `<br><strong>Bis:</strong> ${formatDate(sit.validTo)} ${formatTime(sit.validTo)}` : ''}
+                ${sit.publicationFrom || sit.publicationTo ? `<br><strong>Publikation:</strong> ${sit.publicationFrom ? `${formatDate(sit.publicationFrom)} ${formatTime(sit.publicationFrom)}` : '--'} bis ${sit.publicationTo ? `${formatDate(sit.publicationTo)} ${formatTime(sit.publicationTo)}` : '--'}` : ''}
                 </div>`
             : '';
         
@@ -242,6 +260,7 @@ function renderBoard() {
                     <div class="situation-badges">
                         ${plannedBadge}
                         ${categoryBadge}
+                        ${progressBadge}
                     </div>
                 </div>
                 
