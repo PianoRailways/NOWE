@@ -18,6 +18,7 @@ define('CACHE_DIR', __DIR__ . '/siri_data/');
 define('FILE_PLANNED', CACHE_DIR . 'siri_planned.xml');
 define('FILE_UNPLANNED', CACHE_DIR . 'siri_unplanned.xml');
 define('DB_FILE', CACHE_DIR . 'siri_index.sqlite');
+define('DB_SCHEMA_VERSION', 2);
 
 define('TTL_PLANNED', 86400); // 24 Stunden
 define('TTL_UNPLANNED', 300);  // 5 Minuten
@@ -142,6 +143,7 @@ function rebuildSqliteIndex(): void {
         $pdo->exec("DELETE FROM siri_events");
         importSiriXmlToSqlite(FILE_UNPLANNED, $pdo, 'unplanned');
         importSiriXmlToSqlite(FILE_PLANNED, $pdo, 'planned');
+        $pdo->exec('PRAGMA user_version = ' . DB_SCHEMA_VERSION);
         $pdo->commit();
     } catch (Throwable $error) {
         if ($pdo->inTransaction()) {
@@ -151,10 +153,24 @@ function rebuildSqliteIndex(): void {
     }
 }
 
+function databaseNeedsRebuild(): bool {
+    if (!file_exists(DB_FILE)) {
+        return true;
+    }
+
+    try {
+        $pdo = new PDO('sqlite:' . DB_FILE);
+        $version = (int)$pdo->query('PRAGMA user_version')->fetchColumn();
+        return $version < DB_SCHEMA_VERSION;
+    } catch (PDOException $error) {
+        return true;
+    }
+}
+
 // -----------------------------------------------------------------------------
 // 4. Synchronisations-Funktion
 // -----------------------------------------------------------------------------
-function syncSiriData(string $filePath, int $ttlSeconds, string $apiUrl): void {
+function syncSiriData(string $filePath, int $ttlSeconds, string $apiUrl): bool {
     $now = time();
     $fileNeedsUpdate = false;
 
@@ -172,12 +188,12 @@ function syncSiriData(string $filePath, int $ttlSeconds, string $apiUrl): void {
         
         if (!is_dir($dir) && !@mkdir($dir, 0775, true)) {
             echo "<p style='color:red;'><strong>Fehler:</strong> Ordner <code>{$dir}</code> konnte nicht erstellt werden.</p>";
-            return;
+            return false;
         }
 
         if (!is_writable($dir)) {
             echo "<p style='color:red;'><strong>Fehler:</strong> Das Verzeichnis <code>{$dir}</code> ist nicht beschreibbar.</p>";
-            return;
+            return false;
         }
 
         $ch = curl_init();
@@ -238,7 +254,9 @@ function syncSiriData(string $filePath, int $ttlSeconds, string $apiUrl): void {
             if (!empty($xmlContent) && str_contains($xmlContent, '<')) {
                 $tmpFile = $filePath . '.tmp';
                 if (file_put_contents($tmpFile, $xmlContent) !== false) {
-                    rename($tmpFile, $filePath);
+                    if (rename($tmpFile, $filePath)) {
+                        return true;
+                    }
                 } else {
                     echo "<p style='color:red;'><strong>Fehler:</strong> Schreibzugriff auf Temp-Datei fehlgeschlagen.</p>";
                 }
@@ -260,11 +278,10 @@ function syncSiriData(string $filePath, int $ttlSeconds, string $apiUrl): void {
             }
             echo "</div>";
             
-            if (file_exists($filePath)) {
-                touch($filePath);
-            }
         }
     }
+
+    return false;
 }
 
 // -----------------------------------------------------------------------------
@@ -273,9 +290,25 @@ function syncSiriData(string $filePath, int $ttlSeconds, string $apiUrl): void {
 $urlPlanned = 'https://api.opentransportdata.swiss/la/siri-sx'; 
 $urlUnplanned = 'https://api.opentransportdata.swiss/la/siri-sx-unplanned';
 
-syncSiriData(FILE_UNPLANNED, TTL_UNPLANNED, $urlUnplanned);
-syncSiriData(FILE_PLANNED, TTL_PLANNED, $urlPlanned);
-rebuildSqliteIndex();
+$lockDirectory = dirname(DB_FILE);
+if (!is_dir($lockDirectory)) {
+    @mkdir($lockDirectory, 0775, true);
+}
+$syncLock = fopen(CACHE_DIR . '.sync.lock', 'c');
+if ($syncLock === false || !flock($syncLock, LOCK_EX | LOCK_NB)) {
+    http_response_code(409);
+    exit('Synchronisation läuft bereits.');
+}
+register_shutdown_function(static function () use ($syncLock): void {
+    flock($syncLock, LOCK_UN);
+    fclose($syncLock);
+});
+
+$unplannedUpdated = syncSiriData(FILE_UNPLANNED, TTL_UNPLANNED, $urlUnplanned);
+$plannedUpdated = syncSiriData(FILE_PLANNED, TTL_PLANNED, $urlPlanned);
+if ($unplannedUpdated || $plannedUpdated || databaseNeedsRebuild()) {
+    rebuildSqliteIndex();
+}
 
 // -----------------------------------------------------------------------------
 // 6. Status-Ausgabe
