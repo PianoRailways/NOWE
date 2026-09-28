@@ -209,6 +209,44 @@ input::focus {
     background: var(--board-row);
 }
 
+/* RELATED JOURNEYS */
+.related-journeys {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 0 14px 14px;
+    background: var(--board-row);
+}
+
+.related-journey {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+}
+
+.related-journey-label {
+    color: var(--text-dim);
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.related-journey-value {
+    color: var(--text-main);
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+@media (max-width: 520px) {
+    .related-journeys {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* WAGON CARD */
 .wagon-card {
     background: rgba(255,255,255,0.04);

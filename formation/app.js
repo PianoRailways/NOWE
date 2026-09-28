@@ -144,16 +144,44 @@ async function fetchFormation() {
 
         <div class="formation-title">Formation</div>
         <div class="formation-grid" id="vehiclesContainer"></div>
+
+        <div class="related-journeys" aria-label="Verbundene Fahrten">
+            <div class="related-journey">
+                <span class="related-journey-label">Vorherige Fahrt</span>
+                <span class="related-journey-value" id="previousTrainNumber">-</span>
+            </div>
+            <div class="related-journey">
+                <span class="related-journey-label">Nachfolgende Fahrt</span>
+                <span class="related-journey-value" id="nextTrainNumber">-</span>
+            </div>
+        </div>
     `;
 
     resultDiv.innerHTML = html;
 
     window.formationData = {
         vehicles: vehicles,
-        stops: stops
+        stops: stops,
+        relationships: foundData.relationships || []
     };
 
+    updateRelatedJourneys(foundData.relationships || []);
+
     updateFormationView(0);
+}
+
+function updateRelatedJourneys(relationships) {
+    const previousJourney = relationships.find((relationship) =>
+        relationship.vehicleRelationshipDetails?.direction === 'V'
+    );
+    const nextJourney = relationships.find((relationship) =>
+        relationship.vehicleRelationshipDetails?.direction === 'N'
+    );
+
+    document.getElementById('previousTrainNumber').textContent =
+        previousJourney?.advancedJourneyInformation1?.trainMetaInformation?.trainNumber || '-';
+    document.getElementById('nextTrainNumber').textContent =
+        nextJourney?.advancedJourneyInformation1?.trainMetaInformation?.trainNumber || '-';
 }
 
 function updateFormationView(stopIdx) {
