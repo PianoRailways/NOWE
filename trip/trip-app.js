@@ -2,6 +2,11 @@ import { fetchTripInfo } from './trip-api-client.js';
 
 // ─── DOM-Refs ─────────────────────────────────────────────────────────────────
 const $ = (id) => document.getElementById(id);
+let activeTrip = null;
+let positionTimer = null;
+let positionRequestRunning = false;
+let positionErrorShown = false;
+let positionRequestKey = 0;
 
 // ─── Uhr ──────────────────────────────────────────────────────────────────────
 function updateClock() {
@@ -62,6 +67,10 @@ function accessIcon(type) {
 
 // ─── Trip laden ───────────────────────────────────────────────────────────────
 async function loadTrip() {
+    stopPositionUpdates();
+    activeTrip = null;
+    positionRequestKey += 1;
+
     const journeyId   = $('trip-input')?.value.trim();
     const operatingDay = $('trip-date')?.value || null;
 
@@ -81,6 +90,10 @@ async function loadTrip() {
         }
         
         renderTrip(trip);
+        activeTrip = trip;
+        positionErrorShown = false;
+        const initialPosition = updateVehiclePosition(trip);
+        if (!initialPosition?.isFinal) startPositionUpdates();
         showStatus(`${trip.category} ${trip.line}  ·  Fahrtnummer ${trip.trainNumber}  ·  ${trip.stops.length} Halte`, 'success');
 
         // URL in der Adresszeile aktualisieren, ohne die Seite neu zu laden
@@ -203,7 +216,7 @@ function renderPerlschnur(trip) {
 
         const rowClass = isThisStop ? 'chain-stop this-call' : 'chain-stop';
         html += `
-            <div class="${rowClass}">
+            <div class="${rowClass}" data-stop-index="${idx}">
                 ${timesHtml}
                 ${dotHtml}
                 ${chainInfo}
@@ -242,6 +255,131 @@ function renderTrip(trip) {
     const board = $('trip-board');
     if (!board) return;
     board.innerHTML = renderHeader(trip) + renderPerlschnur(trip);
+}
+
+function updateStopTimes(row, stop) {
+    const arrival = fmtTime(stop.arrival?.estimated || stop.arrival?.timetabled);
+    const departure = fmtTime(stop.departure?.estimated || stop.departure?.timetabled);
+    const arrivalTime = row.querySelector('.ps-time--arr');
+    const departureTime = row.querySelector('.ps-time--dep');
+    if (arrivalTime) arrivalTime.textContent = arrival ?? '--:--';
+    if (departureTime) departureTime.textContent = departure ?? '--:--';
+
+    const rows = row.querySelectorAll('.time-row');
+    rows.forEach(timeRow => {
+        const isDeparture = timeRow.querySelector('.ps-time--dep');
+        const delay = isDeparture ? stop.departure?.delaySec : stop.arrival?.delaySec;
+        timeRow.querySelector('.delay-badge')?.remove();
+        const badge = delayLabel(delay);
+        if (badge) timeRow.insertAdjacentHTML('beforeend', badge);
+    });
+}
+
+function updatePerlschnurTimes(trip) {
+    document.querySelectorAll('.chain-stop[data-stop-index]').forEach(row => {
+        const index = Number(row.dataset.stopIndex);
+        const stop = trip.stops[index];
+        if (stop) updateStopTimes(row, stop);
+    });
+}
+
+function removeVehicleMarker() {
+    document.querySelector('.vehicle-position-marker')?.remove();
+}
+
+function updateVehicleMarker(trip) {
+    const chain = document.querySelector('.chain');
+    const position = globalThis.calculateVehiclePosition?.(trip.stops, new Date(), trip);
+    if (!chain || !position) {
+        removeVehicleMarker();
+        return;
+    }
+
+    const stopRows = [...chain.querySelectorAll('.chain-stop[data-stop-index]')];
+    const rowForIndex = index => stopRows.find(row => Number(row.dataset.stopIndex) === index);
+    const currentDot = rowForIndex(position.stopIndex)?.querySelector('.ps-dot');
+    if (!currentDot) {
+        removeVehicleMarker();
+        return;
+    }
+
+    const chainRect = chain.getBoundingClientRect();
+    const currentRect = currentDot.getBoundingClientRect();
+    let x = currentRect.left + currentRect.width / 2 - chainRect.left;
+    let y = currentRect.top + currentRect.height / 2 - chainRect.top;
+    const nextDot = position.nextStopIndex === undefined
+        ? null
+        : rowForIndex(position.nextStopIndex)?.querySelector('.ps-dot');
+    if (nextDot && Number.isFinite(position.progress)) {
+        const nextRect = nextDot.getBoundingClientRect();
+        const nextX = nextRect.left + nextRect.width / 2 - chainRect.left;
+        const nextY = nextRect.top + nextRect.height / 2 - chainRect.top;
+        x += (nextX - x) * position.progress;
+        y += (nextY - y) * position.progress;
+    }
+
+    let marker = chain.querySelector('.vehicle-position-marker');
+    if (!marker) {
+        marker = document.createElement('div');
+        marker.className = 'vehicle-position-marker';
+        chain.appendChild(marker);
+    }
+    marker.style.left = `${x}px`;
+    marker.style.top = `${y}px`;
+    const currentName = trip.stops[position.stopIndex]?.name || 'Halt';
+    const nextName = position.nextStopIndex === undefined ? '' : trip.stops[position.nextStopIndex]?.name || 'Halt';
+    marker.title = position.state === 'inStation'
+        ? `In ${currentName}`
+        : `Zwischen ${currentName} und ${nextName}`;
+    return position;
+}
+
+function updateVehiclePosition(trip) {
+    updatePerlschnurTimes(trip);
+    return updateVehicleMarker(trip);
+}
+
+async function refreshVehiclePosition() {
+    if (!activeTrip || document.hidden || positionRequestRunning) return;
+    positionRequestRunning = true;
+    const requestKey = positionRequestKey;
+    const journeyId = $('trip-input')?.value.trim();
+    const operatingDay = $('trip-date')?.value || null;
+    try {
+        const freshTrip = await fetchTripInfo(journeyId, operatingDay);
+        if (activeTrip && requestKey === positionRequestKey && freshTrip?.stops?.length) {
+            activeTrip = freshTrip;
+            const position = updateVehiclePosition(freshTrip);
+            if (position?.isFinal) stopPositionTimer();
+            positionErrorShown = false;
+        }
+    } catch (error) {
+        if (!positionErrorShown) {
+            positionErrorShown = true;
+            console.warn('Live-Position konnte nicht aktualisiert werden:', error);
+        }
+    } finally {
+        positionRequestRunning = false;
+    }
+}
+
+function startPositionUpdates() {
+    if (positionTimer !== null) {
+        window.clearInterval(positionTimer);
+    }
+    positionTimer = window.setInterval(refreshVehiclePosition, 15000);
+}
+
+function stopPositionTimer() {
+    if (positionTimer !== null) {
+        window.clearInterval(positionTimer);
+        positionTimer = null;
+    }
+}
+
+function stopPositionUpdates() {
+    stopPositionTimer();
+    removeVehicleMarker();
 }
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
@@ -295,6 +433,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     $('btn-home')?.addEventListener('click', () => {
+        stopPositionUpdates();
+        activeTrip = null;
         window.location.href = '../';
     });
     // Aktualisiert die URL live, wenn das Datum im Webinterface geändert wird
@@ -315,4 +455,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.history.replaceState({}, '', url.toString());
     });
+
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) refreshVehiclePosition();
+    });
+    window.addEventListener('pagehide', stopPositionUpdates);
 });

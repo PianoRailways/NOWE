@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Test Fahrzeugposition</title>
+    <style>
+        body { font: 16px sans-serif; margin: 2rem; }
+        li { margin: .4rem 0; }
+        .ok { color: #087f23; }
+        .fail { color: #b00020; }
+    </style>
+</head>
+<body>
+    <h1>Positionsfunktion</h1>
+    <ul id="results"></ul>
+    <script src="./trip-position.js"></script>
+    <script>
+        const results = document.getElementById('results');
+        const stop = (arrival, departure, extra = {}) => ({
+            name: extra.name || 'Halt',
+            arrival: { timetabled: arrival || null },
+            departure: { timetabled: departure || null },
+            ...extra
+        });
+        const at = time => new Date(`2026-10-11T${time}:00+02:00`);
+        const stops = [
+            stop('09:00', '09:10', { name: 'A' }),
+            stop('09:40', '09:45', { name: 'B' }),
+            stop('10:15', null, { name: 'C' })
+        ];
+        const cases = [
+            ['Vor Start', calculateVehiclePosition(stops, at('08:50')), { stopIndex: 0, state: 'inStation' }],
+            ['In Station', calculateVehiclePosition(stops, at('09:05')), { stopIndex: 0, state: 'inStation' }],
+            ['Just departed', calculateVehiclePosition(stops, at('09:17')), { stopIndex: 0, state: 'justDeparted' }],
+            ['Middle', calculateVehiclePosition(stops, at('09:25')), { stopIndex: 0, state: 'middle' }],
+            ['Almost there', calculateVehiclePosition(stops, at('09:33')), { stopIndex: 0, state: 'almostThere' }],
+            ['Nach Ziel', calculateVehiclePosition(stops, at('10:30')), { stopIndex: 2, state: 'inStation' }],
+            ['Ohne Zeiten übersprungen', calculateVehiclePosition([
+                stops[0], stop(null, null, { name: 'Durchfahrt' }), stops[1]
+            ], at('09:25')), { stopIndex: 0, state: 'middle' }],
+            ['Ausfall', calculateVehiclePosition(stops.map(item => ({ ...item, cancelled: true })), at('09:25')), null]
+        ];
+
+        cases.forEach(([name, actual, expected]) => {
+            const ok = JSON.stringify(actual) === JSON.stringify(expected)
+                || (actual && expected && actual.stopIndex === expected.stopIndex && actual.state === expected.state);
+            const item = document.createElement('li');
+            item.className = ok ? 'ok' : 'fail';
+            item.textContent = `${ok ? 'OK' : 'FEHLER'}: ${name}` + (ok ? '' : ` (erhalten: ${JSON.stringify(actual)})`);
+            results.appendChild(item);
+        });
+    </script>
+</body>
+</html>

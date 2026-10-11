@@ -235,6 +235,7 @@
     display: flex;
     flex-direction: column;
     padding: 0;
+    position: relative;
 }
 
 .chain-stop {
@@ -343,6 +344,24 @@
     height: 16px;
     background: #FFFFFF47;
     box-shadow: 0 0 0 2px #FFFFFF47;
+}
+
+.vehicle-position-marker {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--sbb-red);
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.25), 0 0 10px rgba(255, 59, 48, 0.7);
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    pointer-events: auto;
+    animation: vehicle-position-pulse 2s ease-in-out infinite;
+}
+
+@keyframes vehicle-position-pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.25), 0 0 10px rgba(255, 59, 48, 0.7); }
+    50% { box-shadow: 0 0 0 5px rgba(255, 59, 48, 0.12), 0 0 14px rgba(255, 59, 48, 0.85); }
 }
 
 /* ────── Info-Spalte (Name + Quay) ──────────────────────────────────────────── */
