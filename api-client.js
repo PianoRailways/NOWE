@@ -219,10 +219,10 @@ function createNearbyLocationRequest(latitude, longitude, radius) {
                 <InitialInput>
                     <GeoRestriction>
                         <Circle>
-                            <siri:Position>
-                                <siri:Longitude>${longitude}</siri:Longitude>
-                                <siri:Latitude>${latitude}</siri:Latitude>
-                            </siri:Position>
+                            <Center>
+                                <siri:Longitude>${Number(longitude).toFixed(6)}</siri:Longitude>
+                                <siri:Latitude>${Number(latitude).toFixed(6)}</siri:Latitude>
+                            </Center>
                             <Radius>${radius}</Radius>
                         </Circle>
                     </GeoRestriction>
