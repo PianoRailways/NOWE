@@ -204,6 +204,84 @@ export async function searchStops(queryString) {
     }
 }
 
+function createNearbyLocationRequest(latitude, longitude, radius) {
+        const now = new Date().toISOString();
+        const msgId = 'LIR-' + Math.random().toString(36).substr(2, 9);
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<OJP xmlns="http://www.vdv.de/ojp" xmlns:siri="http://www.siri.org.uk/siri" version="2.0">
+    <OJPRequest>
+        <siri:ServiceRequest>
+            <siri:RequestTimestamp>${now}</siri:RequestTimestamp>
+            <siri:RequestorRef>${API_CONFIG.REQUESTOR_REF}</siri:RequestorRef>
+            <OJPLocationInformationRequest>
+                <siri:RequestTimestamp>${now}</siri:RequestTimestamp>
+                <siri:MessageIdentifier>${msgId}</siri:MessageIdentifier>
+                <InitialInput>
+                    <GeoRestriction>
+                        <Circle>
+                            <siri:Position>
+                                <siri:Longitude>${longitude}</siri:Longitude>
+                                <siri:Latitude>${latitude}</siri:Latitude>
+                            </siri:Position>
+                            <Radius>${radius}</Radius>
+                        </Circle>
+                    </GeoRestriction>
+                </InitialInput>
+                <Restrictions>
+                    <Type>stop</Type>
+                    <NumberOfResults>10</NumberOfResults>
+                </Restrictions>
+            </OJPLocationInformationRequest>
+        </siri:ServiceRequest>
+    </OJPRequest>
+</OJP>`;
+}
+
+export async function searchStopsNearLocation(latitude, longitude, radius = 1000) {
+        const response = await fetch(API_CONFIG.PROXY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/xml' },
+                body: createNearbyLocationRequest(latitude, longitude, radius)
+        });
+
+        const xmlData = await response.text();
+        if (!response.ok) {
+                throw new Error(`OJP-Fehler (${response.status})`);
+        }
+
+        return parseNearbyLocationResponse(xmlData);
+}
+
+function parseNearbyLocationResponse(xmlString) {
+        const xmlDoc = new DOMParser().parseFromString(xmlString, 'text/xml');
+        if (xmlDoc.getElementsByTagName('parsererror').length > 0) {
+                throw new Error('OJP-Antwort konnte nicht gelesen werden');
+        }
+
+        const firstElementByLocalName = (parent, localName) => Array.from(parent.getElementsByTagName('*'))
+            .find(element => element.localName === localName);
+
+        return Array.from(xmlDoc.getElementsByTagName('PlaceResult')).map(result => {
+                const place = result.getElementsByTagName('Place')[0];
+                const stopPlace = place?.getElementsByTagName('StopPlace')[0];
+                if (!stopPlace) return null;
+
+                const ref = stopPlace.getElementsByTagName('StopPlaceRef')[0]?.textContent?.trim() ?? '';
+                const name = stopPlace.getElementsByTagName('StopPlaceName')[0]
+                        ?.getElementsByTagName('Text')[0]?.textContent?.trim()
+                        || place.getElementsByTagName('Name')[0]?.getElementsByTagName('Text')[0]?.textContent?.trim()
+                        || '';
+                const position = firstElementByLocalName(stopPlace, 'GeoPosition')
+                    || firstElementByLocalName(place, 'GeoPosition');
+                const latitude = Number(position && firstElementByLocalName(position, 'Latitude')?.textContent);
+                const longitude = Number(position && firstElementByLocalName(position, 'Longitude')?.textContent);
+
+                return ref && name && Number.isFinite(latitude) && Number.isFinite(longitude)
+                        ? { ref, name, latitude, longitude }
+                        : null;
+        }).filter(Boolean);
+}
+
 function parseLocationResponse(xmlString) {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlString, 'text/xml');

@@ -188,6 +188,12 @@ body {
     margin-left: 8px;
 }
 
+#stop-dropdown .dd-distance {
+    flex: 0 0 auto;
+    color: var(--text-dim);
+    white-space: nowrap;
+}
+
 /* Datum + Zeit Picker */
 
 /* Stop-Suche */
@@ -208,6 +214,20 @@ body {
     border-radius: 4px;
     transition: background 0.2s;
 }
+
+#btn-nearby {
+    min-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    background: var(--sbb-blue);
+    color: white;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#btn-nearby:hover { background: var(--sbb-red); }
+#btn-nearby:disabled { opacity: 0.65; cursor: wait; }
 
 #btn-add-fav:hover {
     background: var(--sbb-red);

@@ -1,4 +1,4 @@
-import { fetchDepartures, searchStops } from './api-client.js';
+import { fetchDepartures, searchStops, searchStopsNearLocation } from './api-client.js';
 
 // ─── Produktkategorie-Mapping ────────────────────────────────────────────────
 const CAT = {
@@ -149,6 +149,7 @@ const DOM = {
     favBar:         () => document.getElementById('fav-bar'),
     filterBar:      () => document.getElementById('filter-bar'),
     stopDropdown:   () => document.getElementById('stop-dropdown'),
+    nearbyBtn:      () => document.getElementById('btn-nearby'),
 };
 
 // ─── Zustand ─────────────────────────────────────────────────────────────────
@@ -1145,6 +1146,83 @@ function closeDropdown() {
     if (dd) { dd.innerHTML = ''; dd.classList.add('hidden'); }
 }
 
+function distanceInMetres(latitude1, longitude1, latitude2, longitude2) {
+    const earthRadius = 6371000;
+    const toRadians = degrees => degrees * Math.PI / 180;
+    const latitudeDelta = toRadians(latitude2 - latitude1);
+    const longitudeDelta = toRadians(longitude2 - longitude1);
+    const a = Math.sin(latitudeDelta / 2) ** 2
+        + Math.cos(toRadians(latitude1)) * Math.cos(toRadians(latitude2))
+        * Math.sin(longitudeDelta / 2) ** 2;
+    return 2 * earthRadius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function getCurrentPosition() {
+    return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 30000
+        });
+    });
+}
+
+async function findNearbyStations() {
+    const button = DOM.nearbyBtn();
+    const dropdown = DOM.stopDropdown();
+    if (!button || !dropdown) return;
+
+    if (!window.isSecureContext && !['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)) {
+        showStatus('Standortsuche funktioniert nur über HTTPS.', 'error');
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = '📍 Suche läuft…';
+    closeDropdown();
+
+    try {
+        const position = await getCurrentPosition();
+        const { latitude, longitude } = position.coords;
+        let stations = await searchStopsNearLocation(latitude, longitude, 1000);
+        if (stations.length === 0) stations = await searchStopsNearLocation(latitude, longitude, 3000);
+
+        const uniqueStations = new Map();
+        stations.forEach(station => {
+            const distance = distanceInMetres(latitude, longitude, station.latitude, station.longitude);
+            const current = uniqueStations.get(station.ref);
+            if (!current || distance < current.distance) {
+                uniqueStations.set(station.ref, { ...station, distance });
+            }
+        });
+
+        const nearbyStations = [...uniqueStations.values()].sort((a, b) => a.distance - b.distance);
+        if (nearbyStations.length === 0) {
+            showStatus('Keine Station im Umkreis gefunden.', 'error');
+            return;
+        }
+
+        dropdown.innerHTML = nearbyStations.map(station => `
+            <li data-id="${station.ref}" data-name="${station.name}">
+                <span class="dd-name">${station.name}</span>
+                <span class="dd-distance">${Math.round(station.distance)} m</span>
+            </li>
+        `).join('');
+        dropdown.classList.remove('hidden');
+        showStatus('', '');
+    } catch (error) {
+        const message = error.code === 1
+            ? 'Standortberechtigung verweigert.'
+            : error.code === 2 || error.code === 3
+                ? 'Standort nicht verfügbar oder Zeitüberschreitung.'
+            : 'OJP-Fehler bei der Stationssuche.';
+        showStatus(message, 'error');
+    } finally {
+        button.disabled = false;
+        button.textContent = '📍 In meiner Nähe';
+    }
+}
+
 // ─── Uhr ──────────────────────────────────────────────────────────────────────
 
 function updateClock() {
@@ -1285,6 +1363,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFavBar();
     initFilterBar();
     initStopSearch();
+    DOM.nearbyBtn()?.addEventListener('click', findNearbyStations);
     updateClock();
     setInterval(updateClock, 1000);
     

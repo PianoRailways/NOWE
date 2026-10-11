@@ -15,8 +15,11 @@ logDebug("Methode: " . $_SERVER['REQUEST_METHOD']);
 logDebug("URI: " . $_SERVER['REQUEST_URI']);
 
 $xmlInput = file_get_contents('php://input');
+$isGeoRequest = strpos($xmlInput, '<GeoRestriction>') !== false;
 logDebug("Eingehender Body (Länge): " . strlen($xmlInput) . " Bytes");
-logDebug("Eingehender Body (Vorschau): " . substr($xmlInput, 0, 200));
+logDebug($isGeoRequest
+    ? "Eingehender Geo-Request: Inhalt wird nicht protokolliert"
+    : "Eingehender Body (Vorschau): " . substr($xmlInput, 0, 200));
 
 $url   = 'https://api.opentransportdata.swiss/ojp20';
 $token = '';
