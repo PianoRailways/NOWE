@@ -47,6 +47,23 @@ function hasFormationSupport(dep) {
     return FORMATION_OPERATORS.has(ref.toLowerCase());
 }
 
+const toCodeMap = {
+    '33': 'BLSP',
+    '11': 'SBBP',
+    '82': 'SOB',
+    '86': 'zb',
+    '53': 'TPF',
+    '72': 'RhB',
+    '65': 'THURBO',
+    '73': 'TRN',
+};
+
+function getEvuFromOperatorRef(operatorRef) {
+    if (!operatorRef) return '';
+    const cleanRef = operatorRef.toString().toLowerCase().replace('ojp:', '').trim();
+    return toCodeMap[cleanRef] || '';
+}
+
 // ─── Favoriten ───────────────────────────────────────────────────────────────
 // Initiales Laden aus dem Speicher oder Standardwerte
 function loadFavorites() {
@@ -470,10 +487,16 @@ function renderBoard(departures) {
             ? 'background-color: #00cc44; color: #000; border-radius: 3px; padding: 1px 5px; display: inline-block; border: 1px solid #009933; font-weight: bold;'
             : '';
 
-        // Formation-Link nur anzeigen, wenn der Betreiber in betreiber.txt gelistet ist
+        // ─── GEÄNDERTER BEREICH START ────────────────────────────────────────
+        let formationUrl = `/formation/?train=${dep.journeyNumber}`;
+        const evuCode = getEvuFromOperatorRef(dep.operatorRef);
+        if (evuCode) {
+            formationUrl += `&evu=${encodeURIComponent(evuCode)}`;
+        }
+
         const journeyNumHtml = dep.journeyNumber
             ? (hasFormationSupport(dep)
-                ? `<div class="journey-num" style="${unplannedStyle}"><a href="/formation/?train=${dep.journeyNumber}" class="journey-num">${dep.journeyNumber}</a></div>`
+                ? `<div class="journey-num" style="${unplannedStyle}"><a href="${formationUrl}" class="journey-num">${dep.journeyNumber}</a></div>`
                 : `<div class="journey-num" style="${unplannedStyle}">${dep.journeyNumber}</div>`)
             : '';
 
