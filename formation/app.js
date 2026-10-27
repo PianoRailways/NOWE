@@ -148,11 +148,11 @@ async function fetchFormation() {
         <div class="related-journeys" aria-label="Verbundene Fahrten">
             <div class="related-journey">
                 <span class="related-journey-label">Vorherige Fahrt</span>
-                <span class="related-journey-value" id="previousTrainNumber">-</span>
+                <a class="related-journey-value" id="previousTrainNumber">-</a>
             </div>
             <div class="related-journey">
                 <span class="related-journey-label">Nachfolgende Fahrt</span>
-                <span class="related-journey-value" id="nextTrainNumber">-</span>
+                <a class="related-journey-value" id="nextTrainNumber">-</a>
             </div>
         </div>
     `;
@@ -178,10 +178,27 @@ function updateRelatedJourneys(relationships) {
         relationship.vehicleRelationshipDetails?.direction === 'N'
     );
 
-    document.getElementById('previousTrainNumber').textContent =
-        previousJourney?.advancedJourneyInformation1?.trainMetaInformation?.trainNumber || '-';
-    document.getElementById('nextTrainNumber').textContent =
-        nextJourney?.advancedJourneyInformation1?.trainMetaInformation?.trainNumber || '-';
+    const prevNumber = previousJourney?.advancedJourneyInformation1?.trainMetaInformation?.trainNumber;
+    const prevElement = document.getElementById('previousTrainNumber');
+    
+    if (prevNumber) {
+        prevElement.textContent = prevNumber;
+        prevElement.href = `./?train=${encodeURIComponent(prevNumber)}`;
+    } else {
+        prevElement.textContent = '-';
+        prevElement.removeAttribute('href');
+    }
+
+    const nextNumber = nextJourney?.advancedJourneyInformation1?.trainMetaInformation?.trainNumber;
+    const nextElement = document.getElementById('nextTrainNumber');
+
+    if (nextNumber) {
+        nextElement.textContent = nextNumber;
+        nextElement.href = `./?train=${encodeURIComponent(nextNumber)}`;
+    } else {
+        nextElement.textContent = '-';
+        nextElement.removeAttribute('href');
+    }
 }
 
 function updateFormationView(stopIdx) {
