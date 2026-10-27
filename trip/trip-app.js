@@ -127,6 +127,7 @@ function renderHeader(trip) {
 }
 
 // ─── Chain-ähnliche Perlschnur (wie Abfahrtstabelle) mit Ausfällen ──────────
+// ─── Chain-ähnliche Perlschnur (wie Abfahrtstabelle) mit Ausfällen ──────────
 function renderPerlschnur(trip) {
     let html = '<div class="chain">';
     
@@ -136,42 +137,44 @@ function renderPerlschnur(trip) {
         const isThisStop = stop.isThisCall;
 
         // Zeiten (nur HH:MM, ohne Sekunden)
-        const arrTime = fmtTime(stop.arrival.timetabled);
-        const depTime = fmtTime(stop.departure.timetabled);
+        const arrTT  = fmtTime(stop.arrival?.timetabled);
+        const arrEst = fmtTime(stop.arrival?.estimated);
+        const depTT  = fmtTime(stop.departure?.timetabled);
+        const depEst = fmtTime(stop.departure?.estimated);
 
-        // ✅ Datum und Uhrzeit für die URL extrahieren
-        const arrivalIso = stop.arrival.timetabled;
+        // Datum und Uhrzeit für die URL extrahieren
+        const arrivalIso = stop.arrival?.timetabled;
         const arrivalDate = arrivalIso ? arrivalIso.split('T')[0] : null;
-        const arrivalTimeForUrl = arrTime; // "HH:MM"
+        const arrivalTimeForUrl = arrTT;
 
         // Verspätungs-/Verfrühungs-Badges
-        const arrDelay = delayLabel(stop.arrival.delaySec);
-        const depDelay = delayLabel(stop.departure.delaySec);
+        const arrDelay = delayLabel(stop.arrival?.delaySec);
+        const depDelay = delayLabel(stop.departure?.delaySec);
 
-        // HTML für Zeitspalte
+        // HTML für Zeitspalte (mit SOLL-Zeiten im Span & Data-Attributen für Prognose-Klick)
         let timesHtml = '';
         if (isFirst) {
             timesHtml = `<div class="chain-times">
-                <div class="time-row">
-                    <span class="ps-time ps-time--dep">${depTime ?? '--:--'}</span>
+                <div class="time-row" data-tt="${depTT ?? ''}" data-est="${depEst ?? ''}" data-delay="${stop.departure?.delaySec ?? 0}" style="cursor: pointer;" title="Klicken für Prognosezeit">
+                    <span class="ps-time ps-time--dep">${depTT ?? '--:--'}</span>
                     ${depDelay}
                 </div>
             </div>`;
         } else if (isLast) {
             timesHtml = `<div class="chain-times">
-                <div class="time-row">
-                    <span class="ps-time ps-time--arr">${arrTime ?? '--:--'}</span>
+                <div class="time-row" data-tt="${arrTT ?? ''}" data-est="${arrEst ?? ''}" data-delay="${stop.arrival?.delaySec ?? 0}" style="cursor: pointer;" title="Klicken für Prognosezeit">
+                    <span class="ps-time ps-time--arr">${arrTT ?? '--:--'}</span>
                     ${arrDelay}
                 </div>
             </div>`;
         } else {
             timesHtml = `<div class="chain-times">
-                <div class="time-row">
-                    <span class="ps-time ps-time--arr">${arrTime ?? '--:--'}</span>
+                <div class="time-row" data-tt="${arrTT ?? ''}" data-est="${arrEst ?? ''}" data-delay="${stop.arrival?.delaySec ?? 0}" style="cursor: pointer;" title="Klicken für Prognosezeit">
+                    <span class="ps-time ps-time--arr">${arrTT ?? '--:--'}</span>
                     ${arrDelay}
                 </div>
-                <div class="time-row">
-                    <span class="ps-time ps-time--dep">${depTime ?? '--:--'}</span>
+                <div class="time-row" data-tt="${depTT ?? ''}" data-est="${depEst ?? ''}" data-delay="${stop.departure?.delaySec ?? 0}" style="cursor: pointer;" title="Klicken für Prognosezeit">
+                    <span class="ps-time ps-time--dep">${depTT ?? '--:--'}</span>
                     ${depDelay}
                 </div>
             </div>`;
@@ -193,10 +196,10 @@ function renderPerlschnur(trip) {
         // Name + Quay unter dem Namen
         const quayLine = stop.quay ? `<div class="ps-quay-line">Gl. ${stop.quay}</div>` : '';
         
-        // Nutzt die jetzt im Objekt vorhandene ID (z.B. "ch:1:sloid:8100:2:3")
+        // Nutzt die ID (z.B. "ch:1:sloid:8100:2:3")
         const stopParam = stop.stopPointRef || stop.name;
         
-        // ✅ GEÄNDERT: Datum + Zeit mit übergeben
+        // Datum + Zeit mit übergeben
         const stsUrl = arrivalDate && arrivalTimeForUrl
             ? `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(stopParam)}&date=${encodeURIComponent(arrivalDate)}&time=${encodeURIComponent(arrivalTimeForUrl)}`
             : `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(stopParam)}`;
@@ -257,21 +260,64 @@ function renderTrip(trip) {
     board.innerHTML = renderHeader(trip) + renderPerlschnur(trip);
 }
 
-function updateStopTimes(row, stop) {
-    const arrival = fmtTime(stop.arrival?.timetabled);
-    const departure = fmtTime(stop.departure?.timetabled);
-    const arrivalTime = row.querySelector('.ps-time--arr');
-    const departureTime = row.querySelector('.ps-time--dep');
-    if (arrivalTime) arrivalTime.textContent = arrival ?? '--:--';
-    if (departureTime) departureTime.textContent = departure ?? '--:--';
+// Klick-Handler für den 5-Sekunden-Wechsel auf Prognosezeit
+document.addEventListener('click', (e) => {
+    const timeRow = e.target.closest('.time-row');
+    if (!timeRow) return;
 
-    const rows = row.querySelectorAll('.time-row');
-    rows.forEach(timeRow => {
-        const isDeparture = timeRow.querySelector('.ps-time--dep');
-        const delay = isDeparture ? stop.departure?.delaySec : stop.arrival?.delaySec;
-        timeRow.querySelector('.delay-badge')?.remove();
-        const badge = delayLabel(delay);
-        if (badge) timeRow.insertAdjacentHTML('beforeend', badge);
+    const timeSpan = timeRow.querySelector('.ps-time');
+    const badgeSpan = timeRow.querySelector('.delay-badge');
+
+    const ttTime = timeRow.dataset.tt;
+    const estTime = timeRow.dataset.est;
+
+    if (!estTime || estTime === ttTime) return;
+
+    // Falls bereits im Prognose-Modus, Timer zurücksetzen
+    if (timeRow.dataset.mode === 'estimated') {
+        clearTimeout(timeRow._timeoutId);
+    } else {
+        // Auf Prognose umschalten, Verspätungs-Badge verstecken
+        timeRow.dataset.mode = 'estimated';
+        if (timeSpan) timeSpan.textContent = estTime;
+        if (badgeSpan) badgeSpan.style.display = 'none';
+    }
+
+    // Nach 5 Sekunden automatisch zurücksetzen
+    timeRow._timeoutId = setTimeout(() => {
+        timeRow.dataset.mode = 'timetabled';
+        if (timeSpan) timeSpan.textContent = ttTime || '--:--';
+        if (badgeSpan) badgeSpan.style.display = '';
+        delete timeRow._timeoutId;
+    }, 5000);
+});
+
+function updateStopTimes(row, stop) {
+    const arrTT = fmtTime(stop.arrival?.timetabled);
+    const arrEst = fmtTime(stop.arrival?.estimated);
+    const depTT = fmtTime(stop.departure?.timetabled);
+    const depEst = fmtTime(stop.departure?.estimated);
+
+    const timeRows = row.querySelectorAll('.time-row');
+    timeRows.forEach((timeRow) => {
+        const isDep = timeRow.querySelector('.ps-time--dep');
+        const tt = isDep ? depTT : arrTT;
+        const est = isDep ? depEst : arrEst;
+        const delay = isDep ? stop.departure?.delaySec : stop.arrival?.delaySec;
+
+        timeRow.dataset.tt = tt || '';
+        timeRow.dataset.est = est || '';
+        timeRow.dataset.delay = delay ?? 0;
+
+        // Nur aktualisieren, wenn der Benutzer gerade nicht in der 5-Sekunden-Ansicht ist
+        if (timeRow.dataset.mode !== 'estimated') {
+            const timeSpan = timeRow.querySelector('.ps-time');
+            if (timeSpan) timeSpan.textContent = tt ?? '--:--';
+
+            timeRow.querySelector('.delay-badge')?.remove();
+            const badge = delayLabel(delay);
+            if (badge) timeRow.insertAdjacentHTML('beforeend', badge);
+        }
     });
 }
 
