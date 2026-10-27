@@ -3,8 +3,15 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('date').value = new Date().toISOString().split('T')[0];
 
     const trainInput = document.getElementById('trainNumber');
+    const evuSelect = document.getElementById('evu');
     const urlParams = new URLSearchParams(window.location.search);
+    
     const trainParam = urlParams.get('train');
+    const evuParam = urlParams.get('evu');
+
+    if (evuParam && evuSelect) {
+        evuSelect.value = evuParam;
+    }
 
     if (trainParam && trainInput) {
         trainInput.value = trainParam;
@@ -171,6 +178,19 @@ async function fetchFormation() {
 }
 
 function updateRelatedJourneys(relationships) {
+    // Mapping der TOCodes auf die entsprechenden EVU-Kürzel
+    const toCodeMap = {
+        '33': 'BLSP',
+        '11': 'SBBP',
+        '82': 'SOB',
+        '86': 'zb',
+        '53': 'TPF',
+        '72': 'RhB',
+        '65': 'THURBO',
+        '43': 'CJ',
+        '73': 'TRN',
+    };
+
     const previousJourney = relationships.find((relationship) =>
         relationship.vehicleRelationshipDetails?.direction === 'V'
     );
@@ -178,23 +198,37 @@ function updateRelatedJourneys(relationships) {
         relationship.vehicleRelationshipDetails?.direction === 'N'
     );
 
-    const prevNumber = previousJourney?.advancedJourneyInformation1?.trainMetaInformation?.trainNumber;
+    // Vorherige Fahrt verarbeiten
+    const prevMeta = previousJourney?.advancedJourneyInformation1?.trainMetaInformation;
+    const prevNumber = prevMeta?.trainNumber;
+    const prevToCode = prevMeta?.toCode;
     const prevElement = document.getElementById('previousTrainNumber');
     
     if (prevNumber) {
         prevElement.textContent = prevNumber;
-        prevElement.href = `./?train=${encodeURIComponent(prevNumber)}`;
+        let prevUrl = `./?train=${encodeURIComponent(prevNumber)}`;
+        if (prevToCode && toCodeMap[prevToCode]) {
+            prevUrl += `&evu=${encodeURIComponent(toCodeMap[prevToCode])}`;
+        }
+        prevElement.href = prevUrl;
     } else {
         prevElement.textContent = '-';
         prevElement.removeAttribute('href');
     }
 
-    const nextNumber = nextJourney?.advancedJourneyInformation1?.trainMetaInformation?.trainNumber;
+    // Nachfolgende Fahrt verarbeiten
+    const nextMeta = nextJourney?.advancedJourneyInformation1?.trainMetaInformation;
+    const nextNumber = nextMeta?.trainNumber;
+    const nextToCode = nextMeta?.toCode;
     const nextElement = document.getElementById('nextTrainNumber');
 
     if (nextNumber) {
         nextElement.textContent = nextNumber;
-        nextElement.href = `./?train=${encodeURIComponent(nextNumber)}`;
+        let nextUrl = `./?train=${encodeURIComponent(nextNumber)}`;
+        if (nextToCode && toCodeMap[nextToCode]) {
+            nextUrl += `&evu=${encodeURIComponent(toCodeMap[nextToCode])}`;
+        }
+        nextElement.href = nextUrl;
     } else {
         nextElement.textContent = '-';
         nextElement.removeAttribute('href');
