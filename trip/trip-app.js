@@ -258,8 +258,8 @@ function renderTrip(trip) {
 }
 
 function updateStopTimes(row, stop) {
-    const arrival = fmtTime(stop.arrival?.estimated || stop.arrival?.timetabled);
-    const departure = fmtTime(stop.departure?.estimated || stop.departure?.timetabled);
+    const arrival = fmtTime(stop.arrival?.timetabled);
+    const departure = fmtTime(stop.departure?.timetabled);
     const arrivalTime = row.querySelector('.ps-time--arr');
     const departureTime = row.querySelector('.ps-time--dep');
     if (arrivalTime) arrivalTime.textContent = arrival ?? '--:--';
