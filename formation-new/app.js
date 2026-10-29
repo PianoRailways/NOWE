@@ -371,10 +371,17 @@ function renderFormationStrip(stopIdx) {
     const goals = stop.vehicleGoals || [];
     const direction = goals.length === 1 ? `← Richtung ${goals[0].toStop?.name || goals[0].name || goals[0]}` : '';
     const wagonHtml = ordered.map((item, index) => renderWagon(item.vehicle, item.stopData, item.index, index, ordered, stopIdx)).join('');
+    const meta = window.formationData.metaInformation || {};
+    const lastUpdate = meta.lastUpdate ? formatTime(meta.lastUpdate) : '';
+    const hints = window.formationData.hints;
     return `<div class="formation-strip" style="--wagon-count:${ordered.length}">
         <div class="sector-bar">${sectorHtml}</div>
         ${direction ? `<div class="formation-direction">${direction}</div>` : ''}
         <div class="wagon-row">${wagonHtml}</div>
+        <div class="formation-meta">
+            ${meta.length ? `Länge ${meta.length} m` : ''}${meta.numberSeats ? ` · ${meta.numberSeats} Sitzplätze` : ''}${lastUpdate ? ` · Stand ${lastUpdate}` : ''}
+        </div>
+        ${hints ? `<div class="formation-hints">${Array.isArray(hints) ? hints.map(hint => `<span>${typeof hint === 'string' ? hint : JSON.stringify(hint)}</span>`).join('') : JSON.stringify(hints)}</div>` : ''}
     </div>`;
 }
 
@@ -414,7 +421,7 @@ function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
 }
 
 function showDetails(vehicle, stopData, vIdx) {
-    const props = vehicle.vehicleProperties;
+    const props = vehicle.vehicleProperties || {};
     const accessibility = props.accessibilityProperties || {};
 
     // Die "vehicle.number" entspricht der Anzeigennummer (Perron), 
@@ -423,8 +430,9 @@ function showDetails(vehicle, stopData, vIdx) {
         <div class="modal-title">
             <div class="modal-title-main">${vehicle.vehicleIdentifier.typeCodeName}</div>
             <div class="modal-title-meta">
-                <span class="modal-badges">${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? iconSvg('bike') : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}</span>
-                Wagen ${vehicle.number || '-'} (Pos. ${vehicle.position || '-'})
+                <span class="modal-badges">${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? '🚲' : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}</span>
+                ${Number(vehicle.number) > 0 ? `Wagen ${vehicle.number}` : ''} (Pos. ${vehicle.position || '-'})
+                ${props.closed === true ? '<span class="wagon-status">gesperrt</span>' : ''}${props.vehicleWillBePutAway === true ? '<span class="wagon-status">wird abgehängt</span>' : ''}
             </div>
         </div>
 
@@ -433,8 +441,12 @@ function showDetails(vehicle, stopData, vIdx) {
                 <div class="detail-group-title">Allgemein</div>
                 <div class="detail-row"><span class="detail-label">Wagennummer:</span> <span class="detail-value">${vehicle.number || '-'}</span></div>
                 <div class="detail-row"><span class="detail-label">Physische Position:</span> <span class="detail-value">${vehicle.position || '-'}</span></div>
-                <div class="detail-row"><span class="detail-label">Tech. Wagennr.:</span> <span class="detail-value">${vehicle.vehicleIdentifier.vehicleNumber || '-'}</span></div>
-                <div class="detail-row"><span class="detail-label">EVN:</span> <span class="detail-value detail-value--small">${vehicle.vehicleIdentifier.evn || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">Tech. Wagennr.:</span> <span class="detail-value">${vehicle.vehicleIdentifier?.vehicleNumber || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">EVN:</span> <span class="detail-value detail-value--small">${vehicle.vehicleIdentifier?.evn || '-'}</span></div>
+                ${vehicle.vehicleIdentifier?.parentEvn ? `<div class="detail-row"><span class="detail-label">Parent-EVN:</span> <span class="detail-value detail-value--small">${vehicle.vehicleIdentifier.parentEvn}</span></div>` : ''}
+                <div class="detail-row"><span class="detail-label">Velohaken:</span> <span class="detail-value">${props.numberBikeHooks || 0}</span></div>
+                <div class="detail-row"><span class="detail-label">Verkehrt ab/bis:</span> <span class="detail-value">${props.fromStop?.name || '-'} / ${props.toStop?.name || '-'}</span></div>
+                ${props.trolleyStatus && props.trolleyStatus !== 'Normal' ? `<div class="detail-row"><span class="detail-label">Zustand:</span> <span class="detail-value">${props.trolleyStatus}</span></div>` : ''}
                 <div class="detail-row"><span class="detail-label">Länge:</span> <span class="detail-value">${props.length || '-'} m</span></div>
                 <div class="detail-row"><span class="detail-label">Sektoren:</span> <span class="detail-value">${stopData.sectors || '-'}</span></div>
             </div>
