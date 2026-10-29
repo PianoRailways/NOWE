@@ -425,7 +425,6 @@ function showDetails(vehicle, stopData, vIdx) {
     
     // Overlay anzeigen
     const overlay = document.getElementById('modal-overlay');
-    overlay.style.display = 'flex';
     overlay.classList.add('active');
 }
 
