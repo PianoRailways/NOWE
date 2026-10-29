@@ -169,7 +169,7 @@ async function fetchFormation() {
             index,
             arrivalTime: entry.stopTime?.arrivalTime,
             departureTime: entry.stopTime?.departureTime,
-            track: entry.track,
+            track: entry.track || entry.stopTime?.track || scheduledStop.track || scheduledStop.quay || point.track || point.quay,
             formationShort: entry.formationShort || {},
             vehicleGoals: entry.formationShort?.vehicleGoals || []
         };
