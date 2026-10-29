@@ -35,12 +35,15 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const trainParam = urlParams.get('train');
     const evuParam = urlParams.get('evu');
+    const sjyidParam = urlParams.get('sjyid');
 
     if (evuParam && evuSelect) {
         evuSelect.value = evuParam;
     }
 
-    if (trainParam && trainInput) {
+    if (sjyidParam) {
+        loadTripOnly(sjyidParam, urlParams.get('date') || document.getElementById('date').value);
+    } else if (trainParam && trainInput) {
         trainInput.value = trainParam;
         fetchFormation();
     }
@@ -52,6 +55,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 fetchFormation();
             }
         });
+
+        async function loadTripOnly(sjyid, date) {
+            try {
+                const trip = await fetchTripInfo(sjyid, date);
+                if (!trip?.stops?.length) return;
+                const stops = [];
+                const rows = trip.stops.map((stop) => ({
+                    ...stop,
+                    fIdx: undefined
+                }));
+                document.getElementById('result').innerHTML = `
+                    <div class="trip-only-status">${trip.category || ''} ${trip.line || ''} · ${trip.trainNumber || ''}</div>
+                    <div class="stop-chain" id="stopChain"></div>`;
+                window.formationData = { formations: [], stops, rows, trip, relationships: [] };
+                renderStopChain();
+                startTripRefresh();
+            } catch {
+                // Ein Trip-Link darf die Formationsseite nicht stoeren.
+            }
+        }
     }
 });
 

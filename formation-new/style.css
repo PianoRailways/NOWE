@@ -320,6 +320,14 @@ input::focus {
     background: var(--board-bg);
 }
 
+.trip-only-status {
+    padding: 10px 14px;
+    background: var(--board-head);
+    border-bottom: 1px solid var(--border);
+    color: var(--text-via);
+    font-weight: 600;
+}
+
 .formation-stop {
     border-bottom: 1px solid var(--border);
 }
