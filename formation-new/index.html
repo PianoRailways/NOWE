@@ -10,10 +10,10 @@
     <!-- ═══════════════ HEADER ═══════════════ -->
     <header id="app-header">
         <div id="header-left">
-            <button id="btn-home" onclick="window.location = '../'" title="Startseite">⌂ Home</button>
+            <button id="btn-home" title="Startseite">⌂ Home</button>
         </div>
         <div id="header-center">
-            <span id="live-clock" onclick="window.location = './?train='">18:04:00</span>
+            <span id="live-clock">18:04:00</span>
         </div>
         <div id="header-right">
             <span id="app-title">öV NOWE</span>
@@ -25,7 +25,7 @@
         <input id="evu" type="text" placeholder="fak. EVU (z.B. SBBP)">
         <input id="trainNumber" type="tel" placeholder="Zugnummer (z.B. 4713)">
         <input id="date" type="date">
-        <button class="fetch-button" onclick="fetchFormation()">GO</button>
+        <button class="fetch-button" id="fetch-button">GO</button>
     </div>
 
     <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
@@ -36,43 +36,12 @@
     <!-- ═══════════════ MODAL OVERLAY ═══════════════ -->
     <div id="modal-overlay">
         <div id="modal-content">
-            <button id="modal-close" onclick="closeModal()">✕ Schliessen</button>
+            <button id="modal-close">✕ Schliessen</button>
             <div id="modal-body"></div>
         </div>
     </div>
 
-    <script>
-        document.getElementById('date').valueAsDate = new Date();
-
-        function updateClock() {
-            const el = document.getElementById('live-clock');
-            if (!el) return;
-            const now = new Date();
-            el.textContent = now.getHours().toString().padStart(2,'0') + ':'
-                           + now.getMinutes().toString().padStart(2,'0') + ':'
-                           + now.getSeconds().toString().padStart(2,'0');
-        }
-        updateClock();
-        setInterval(updateClock, 1000);
-
-        document.getElementById('trainNumber').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') fetchFormation();
-        });
-
-function closeModal() {
-    const overlay = document.getElementById('modal-overlay');
-    overlay.classList.remove('active');
-}
-
-        document.getElementById('modal-overlay').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('modal-overlay')) {
-                closeModal();
-            }
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
-        });
-    </script>
-    <script src="app.js"></script>
+    <script src="../trip/trip-position.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>

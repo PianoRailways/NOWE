@@ -1,7 +1,7 @@
 // ─── Konfiguration ────────────────────────────────────────────────────────────
 
 const TRIP_API_CONFIG = {
-    PROXY_URL:     './trip-proxy.php',
+    PROXY_URL:     new URL('./trip-proxy.php', import.meta.url).href,
     REQUESTOR_REF: 'NOWE26'
 };
 

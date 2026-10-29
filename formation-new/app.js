@@ -1,6 +1,30 @@
-// Setup beim Laden
+import { fetchTripInfo } from '../trip/trip-api-client.js';
+
+function updateClock() {
+    const el = document.getElementById('live-clock');
+    if (!el) return;
+    const now = new Date();
+    el.textContent = now.toLocaleTimeString('de-CH');
+}
+
+function closeModal() {
+    document.getElementById('modal-overlay')?.classList.remove('active');
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('date').valueAsDate = new Date();
+    updateClock();
+    setInterval(updateClock, 1000);
+    document.getElementById('btn-home')?.addEventListener('click', () => { window.location = '../'; });
+    document.getElementById('live-clock')?.addEventListener('click', () => { window.location = './?train='; });
+    document.getElementById('fetch-button')?.addEventListener('click', fetchFormation);
+    document.getElementById('modal-close')?.addEventListener('click', closeModal);
+    document.getElementById('modal-overlay')?.addEventListener('click', (event) => {
+        if (event.target === event.currentTarget) closeModal();
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') closeModal();
+    });
 
     const trainInput = document.getElementById('trainNumber');
     const evuSelect = document.getElementById('evu');
