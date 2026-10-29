@@ -317,6 +317,7 @@ input::focus {
 
 /* Perlschnur und geoeffnete Formation */
 .stop-chain {
+    position: relative;
     background: var(--board-bg);
 }
 
@@ -358,6 +359,25 @@ input::focus {
 .formation-stop:first-child .chain-marker::before { top: 50%; }
 .formation-stop:last-child .chain-marker::before { bottom: 50%; }
 .chain-dot { z-index: 1; width: 11px; height: 11px; border: 2px solid var(--sbb-orange); border-radius: 50%; background: var(--board-bg); }
+.vehicle-position-marker {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--sbb-red);
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, .25), 0 0 10px rgba(255, 59, 48, .7);
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    pointer-events: none;
+    animation: vehicle-position-pulse 2s ease-in-out infinite;
+}
+
+.vehicle-position-marker[hidden] { display: none; }
+
+@keyframes vehicle-position-pulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(255, 59, 48, .25), 0 0 10px rgba(255, 59, 48, .7); }
+    50% { box-shadow: 0 0 0 5px rgba(255, 59, 48, .12), 0 0 14px rgba(255, 59, 48, .85); }
+}
 .chain-stop-text { display: flex; flex-direction: column; justify-content: center; padding-left: 8px; min-width: 0; }
 .chain-stop-text strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chain-stop-text a { color: inherit; text-decoration: none; }

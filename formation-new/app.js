@@ -227,6 +227,7 @@ function updateTripRows(trip) {
         });
     });
     setupTimeRows();
+    updateVehicleMarker();
 }
 
 async function refreshTrip() {
@@ -474,9 +475,9 @@ function renderStopChain() {
                 : `${timeRow(arrival, row.arrival?.estimated, row.arrival?.delaySec, 'arr')}${timeRow(departure, row.departure?.estimated, row.departure?.delaySec, 'dep')}`;
         const quay = fIdx !== undefined ? stops[fIdx].track : row.quay;
         const link = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`;
-        const rowBody = `<span class="chain-stop-text"><a href="${link}" onclick="event.stopPropagation()">${row.name}</a>${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}<small>Gl. ${quay || '-'}</small></span>`;
+        const rowBody = `<span class="chain-stop-text"><a href="${link}" onclick="event.preventDefault(); event.stopPropagation(); window.location.href=this.href">${row.name}</a>${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}<small>Gl. ${quay || '-'}</small></span>`;
         return `
-            <section class="formation-stop" data-stop-index="${fIdx ?? ''}">
+            <section class="formation-stop" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}">
                 <button class="formation-stop-row" type="button" ${fIdx === undefined ? 'disabled' : `onclick="toggleStop(${fIdx})"`}>
                     <span class="chain-times">${times}</span>
                     <span class="chain-marker"><span class="chain-dot"></span></span>
@@ -495,6 +496,7 @@ function renderStopChain() {
     })());
     toggleStop(openIndex >= 0 ? rows[openIndex].fIdx : (rows.find(row => row.fIdx !== undefined)?.fIdx ?? -1));
     setupTimeRows();
+    updateVehicleMarker();
 }
 
 function setupTimeRows() {
@@ -525,6 +527,46 @@ function toggleStop(stopIdx) {
             panel.innerHTML = '';
         }
     });
+    updateVehicleMarker();
+}
+
+function updateVehicleMarker() {
+    const chain = document.getElementById('stopChain');
+    const trip = window.formationData?.trip;
+    if (!chain || !trip?.stops?.length || typeof window.calculateVehiclePosition !== 'function') return;
+
+    let marker = chain.querySelector('.vehicle-position-marker');
+    if (!marker) {
+        marker = document.createElement('span');
+        marker.className = 'vehicle-position-marker';
+        marker.title = 'Aktuelle Zugposition';
+        chain.appendChild(marker);
+    }
+
+    const position = window.calculateVehiclePosition(trip.stops, new Date(), trip);
+    if (!position) {
+        marker.hidden = true;
+        return;
+    }
+
+    const rows = [...chain.querySelectorAll('.formation-stop')];
+    const currentRow = rows.find((row) => Number(row.dataset.rowIndex) === position.stopIndex);
+    if (!currentRow) {
+        marker.hidden = true;
+        return;
+    }
+    const nextRow = position.nextStopIndex === undefined
+        ? currentRow
+        : rows.find((row) => Number(row.dataset.rowIndex) === position.nextStopIndex) || currentRow;
+    const chainRect = chain.getBoundingClientRect();
+    const currentDot = currentRow.querySelector('.chain-dot').getBoundingClientRect();
+    const nextDot = nextRow.querySelector('.chain-dot').getBoundingClientRect();
+    const progress = position.progress || 0;
+    const currentY = currentDot.top + currentDot.height / 2 - chainRect.top;
+    const nextY = nextDot.top + nextDot.height / 2 - chainRect.top;
+    marker.style.top = `${currentY + (nextY - currentY) * progress}px`;
+    marker.style.left = `${currentDot.left + currentDot.width / 2 - chainRect.left}px`;
+    marker.hidden = false;
 }
 
 function stopFormationData(stopIdx) {
