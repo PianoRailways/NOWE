@@ -114,47 +114,8 @@ async function fetchFormation() {
         });
     });
 
-    // HTML aufbauen
-    let html = `
-        <div class="stop-selector">
-            <label class="stop-label">Haltestelle wählen</label>
-            <select id="stopSelect" onchange="updateFormationView(this.value)">
-    `;
-
-    stops.forEach((stop, idx) => {
-        html += `<option value="${idx}">${stop.name}</option>`;
-    });
-
-    html += `
-            </select>
-            <input type="range" id="stopSlider" min="0" max="${stops.length - 1}" value="0" onchange="updateFormationView(this.value)">
-            <div class="stop-counter" id="stopCounter">1/${stops.length}</div>
-        </div>
-
-        <div class="stop-name" id="stopName">-</div>
-
-        <div class="stop-info">
-            <div class="stop-info-item">
-                <div class="stop-info-label">Gleis</div>
-                <div class="stop-info-value" id="stopTrack">-</div>
-            </div>
-            <div class="stop-info-item">
-                <div class="stop-info-label">Ankunft</div>
-                <div class="stop-info-value" id="stopArrival">-</div>
-            </div>
-            <div class="stop-info-item">
-                <div class="stop-info-label">Abfahrt</div>
-                <div class="stop-info-value" id="stopDeparture">-</div>
-            </div>
-            <div class="stop-info-item">
-                <div class="stop-info-label">Wagen</div>
-                <div class="stop-info-value" id="vehicleCount">-</div>
-            </div>
-        </div>
-
-        <div class="formation-title">Formation</div>
-        <div class="formation-grid" id="vehiclesContainer"></div>
-
+    const html = `
+        <div class="stop-chain" id="stopChain"></div>
         <div class="related-journeys" aria-label="Verbundene Fahrten">
             <div class="related-journey">
                 <span class="related-journey-label">Vorherige Fahrt</span>
@@ -177,7 +138,7 @@ async function fetchFormation() {
 
     updateRelatedJourneys(foundData.relationships || []);
 
-    updateFormationView(0);
+    renderStopChain();
 }
 
 function updateRelatedJourneys(relationships) {
@@ -238,119 +199,110 @@ function updateRelatedJourneys(relationships) {
     }
 }
 
-function updateFormationView(stopIdx) {
-    if (!window.formationData) return;
+const FLIP_DIRECTION = false;
 
-    stopIdx = parseInt(stopIdx);
+function renderStopChain() {
     const { vehicles, stops } = window.formationData;
-    const stop = stops[stopIdx];
+    const chain = document.getElementById('stopChain');
+    chain.innerHTML = stops.map((stop, idx) => {
+        const stopData = vehicles[0]?.formationVehicleAtScheduledStops[idx];
+        const isFirst = idx === 0;
+        const isLast = idx === stops.length - 1;
+        const arrival = stopData?.stopTime?.arrivalTime;
+        const departure = stopData?.stopTime?.departureTime;
+        const times = isFirst
+            ? `<span class="chain-time">${departure ? formatTime(departure) : '--:--'}</span>`
+            : isLast
+                ? `<span class="chain-time">${arrival ? formatTime(arrival) : '--:--'}</span>`
+                : `<span class="chain-time">${arrival ? formatTime(arrival) : '--:--'}</span><span class="chain-time">${departure ? formatTime(departure) : '--:--'}</span>`;
+        return `
+            <section class="formation-stop" data-stop-index="${idx}">
+                <button class="formation-stop-row" type="button" onclick="toggleStop(${idx})">
+                    <span class="chain-times">${times}</span>
+                    <span class="chain-marker"><span class="chain-dot"></span></span>
+                    <span class="chain-stop-text"><strong>${stop.name}</strong><small>Gl. ${stopData?.track || '-'}</small></span>
+                    <span class="stop-arrow" aria-hidden="true">›</span>
+                </button>
+                <div class="formation-panel" id="formation-panel-${idx}"></div>
+            </section>`;
+    }).join('');
 
-    document.getElementById('stopSlider').value = stopIdx;
-    document.getElementById('stopSelect').value = stopIdx;
-    document.getElementById('stopCounter').textContent = `${stopIdx + 1}/${stops.length}`;
-
-    const firstVehicleStop = vehicles[0]?.formationVehicleAtScheduledStops[stopIdx];
-
-    document.getElementById('stopName').textContent = stop.name;
-    document.getElementById('stopTrack').textContent = firstVehicleStop?.track || '-';
-
-    const arrival = firstVehicleStop?.stopTime?.arrivalTime;
-    const departure = firstVehicleStop?.stopTime?.departureTime;
-
-    document.getElementById('stopArrival').textContent = arrival ? formatTime(arrival) : '-';
-    document.getElementById('stopDeparture').textContent = departure ? formatTime(departure) : '-';
-    document.getElementById('vehicleCount').textContent = `${vehicles.length}`;
-
-    renderVehicles(vehicles, stopIdx);
+    const now = Date.now();
+    let openIndex = stops.findIndex((stop, idx) => {
+        const data = vehicles[0]?.formationVehicleAtScheduledStops[idx];
+        const time = idx === stops.length - 1 ? data?.stopTime?.arrivalTime : data?.stopTime?.departureTime;
+        return time && new Date(time).getTime() >= now;
+    });
+    toggleStop(openIndex >= 0 ? openIndex : 0);
 }
 
-function renderVehicles(vehicles, stopIdx) {
-    const container = document.getElementById('vehiclesContainer');
-    container.innerHTML = '';
-
-    vehicles.forEach((vehicle, vIdx) => {
-        const stopData = vehicle.formationVehicleAtScheduledStops[stopIdx];
-        if (!stopData) return;
-
-        const props = vehicle.vehicleProperties || {};
-        const accessibility = props.accessibilityProperties || {};
-        const typeCode = vehicle.vehicleIdentifier?.typeCodeName || 'Wagen';
-
-        let classColor = '';
-        if (props.numberRestaurantSpace > 0) {
-            classColor = 'class-restaurant';
-        } else if (props.number1class > 0 && props.number2class > 0) {
-            classColor = 'class-both';
-        } else if (props.number1class > 0) {
-            classColor = 'class-1';
-        } else if (props.number2class > 0) {
-            classColor = 'class-2';
+function toggleStop(stopIdx) {
+    const { vehicles } = window.formationData;
+    document.querySelectorAll('.formation-stop').forEach((stop, idx) => {
+        const open = idx === stopIdx;
+        stop.classList.toggle('is-open', open);
+        const panel = stop.querySelector('.formation-panel');
+        if (open) {
+            panel.innerHTML = renderFormationStrip(vehicles, idx);
+        } else {
+            panel.innerHTML = '';
         }
-
-        const card = document.createElement('div');
-        card.className = 'wagon-card';
-        card.onclick = () => showDetails(vehicle, stopData, vIdx);
-
-        // KORREKTUR & ERWEITERUNG: Wagenübergänge prüfen (Standard ist offen, außer explizit false)
-        const transitionPrev = stopData.accessToPreviousVehicle !== false ? '✓' : '✖';
-        const transitionNext = stopData.accessToNextVehicle !== false ? '✓' : '✖';
-        const prevColor = stopData.accessToPreviousVehicle !== false ? '#4ade80' : '#f87171'; // Grün vs Rot
-        const nextColor = stopData.accessToNextVehicle !== false ? '#4ade80' : '#f87171';
-
-        // KORREKTUR: "Wagen 31 (Pos. 12)" Logik im Header eingebaut
-        let html = `
-            <div class="wagon-header ${classColor}">
-                <div>${typeCode}</div>
-                <div class="wagon-number" style="text-align: right; line-height: 1.2;">
-                    <div>Wagen ${vehicle.number || '-'}</div>
-                    <div style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">(Pos. ${vehicle.position || '-'})</div>
-                </div>
-            </div>
-            <div class="wagon-content">
-        `;
-
-        if (stopData.sectors) {
-            html += `
-                <div class="wagon-sector">
-                    <div class="wagon-sector-label">Sektor</div>
-                    <div class="wagon-sector-value">${stopData.sectors}</div>
-                </div>
-            `;
-        }
-
-        if (props.number1class > 0 || props.number2class > 0) {
-            html += `<div class="wagon-classes">`;
-            if (props.number1class > 0) {
-                html += `<div class="class-badge first">${props.number1class}×1</div>`;
-            }
-            if (props.number2class > 0) {
-                html += `<div class="class-badge second">${props.number2class}×2</div>`;
-            }
-            html += `</div>`;
-        }
-
-        // NEU: Darstellung der Wagenübergänge vor den Features
-        html += `
-            <div class="wagon-transitions" style="display: flex; justify-content: space-between; font-size: 0.75em; margin-bottom: 8px; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-dim);">
-                <span>Übergang Vorn: <b style="color: ${prevColor}">${transitionPrev}</b></span>
-                <span>Hinten: <b style="color: ${nextColor}">${transitionNext}</b></span>
-            </div>
-        `;
-
-        html += `<div class="wagon-features">`;
-        html += `<div class="feature-icon ${props.bikePlatform ? 'active' : 'disabled'}">🚲 V</div>`;
-        html += `<div class="feature-icon ${accessibility.wheelchairToilet ? 'active' : 'disabled'}">🚻 WC</div>`;
-        html += `<div class="feature-icon ${accessibility.wheelchairSymbolProperties?.foldingRamp ? 'active' : 'disabled'}">↓ R</div>`;
-        html += `<div class="feature-icon ${accessibility.wheelchairSymbolProperties?.gapBridging ? 'active' : 'disabled'}">━ B</div>`;
-        html += `<div class="feature-icon ${props.climated ? 'active' : 'disabled'}">❄ K</div>`;
-        const wcSpaces = accessibility.numberWheelchairSpaces || 0;
-        html += `<div class="feature-icon ${wcSpaces > 0 ? 'active' : 'disabled'}">♿ ${wcSpaces}</div>`;
-        html += `</div>`;
-        html += `</div>`;
-
-        card.innerHTML = html;
-        container.appendChild(card);
     });
+}
+
+function renderFormationStrip(vehicles, stopIdx) {
+    const available = vehicles.map((vehicle, index) => ({
+        vehicle,
+        stopData: vehicle.formationVehicleAtScheduledStops[stopIdx],
+        index
+    })).filter(item => item.stopData);
+    const ordered = FLIP_DIRECTION ? [...available].reverse() : available;
+    const sectors = [];
+    ordered.forEach((item, index) => {
+        const sector = item.stopData.sectors || '';
+        const previous = sectors[sectors.length - 1];
+        if (previous && previous.sector === sector) previous.count++;
+        else sectors.push({ sector, count: 1 });
+    });
+    const sectorHtml = sectors.map(group => `<span class="sector-group" style="--span:${group.count}">${group.sector ? `<b><span>Sektor ${group.sector}</span></b>` : ''}</span>`).join('');
+    const direction = window.formationData.stops.at(-1)?.name || '-';
+    const wagonHtml = ordered.map((item, index) => renderWagon(item.vehicle, item.stopData, item.index, index, ordered, stopIdx)).join('');
+    return `<div class="formation-strip">
+        <div class="sector-bar">${sectorHtml}</div>
+        <div class="formation-direction">← Richtung ${direction}</div>
+        <div class="wagon-row">${wagonHtml}</div>
+    </div>`;
+}
+
+function iconSvg(type) {
+    const paths = {
+        wheelchair: '<circle cx="7" cy="3" r="2"/><path d="M7 7h3l2 3m-5-3-1 5 4 3m-4-3H4m3-5 4 5h3"/>',
+        bike: '<circle cx="4" cy="14" r="2"/><circle cx="14" cy="14" r="2"/><path d="m4 14 3-7h4l3 7M7 7l-2-2h3m2 2 2-3"/>',
+        stroller: '<circle cx="5" cy="15" r="1.5"/><circle cx="14" cy="15" r="1.5"/><path d="M4 13h8l2-7H6m0 0L5 3H3"/>'
+    };
+    return `<svg viewBox="0 0 18 18" aria-hidden="true">${paths[type]}</svg>`;
+}
+
+function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
+    const props = vehicle.vehicleProperties || {};
+    const accessibility = props.accessibilityProperties || {};
+    const hasSeats = props.number1class > 0 || props.number2class > 0 || props.numberRestaurantSpace > 0;
+    const transitionOpen = stopData.accessToNextVehicle !== false && ordered[index + 1]?.stopData.accessToPreviousVehicle !== false;
+    const badges = props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' :
+        `${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}`;
+    const icons = [
+        (accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet) ? iconSvg('wheelchair') : '',
+        props.bikePlatform ? iconSvg('bike') : '',
+        props.pictoProperties?.strollerPicto ? iconSvg('stroller') : '',
+        props.lowFloorTrolley ? '<strong>NF</strong>' : ''
+    ].filter(Boolean).join('');
+    return `<div class="wagon-unit">
+        <button class="wagon-card ${!hasSeats ? 'wagon-empty' : ''} ${props.numberRestaurantSpace > 0 ? 'wagon-restaurant' : ''}" type="button" onclick="event.stopPropagation(); showDetails(window.formationData.vehicles[${vIdx}], window.formationData.vehicles[${vIdx}].formationVehicleAtScheduledStops[${stopIdx}], ${vIdx})">
+            <span class="wagon-class-bar"></span><span class="wagon-badges">${badges}</span><span class="wagon-number">${vehicle.number || '-'}</span>
+        </button>
+        <span class="wagon-icons">${icons}</span>
+        ${index < ordered.length - 1 ? `<span class="wagon-connection ${transitionOpen ? '' : 'is-closed'}">${transitionOpen ? '' : '✕'}</span>` : ''}
+    </div>`;
 }
 
 function showDetails(vehicle, stopData, vIdx) {
