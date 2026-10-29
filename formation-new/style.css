@@ -354,6 +354,7 @@ input::focus {
 .ps-time--arr { color: var(--text-via); }
 .ps-time--dep { font-weight: 600; }
 .delay-badge { color: var(--sbb-red); font-size: .62rem; }
+.delay-badge--early { color: #4fc3f7; }
 .chain-marker { position: relative; display: flex; justify-content: center; align-items: center; }
 .chain-marker::before { content: ''; position: absolute; top: -5px; bottom: -5px; width: 2px; background: var(--text-dim); }
 .formation-stop:first-child .chain-marker::before { top: 50%; }

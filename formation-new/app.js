@@ -448,7 +448,8 @@ function delayLabel(seconds) {
     if (!seconds) return '';
     const sign = seconds > 0 ? '+' : '−';
     const absolute = Math.abs(seconds);
-    return `<span class="delay-badge">${sign}${Math.floor(absolute / 60)}:${String(absolute % 60).padStart(2, '0')}</span>`;
+    const type = seconds < 0 ? ' delay-badge--early' : '';
+    return `<span class="delay-badge${type}">${sign}${Math.floor(absolute / 60)}:${String(absolute % 60).padStart(2, '0')}</span>`;
 }
 
 function accessIcon(type) {
