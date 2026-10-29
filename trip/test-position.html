@@ -29,12 +29,29 @@
             stop('09:40', '09:45', { name: 'B' }),
             stop('10:15', null, { name: 'C' })
         ];
+        const forecastStops = [
+            stop('2026-10-11T09:00:00', '2026-10-11T09:20:00', {
+                name: 'A',
+                arrival: { timetabled: '2026-10-11T09:00:00', estimated: '2026-10-11T09:10:00' },
+                departure: { timetabled: '2026-10-11T09:10:00', estimated: '2026-10-11T09:20:00' }
+            }),
+            stop('2026-10-11T09:50:00', '2026-10-11T09:55:00', {
+                name: 'B',
+                arrival: { timetabled: '2026-10-11T09:40:00', estimated: '2026-10-11T09:50:00' },
+                departure: { timetabled: '2026-10-11T09:45:00', estimated: '2026-10-11T09:55:00' }
+            }),
+            stop('2026-10-11T10:25:00', null, {
+                name: 'C',
+                arrival: { timetabled: '2026-10-11T10:15:00', estimated: '2026-10-11T10:25:00' }
+            })
+        ];
         const cases = [
             ['Vor Start', calculateVehiclePosition(stops, at('08:50')), { stopIndex: 0, state: 'inStation' }],
             ['In Station', calculateVehiclePosition(stops, at('09:05')), { stopIndex: 0, state: 'inStation' }],
             ['Just departed', calculateVehiclePosition(stops, at('09:17')), { stopIndex: 0, state: 'justDeparted' }],
             ['Middle', calculateVehiclePosition(stops, at('09:25')), { stopIndex: 0, state: 'middle' }],
             ['Almost there', calculateVehiclePosition(stops, at('09:33')), { stopIndex: 0, state: 'almostThere' }],
+            ['Prognose', calculateVehiclePosition(forecastStops, at('09:25')), { stopIndex: 0, state: 'justDeparted' }],
             ['Nach Ziel', calculateVehiclePosition(stops, at('10:30')), { stopIndex: 2, state: 'inStation' }],
             ['Ohne Zeiten übersprungen', calculateVehiclePosition([
                 stops[0], stop(null, null, { name: 'Durchfahrt' }), stops[1]

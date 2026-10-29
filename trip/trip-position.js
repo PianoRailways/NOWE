@@ -42,8 +42,21 @@
         return new Date(utcGuess - offset);
     }
 
-    function actualTime(stopTime) {
-        return parseTime(stopTime?.estimated || stopTime?.timetabled);
+    function actualTime(stopTime, previousTime = null) {
+        const estimated = parseTime(stopTime?.estimated);
+        const timetabled = parseTime(stopTime?.timetabled);
+
+        // Prognosen sind für die Position maßgeblich. Falls eine einzelne
+        // Prognose älter als die vorherige verfügbare Zeit ist, verwende den
+        // Sollwert dieses Ereignisses, damit der gesamte Positionspfad nicht
+        // wegen gemischter Live-Daten verworfen wird.
+        if (estimated && (!previousTime || estimated >= previousTime)) {
+            return estimated;
+        }
+        if (timetabled && (!previousTime || timetabled >= previousTime)) {
+            return timetabled;
+        }
+        return estimated || timetabled;
     }
 
     function calculateVehiclePosition(stops, currentTime = new Date(), trip = null) {
@@ -54,21 +67,26 @@
         const now = parseTime(currentTime);
         if (!now) return null;
 
-        const timedStops = stops.map((stop, originalIndex) => ({
-            stop,
-            originalIndex,
-            arrival: actualTime(stop?.arrival),
-            departure: actualTime(stop?.departure)
-        })).filter(item => item.arrival || item.departure);
+        const timedStops = [];
+        let previousTime = null;
+        stops.forEach((stop, originalIndex) => {
+            const arrival = actualTime(stop?.arrival, previousTime);
+            if (arrival) previousTime = arrival;
+            const departure = actualTime(stop?.departure, previousTime);
+            if (departure) previousTime = departure;
+            if (arrival || departure) {
+                timedStops.push({ stop, originalIndex, arrival, departure });
+            }
+        });
 
         if (timedStops.length === 0) return null;
 
-        let previousTime = null;
+        let validatedPreviousTime = null;
         for (const item of timedStops) {
             if (item.arrival && item.departure && item.arrival > item.departure) return null;
             for (const time of [item.arrival, item.departure]) {
-                if (time && previousTime && time < previousTime) return null;
-                if (time) previousTime = time;
+                if (time && validatedPreviousTime && time < validatedPreviousTime) return null;
+                if (time) validatedPreviousTime = time;
             }
         }
 
