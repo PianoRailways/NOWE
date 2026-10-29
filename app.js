@@ -488,7 +488,7 @@ function renderBoard(departures) {
             : '';
 
         // ─── GEÄNDERTER BEREICH START ────────────────────────────────────────
-        let formationUrl = `/formation/?train=${dep.journeyNumber}`;
+        let formationUrl = `/formation-new/?train=${dep.journeyNumber}`;
         const evuCode = getEvuFromOperatorRef(dep.operatorRef);
         if (evuCode) {
             formationUrl += `&evu=${encodeURIComponent(evuCode)}`;
