@@ -1,5 +1,8 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
 
+let tripRefreshTimer = null;
+let tripRefreshRunning = false;
+
 function updateClock() {
     const el = document.getElementById('live-clock');
     if (!el) return;
@@ -174,6 +177,59 @@ async function fetchFormation() {
     updateRelatedJourneys(foundData.relationships || []);
 
     renderStopChain();
+    startTripRefresh();
+}
+
+function stopTripRefresh() {
+    if (tripRefreshTimer) window.clearInterval(tripRefreshTimer);
+    tripRefreshTimer = null;
+}
+
+function updateTripRows(trip) {
+    if (!trip?.stops) return;
+    window.formationData.trip = trip;
+    trip.stops.forEach((row, index) => {
+        const element = document.querySelectorAll('.formation-stop')[index];
+        if (!element) return;
+        const timeRows = element.querySelectorAll('.time-row');
+        const values = [row.arrival, row.departure].filter(Boolean);
+        timeRows.forEach((timeRow, timeIndex) => {
+            const value = values[timeIndex];
+            if (!value) return;
+            timeRow.dataset.est = value.estimated || '';
+            timeRow.dataset.delay = value.delaySec || 0;
+            const time = timeRow.querySelector('.ps-time');
+            if (time) time.textContent = fmtTime(value.timetabled) || '--:--';
+        });
+    });
+    setupTimeRows();
+}
+
+async function refreshTrip() {
+    if (tripRefreshRunning || document.hidden || !window.formationData?.trip) return;
+    const meta = window.formationData.trip;
+    const journeyId = meta.swissJourneyId || meta.sjyid || meta.journeyId;
+    if (!journeyId) return;
+    tripRefreshRunning = true;
+    try {
+        const updated = await fetchTripInfo(journeyId, document.getElementById('date').value);
+        updateTripRows(updated);
+        if (updated?.isFinal) stopTripRefresh();
+    } catch {
+        // Live-Daten sind optional.
+    } finally {
+        tripRefreshRunning = false;
+    }
+}
+
+function startTripRefresh() {
+    stopTripRefresh();
+    if (!window.formationData?.trip) return;
+    tripRefreshTimer = window.setInterval(refreshTrip, 15000);
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) refreshTrip();
+    }, { once: true });
+    window.addEventListener('pagehide', stopTripRefresh, { once: true });
 }
 
 function createMasterRows(trip, stops) {
@@ -351,6 +407,29 @@ function orderedFormation(vehicles, parserData) {
     return FLIP_DIRECTION ? items.reverse() : items;
 }
 
+function fmtTime(value) {
+    if (!value) return null;
+    const match = String(value).match(/T(\d{2}):(\d{2})/);
+    return match ? `${match[1]}:${match[2]}` : formatTime(value);
+}
+
+function delayLabel(seconds) {
+    if (!seconds) return '';
+    const sign = seconds > 0 ? '+' : '−';
+    const absolute = Math.abs(seconds);
+    return `<span class="delay-badge">${sign}${Math.floor(absolute / 60)}:${String(absolute % 60).padStart(2, '0')}</span>`;
+}
+
+function accessIcon(type) {
+    return type ? `<span class="access-icon" title="${type}">♿</span>` : '';
+}
+
+function timeRow(value, estimated, delay, kind) {
+    return `<div class="time-row" data-tt="${value || ''}" data-est="${estimated || ''}" data-delay="${delay || 0}">
+        <span class="ps-time ps-time--${kind}">${fmtTime(value) || '--:--'}</span>${delayLabel(delay)}
+    </div>`;
+}
+
 function renderStopChain() {
     const { stops, rows } = window.formationData;
     const chain = document.getElementById('stopChain');
@@ -362,13 +441,13 @@ function renderStopChain() {
         const arrival = row.arrival?.timetabled || stop.arrivalTime;
         const departure = row.departure?.timetabled || stop.departureTime;
         const times = isFirst
-            ? `<span class="chain-time">${departure ? formatTime(departure) : '--:--'}</span>`
+            ? timeRow(departure, row.departure?.estimated, row.departure?.delaySec, 'dep')
             : isLast
-                ? `<span class="chain-time">${arrival ? formatTime(arrival) : '--:--'}</span>`
-                : `<span class="chain-time">${arrival ? formatTime(arrival) : '--:--'}</span><span class="chain-time">${departure ? formatTime(departure) : '--:--'}</span>`;
+                ? timeRow(arrival, row.arrival?.estimated, row.arrival?.delaySec, 'arr')
+                : `${timeRow(arrival, row.arrival?.estimated, row.arrival?.delaySec, 'arr')}${timeRow(departure, row.departure?.estimated, row.departure?.delaySec, 'dep')}`;
         const quay = fIdx !== undefined ? stops[fIdx].track : row.quay;
         const link = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`;
-        const rowBody = `<span class="chain-stop-text"><a href="${link}" onclick="event.stopPropagation()">${row.name}</a><small>Gl. ${quay || '-'}</small></span>`;
+        const rowBody = `<span class="chain-stop-text"><a href="${link}" onclick="event.stopPropagation()">${row.name}</a>${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}<small>Gl. ${quay || '-'}</small></span>`;
         return `
             <section class="formation-stop" data-stop-index="${fIdx ?? ''}">
                 <button class="formation-stop-row" type="button" ${fIdx === undefined ? 'disabled' : `onclick="toggleStop(${fIdx})"`}>
@@ -388,6 +467,21 @@ function renderStopChain() {
         return time && new Date(time).getTime() >= now;
     })());
     toggleStop(openIndex >= 0 ? rows[openIndex].fIdx : (rows.find(row => row.fIdx !== undefined)?.fIdx ?? -1));
+    setupTimeRows();
+}
+
+function setupTimeRows() {
+    document.querySelectorAll('.time-row').forEach((row) => {
+        row.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const estimate = row.dataset.est;
+            if (!estimate) return;
+            const time = row.querySelector('.ps-time');
+            const original = time.textContent;
+            time.textContent = fmtTime(estimate) || original;
+            window.setTimeout(() => { time.textContent = original; }, 5000);
+        });
+    });
 }
 
 function toggleStop(stopIdx) {

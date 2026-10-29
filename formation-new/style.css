@@ -340,7 +340,11 @@ input::focus {
 
 .formation-stop-row:active { background: var(--board-row); }
 .chain-times { display: flex; flex-direction: column; justify-content: center; gap: 2px; text-align: right; padding-right: 8px; }
-.chain-time { font: 0.72rem monospace; color: var(--text-via); }
+.time-row { display: flex; justify-content: flex-end; align-items: baseline; gap: 4px; white-space: nowrap; cursor: pointer; }
+.ps-time { font: .72rem monospace; color: var(--text-main); }
+.ps-time--arr { color: var(--text-via); }
+.ps-time--dep { font-weight: 600; }
+.delay-badge { color: var(--sbb-red); font-size: .62rem; }
 .chain-marker { position: relative; display: flex; justify-content: center; align-items: center; }
 .chain-marker::before { content: ''; position: absolute; top: -5px; bottom: -5px; width: 2px; background: var(--text-dim); }
 .formation-stop:first-child .chain-marker::before { top: 50%; }
@@ -348,7 +352,10 @@ input::focus {
 .chain-dot { z-index: 1; width: 11px; height: 11px; border: 2px solid var(--sbb-orange); border-radius: 50%; background: var(--board-bg); }
 .chain-stop-text { display: flex; flex-direction: column; justify-content: center; padding-left: 8px; min-width: 0; }
 .chain-stop-text strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chain-stop-text a { color: inherit; text-decoration: none; }
 .chain-stop-text small { color: var(--text-dim); margin-top: 2px; }
+.access-icon { margin-left: 5px; font-size: .85em; }
+.hav-badge { margin-left: 5px; border: 1px solid var(--sbb-red); color: var(--sbb-red); padding: 1px 4px; border-radius: 3px; font-size: .65em; }
 .stop-arrow { align-self: center; justify-self: end; color: var(--text-via); font-size: 1.5rem; transition: transform .15s; }
 .formation-stop.is-open .stop-arrow { transform: rotate(90deg); }
 .formation-panel { display: none; padding: 4px 0 14px; background: var(--board-row); }
