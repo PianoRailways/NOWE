@@ -374,6 +374,8 @@ input::focus {
 .class-badge.second { color: var(--text-via); }
 .restaurant-badge { color: #c4b5fd; border-color: #a78bfa; }
 .wagon-number { display: block; margin-top: 5px; color: var(--text-via); font: .65rem monospace; }
+.wagon-status { display: block; color: var(--sbb-red); font-size: .55rem; white-space: nowrap; }
+.wagon-closed { opacity: .45; border-color: var(--sbb-red); }
 .wagon-icons { display: flex; align-items: center; gap: 4px; min-height: 18px; margin-top: 3px; color: var(--text-via); font-size: .68rem; }
 .wagon-icons svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.4; }
 .wagon-connection { width: 10px; height: 2px; margin-top: 27px; background: var(--text-dim); }

@@ -94,24 +94,19 @@ async function fetchFormation() {
         return;
     }
 
-    const formation = foundData.formations[0];
-    const vehicles = formation.formationVehicles;
-
-    // Alle eindeutigen Haltestellen sammeln
-    const stops = [];
-    const stopMap = {};
-
-    vehicles.forEach((vehicle) => {
-        vehicle.formationVehicleAtScheduledStops.forEach((stop) => {
-            if (!stopMap[stop.stopPoint.name]) {
-                stopMap[stop.stopPoint.name] = {
-                    name: stop.stopPoint.name,
-                    uic: stop.stopPoint.uic,
-                    index: stops.length
-                };
-                stops.push(stopMap[stop.stopPoint.name]);
-            }
-        });
+    const stops = (foundData.formationsAtScheduledStops || []).map((entry, index) => {
+        const scheduledStop = entry.scheduledStop || entry;
+        const point = scheduledStop.stopPoint || {};
+        return {
+            name: point.name || '-',
+            uic: point.uic,
+            index,
+            arrivalTime: entry.stopTime?.arrivalTime,
+            departureTime: entry.stopTime?.departureTime,
+            track: entry.track,
+            formationShort: entry.formationShort || {},
+            vehicleGoals: entry.formationShort?.vehicleGoals || []
+        };
     });
 
     const html = `
@@ -131,8 +126,10 @@ async function fetchFormation() {
     resultDiv.innerHTML = html;
 
     window.formationData = {
-        vehicles: vehicles,
+        formations: foundData.formations || [],
         stops: stops,
+        metaInformation: foundData.metaInformation || {},
+        hints: foundData.hints,
         relationships: foundData.relationships || []
     };
 
@@ -199,13 +196,101 @@ function updateRelatedJourneys(relationships) {
     }
 }
 
-const FLIP_DIRECTION = false;
+const FLIP_DIRECTION = true;
+
+const UNKNOWN_ATTRIBUTES = new Set();
+const FORMATION_ATTRIBUTES = new Set(['NF', 'VH', 'KW', 'BHP']);
+
+function parseFormationShort(value) {
+    if (!value) return [];
+    const normalized = String(value).replace(/@([A-Z]+)/g, ',$1,').replace(/,{2,}/g, ',');
+    const result = [];
+    const stack = [[]];
+    let sector = '';
+    const addToken = (token, inherited = []) => {
+        const clean = token.trim();
+        if (!clean || clean === 'F' || clean === '(' || clean === '[') return;
+        if (clean.startsWith('@')) {
+            sector = clean.slice(1);
+            return;
+        }
+        if (clean === ')' || clean === ']') return;
+        const [classPart, attrPart] = clean.split('#');
+        const classes = classPart.replace(/[^12]/g, '');
+        if (!classes && !attrPart) return;
+        const attrs = new Set(inherited);
+        (attrPart || '').split(';').filter(Boolean).forEach((attr) => {
+            if (!FORMATION_ATTRIBUTES.has(attr)) {
+                if (!UNKNOWN_ATTRIBUTES.has(attr)) {
+                    UNKNOWN_ATTRIBUTES.add(attr);
+                    console.warn(`Unbekanntes Formationsattribut: ${attr}`);
+                }
+            }
+            attrs.add(attr);
+        });
+        result.push({ classes: classes === '21' ? '12' : classes, attrs, sector });
+    };
+    const tokens = normalized.split(/([()[\],])/).filter(Boolean);
+    for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i].trim();
+        if (token === '(' || token === '[') {
+            stack.push([]);
+        } else if (token === ')' || token === ']') {
+            const inherited = stack.pop() || [];
+            const following = tokens[i + 1]?.trim() || '';
+            const attrs = following.startsWith('#') ? following.slice(1).split(';') : [];
+            if (attrs.length) i++;
+            result.forEach((wagon) => {
+                if (wagon.attrs === inherited) attrs.forEach((attr) => wagon.attrs.add(attr));
+            });
+        } else if (token !== ',') {
+            addToken(token, stack.at(-1));
+        }
+    }
+    return result;
+}
+
+function stopEntryFor(vehicle, stop) {
+    return (vehicle.formationVehicleAtScheduledStops || []).find((entry) =>
+        entry.stopPoint?.uic === stop.uic
+    );
+}
+
+function formationCoversStop(vehicle, stop, stopIndex) {
+    const props = vehicle.vehicleProperties || {};
+    const from = props.fromStop?.uic;
+    const to = props.toStop?.uic;
+    const fromIndex = stopsIndexByUic(from);
+    const toIndex = stopsIndexByUic(to);
+    return fromIndex <= stopIndex && stopIndex <= toIndex;
+}
+
+function stopsIndexByUic(uic) {
+    return window.formationData.stops.findIndex((stop) => stop.uic === uic);
+}
+
+function formationForStop(stopIdx) {
+    const stop = window.formationData.stops[stopIdx];
+    for (let fIdx = window.formationData.formations.length - 1; fIdx >= 0; fIdx--) {
+        const formation = window.formationData.formations[fIdx];
+        const vehicles = (formation.formationVehicles || []).filter((vehicle) =>
+            formationCoversStop(vehicle, stop, stopIdx) && stopEntryFor(vehicle, stop)
+        );
+        if (vehicles.length) return { formation, vehicles };
+    }
+    return { formation: null, vehicles: [] };
+}
+
+function orderedFormation(vehicles, parserData) {
+    const items = vehicles.map((vehicle, index) => ({ vehicle, sourceIndex: index, parsed: parserData[index] }));
+    return FLIP_DIRECTION ? items.reverse() : items;
+}
 
 function renderStopChain() {
-    const { vehicles, stops } = window.formationData;
+    const { stops } = window.formationData;
     const chain = document.getElementById('stopChain');
     chain.innerHTML = stops.map((stop, idx) => {
-        const stopData = vehicles[0]?.formationVehicleAtScheduledStops[idx];
+        const stopData = stopFormationData(idx);
         const isFirst = idx === 0;
         const isLast = idx === stops.length - 1;
         const arrival = stopData?.stopTime?.arrivalTime;
@@ -229,47 +314,66 @@ function renderStopChain() {
 
     const now = Date.now();
     let openIndex = stops.findIndex((stop, idx) => {
-        const data = vehicles[0]?.formationVehicleAtScheduledStops[idx];
-        const time = idx === stops.length - 1 ? data?.stopTime?.arrivalTime : data?.stopTime?.departureTime;
+        const data = stops[idx];
+        const time = idx === stops.length - 1 ? data.arrivalTime : data.departureTime;
         return time && new Date(time).getTime() >= now;
     });
     toggleStop(openIndex >= 0 ? openIndex : 0);
 }
 
 function toggleStop(stopIdx) {
-    const { vehicles } = window.formationData;
+    const openStop = document.querySelector('.formation-stop.is-open')?.dataset.stopIndex;
+    if (String(stopIdx) === openStop) stopIdx = -1;
     document.querySelectorAll('.formation-stop').forEach((stop, idx) => {
         const open = idx === stopIdx;
         stop.classList.toggle('is-open', open);
         const panel = stop.querySelector('.formation-panel');
         if (open) {
-            panel.innerHTML = renderFormationStrip(vehicles, idx);
+            panel.innerHTML = renderFormationStrip(idx);
         } else {
             panel.innerHTML = '';
         }
     });
 }
 
-function renderFormationStrip(vehicles, stopIdx) {
+function stopFormationData(stopIdx) {
+    const stop = window.formationData.stops[stopIdx];
+    const firstVehicleStop = stop ? stopEntryFor(formationForStop(stopIdx).vehicles[0], stop) : null;
+    return firstVehicleStop || {
+        track: stop?.track,
+        stopTime: { arrivalTime: stop?.arrivalTime, departureTime: stop?.departureTime }
+    };
+}
+
+function renderFormationStrip(stopIdx) {
+    const { vehicles, formation } = formationForStop(stopIdx);
+    const stop = window.formationData.stops[stopIdx];
+    const parserData = parseFormationShort(stop.formationShort?.formationShortString);
+    const parsed = parserData.length === vehicles.length ? parserData : [];
+    if (parserData.length && !parsed.length) {
+        console.warn('FormationShort und Wagenanzahl stimmen nicht überein.');
+    }
     const available = vehicles.map((vehicle, index) => ({
         vehicle,
-        stopData: vehicle.formationVehicleAtScheduledStops[stopIdx],
+        stopData: stopEntryFor(vehicle, stop),
         index
     })).filter(item => item.stopData);
-    const ordered = FLIP_DIRECTION ? [...available].reverse() : available;
+    const ordered = orderedFormation(available.map((item) => item.vehicle), parsed)
+        .map((item) => ({ ...available[item.sourceIndex], parsed: item.parsed }));
     const sectors = [];
     ordered.forEach((item, index) => {
-        const sector = item.stopData.sectors || '';
+        const sector = item.parsed?.sector || (item.stopData.sectors || '').charAt(0);
         const previous = sectors[sectors.length - 1];
         if (previous && previous.sector === sector) previous.count++;
         else sectors.push({ sector, count: 1 });
     });
     const sectorHtml = sectors.map(group => `<span class="sector-group" style="--span:${group.count}">${group.sector ? `<b><span>Sektor ${group.sector}</span></b>` : ''}</span>`).join('');
-    const direction = window.formationData.stops.at(-1)?.name || '-';
+    const goals = stop.vehicleGoals || [];
+    const direction = goals.length === 1 ? `← Richtung ${goals[0].toStop?.name || goals[0].name || goals[0]}` : '';
     const wagonHtml = ordered.map((item, index) => renderWagon(item.vehicle, item.stopData, item.index, index, ordered, stopIdx)).join('');
     return `<div class="formation-strip" style="--wagon-count:${ordered.length}">
         <div class="sector-bar">${sectorHtml}</div>
-        <div class="formation-direction">← Richtung ${direction}</div>
+        ${direction ? `<div class="formation-direction">${direction}</div>` : ''}
         <div class="wagon-row">${wagonHtml}</div>
     </div>`;
 }
@@ -286,19 +390,23 @@ function iconSvg(type) {
 function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
     const props = vehicle.vehicleProperties || {};
     const accessibility = props.accessibilityProperties || {};
+    const parsed = ordered[index].parsed;
+    const classes = parsed?.classes || `${props.number1class > 0 ? '1' : ''}${props.number2class > 0 ? '2' : ''}`;
     const hasSeats = props.number1class > 0 || props.number2class > 0 || props.numberRestaurantSpace > 0;
-    const transitionOpen = stopData.accessToNextVehicle !== false && ordered[index + 1]?.stopData.accessToPreviousVehicle !== false;
+    const transitionOpen = index === 0 || ordered[index].stopData.accessToPreviousVehicle !== false;
     const badges = props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' :
-        `${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}`;
+        `${classes.includes('1') ? '<span class="class-badge first">1</span>' : ''}${classes.includes('2') ? '<span class="class-badge second">2</span>' : ''}`;
     const icons = [
-        (accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet) ? iconSvg('wheelchair') : '',
-        props.bikePlatform ? iconSvg('bike') : '',
-        props.pictoProperties?.strollerPicto ? iconSvg('stroller') : '',
-        props.lowFloorTrolley ? '<strong>NF</strong>' : ''
+        (parsed?.attrs.has('BHP') || accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet || props.pictoProperties?.wheelchairPicto) ? iconSvg('wheelchair') : '',
+        (parsed?.attrs.has('VH') || props.bikePlatform || props.pictoProperties?.bikePicto) ? '🚲' : '',
+        (parsed?.attrs.has('KW') || props.pictoProperties?.strollerPicto) ? iconSvg('stroller') : '',
+        (parsed?.attrs.has('NF') || props.lowFloorTrolley) ? '<strong>NF</strong>' : ''
     ].filter(Boolean).join('');
+    const number = Number(vehicle.number) > 0 ? vehicle.number : '';
+    const status = props.closed === true ? 'gesperrt' : props.vehicleWillBePutAway === true ? 'wird abgehängt' : '';
     return `<div class="wagon-unit">
-        <button class="wagon-card ${!hasSeats ? 'wagon-empty' : ''} ${props.numberRestaurantSpace > 0 ? 'wagon-restaurant' : ''}" type="button" onclick="event.stopPropagation(); showDetails(window.formationData.vehicles[${vIdx}], window.formationData.vehicles[${vIdx}].formationVehicleAtScheduledStops[${stopIdx}], ${vIdx})">
-            <span class="wagon-class-bar"></span><span class="wagon-badges">${badges}</span><span class="wagon-number">${vehicle.number || '-'}</span>
+        <button class="wagon-card ${!hasSeats ? 'wagon-empty' : ''} ${props.numberRestaurantSpace > 0 ? 'wagon-restaurant' : ''} ${props.closed === true ? 'wagon-closed' : ''}" type="button" onclick="event.stopPropagation(); showDetails(window.formationData.formations[${window.formationData.formations.findIndex(f => f.formationVehicles?.includes(vehicle))}].formationVehicles[${vIdx}], window.formationData.stops[${stopIdx}], ${vIdx})">
+            <span class="wagon-class-bar"></span><span class="wagon-badges">${badges}</span><span class="wagon-number">${number}</span>${status ? `<small class="wagon-status">${status}</small>` : ''}
         </button>
         <span class="wagon-icons">${icons}</span>
         ${index < ordered.length - 1 ? `<span class="wagon-connection ${transitionOpen ? '' : 'is-closed'}">${transitionOpen ? '' : '✕'}</span>` : ''}
