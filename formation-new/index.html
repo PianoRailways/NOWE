@@ -69,6 +69,9 @@ function closeModal() {
                 closeModal();
             }
         });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
     </script>
     <script src="app.js"></script>
 </body>

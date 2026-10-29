@@ -487,6 +487,11 @@ input::focus {
     border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
+.modal-title-main { font-size: 1.1em; }
+.modal-title-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; color: var(--text-via); font-size: .82em; }
+.modal-badges { display: inline-flex; gap: 3px; }
+.detail-value--small { font-size: .8em; }
+
 .modal-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -642,6 +647,11 @@ input::focus {
     }
 
     #modal-content {
-        max-height: 95vh;
+        max-height: 85vh;
+        border-radius: 12px 12px 0 0;
+        padding: 18px 14px 14px;
     }
+
+    #modal-overlay { align-items: flex-end; padding: 0; }
+    #modal-close { min-width: 40px; min-height: 40px; padding: 8px; }
 }

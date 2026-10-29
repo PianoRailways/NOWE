@@ -313,10 +313,11 @@ function showDetails(vehicle, stopData, vIdx) {
     // "vehicle.position" ist die physische Reihung (z.B. 1. Wagen ab Lok).
     let html = `
         <div class="modal-title">
-            ${vehicle.vehicleIdentifier.typeCodeName} 
-            <span style="font-size: 0.8em; opacity: 0.7; margin-left: 10px;">
+            <div class="modal-title-main">${vehicle.vehicleIdentifier.typeCodeName}</div>
+            <div class="modal-title-meta">
+                <span class="modal-badges">${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' : ''}</span>
                 Wagen ${vehicle.number || '-'} (Pos. ${vehicle.position || '-'})
-            </span>
+            </div>
         </div>
 
         <div class="modal-grid">
@@ -325,7 +326,7 @@ function showDetails(vehicle, stopData, vIdx) {
                 <div class="detail-row"><span class="detail-label">Wagennummer:</span> <span class="detail-value">${vehicle.number || '-'}</span></div>
                 <div class="detail-row"><span class="detail-label">Physische Position:</span> <span class="detail-value">${vehicle.position || '-'}</span></div>
                 <div class="detail-row"><span class="detail-label">Tech. Wagennr.:</span> <span class="detail-value">${vehicle.vehicleIdentifier.vehicleNumber || '-'}</span></div>
-                <div class="detail-row"><span class="detail-label">EVN:</span> <span class="detail-value" style="font-size: 0.8em;">${vehicle.vehicleIdentifier.evn || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">EVN:</span> <span class="detail-value detail-value--small">${vehicle.vehicleIdentifier.evn || '-'}</span></div>
                 <div class="detail-row"><span class="detail-label">Länge:</span> <span class="detail-value">${props.length || '-'} m</span></div>
                 <div class="detail-row"><span class="detail-label">Sektoren:</span> <span class="detail-value">${stopData.sectors || '-'}</span></div>
             </div>
