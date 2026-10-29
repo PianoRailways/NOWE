@@ -14,6 +14,9 @@ function closeModal() {
     document.getElementById('modal-overlay')?.classList.remove('active');
 }
 
+window.toggleStop = toggleStop;
+window.showDetails = showDetails;
+
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('date').valueAsDate = new Date();
     updateClock();
