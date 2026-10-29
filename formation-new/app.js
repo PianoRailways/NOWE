@@ -478,10 +478,10 @@ function renderStopChain() {
                 : `${timeRow(arrival, row.arrival?.estimated, row.arrival?.delaySec, 'arr')}${timeRow(departure, row.departure?.estimated, row.departure?.delaySec, 'dep')}`;
         const quay = fIdx !== undefined ? stops[fIdx].track : row.quay;
         const link = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`;
-        const rowBody = `<span class="chain-stop-text"><a href="${link}" onclick="event.preventDefault(); event.stopPropagation(); window.location.href=this.href">${row.name}</a>${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}<small>Gl. ${quay || '-'}</small></span>`;
+        const rowBody = `<span class="chain-stop-text"><a href="${link}">${row.name}</a>${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}<small>Gl. ${quay || '-'}</small></span>`;
         return `
             <section class="formation-stop" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}">
-                <button class="formation-stop-row" type="button" ${fIdx === undefined ? 'disabled' : `onclick="toggleStop(${fIdx})"`}>
+                <button class="formation-stop-row" type="button" data-formation-index="${fIdx ?? ''}" ${fIdx === undefined ? 'disabled' : ''}>
                     <span class="chain-times">${times}</span>
                     <span class="chain-marker"><span class="chain-dot"></span></span>
                     ${rowBody}
@@ -490,6 +490,13 @@ function renderStopChain() {
                 ${fIdx === undefined ? '' : `<div class="formation-panel" id="formation-panel-${fIdx}"></div>`}
             </section>`;
     }).join('');
+
+    chain.querySelectorAll('.formation-stop-row:not([disabled])').forEach((row) => {
+        row.addEventListener('click', (event) => {
+            if (event.target.closest('a')) return;
+            toggleStop(Number(row.dataset.formationIndex));
+        });
+    });
 
     const now = Date.now();
     let openIndex = rows.findIndex((row, rowIndex) => row.fIdx !== undefined && (() => {
