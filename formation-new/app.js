@@ -267,7 +267,7 @@ function renderFormationStrip(vehicles, stopIdx) {
     const sectorHtml = sectors.map(group => `<span class="sector-group" style="--span:${group.count}">${group.sector ? `<b><span>Sektor ${group.sector}</span></b>` : ''}</span>`).join('');
     const direction = window.formationData.stops.at(-1)?.name || '-';
     const wagonHtml = ordered.map((item, index) => renderWagon(item.vehicle, item.stopData, item.index, index, ordered, stopIdx)).join('');
-    return `<div class="formation-strip">
+    return `<div class="formation-strip" style="--wagon-count:${ordered.length}">
         <div class="sector-bar">${sectorHtml}</div>
         <div class="formation-direction">← Richtung ${direction}</div>
         <div class="wagon-row">${wagonHtml}</div>

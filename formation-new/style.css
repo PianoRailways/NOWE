@@ -592,7 +592,7 @@ input::focus {
 .formation-stop.is-open .formation-panel { display: block; }
 .formation-strip { min-width: 0; }
 .sector-bar, .wagon-row { display: grid; grid-template-columns: repeat(var(--wagon-count, 1), minmax(58px, 1fr)); padding: 0 12px; }
-.sector-bar { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); min-height: 25px; }
+.sector-bar { min-height: 25px; }
 .sector-group { grid-column: span var(--span); display: flex; align-items: center; min-width: 0; color: var(--text-dim); }
 .sector-group::before, .sector-group::after { content: ''; height: 1px; background: var(--text-dim); flex: 1; }
 .sector-group b { padding: 0 5px; font-size: .68rem; font-weight: 500; white-space: nowrap; }
