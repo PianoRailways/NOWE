@@ -118,6 +118,18 @@ async function fetchFormation() {
         return;
     }
 
+    let trip = null;
+    const journeyMeta = foundData.journeyMetaInformation || {};
+    const swissJourneyId = journeyMeta.sjyid || journeyMeta.SJYID || journeyMeta.swissJourneyId;
+    const operationDate = journeyMeta.operationDate || date;
+    if (swissJourneyId) {
+        try {
+            trip = await fetchTripInfo(swissJourneyId, operationDate);
+        } catch {
+            trip = null;
+        }
+    }
+
     const stops = (foundData.formationsAtScheduledStops || []).map((entry, index) => {
         const scheduledStop = entry.scheduledStop || entry;
         const point = scheduledStop.stopPoint || {};
@@ -152,6 +164,8 @@ async function fetchFormation() {
     window.formationData = {
         formations: foundData.formations || [],
         stops: stops,
+        trip,
+        rows: createMasterRows(trip, stops),
         metaInformation: foundData.metaInformation || {},
         hints: foundData.hints,
         relationships: foundData.relationships || []
@@ -160,6 +174,33 @@ async function fetchFormation() {
     updateRelatedJourneys(foundData.relationships || []);
 
     renderStopChain();
+}
+
+function createMasterRows(trip, stops) {
+    if (!trip?.stops?.length) {
+        return stops.map((stop, fIdx) => ({
+            name: stop.name,
+            stopPointRef: String(stop.uic || ''),
+            quay: stop.track,
+            fIdx,
+            arrival: { timetabled: stop.arrivalTime, estimated: null, delaySec: null },
+            departure: { timetabled: stop.departureTime, estimated: null, delaySec: null },
+            accessibility: null,
+            requestStop: false,
+            isThisCall: false
+        }));
+    }
+    let formationCursor = 0;
+    return trip.stops.map((row) => {
+        const match = stops.findIndex((stop, index) => {
+            if (index < formationCursor) return false;
+            const ref = String(row.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
+            return (ref && Number(ref) === Number(stop.uic) % 100000)
+                || row.name?.trim().toLowerCase() === stop.name?.trim().toLowerCase();
+        });
+        if (match >= 0) formationCursor = match + 1;
+        return { ...row, fIdx: match >= 0 ? match : undefined };
+    });
 }
 
 function updateRelatedJourneys(relationships) {
@@ -311,49 +352,54 @@ function orderedFormation(vehicles, parserData) {
 }
 
 function renderStopChain() {
-    const { stops } = window.formationData;
+    const { stops, rows } = window.formationData;
     const chain = document.getElementById('stopChain');
-    chain.innerHTML = stops.map((stop, idx) => {
-        const stopData = stopFormationData(idx);
+    chain.innerHTML = rows.map((row, idx) => {
+        const fIdx = row.fIdx;
+        const stop = fIdx === undefined ? row : stops[fIdx];
         const isFirst = idx === 0;
-        const isLast = idx === stops.length - 1;
-        const arrival = stopData?.stopTime?.arrivalTime;
-        const departure = stopData?.stopTime?.departureTime;
+        const isLast = idx === rows.length - 1;
+        const arrival = row.arrival?.timetabled || stop.arrivalTime;
+        const departure = row.departure?.timetabled || stop.departureTime;
         const times = isFirst
             ? `<span class="chain-time">${departure ? formatTime(departure) : '--:--'}</span>`
             : isLast
                 ? `<span class="chain-time">${arrival ? formatTime(arrival) : '--:--'}</span>`
                 : `<span class="chain-time">${arrival ? formatTime(arrival) : '--:--'}</span><span class="chain-time">${departure ? formatTime(departure) : '--:--'}</span>`;
+        const quay = fIdx !== undefined ? stops[fIdx].track : row.quay;
+        const link = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`;
+        const rowBody = `<span class="chain-stop-text"><a href="${link}" onclick="event.stopPropagation()">${row.name}</a><small>Gl. ${quay || '-'}</small></span>`;
         return `
-            <section class="formation-stop" data-stop-index="${idx}">
-                <button class="formation-stop-row" type="button" onclick="toggleStop(${idx})">
+            <section class="formation-stop" data-stop-index="${fIdx ?? ''}">
+                <button class="formation-stop-row" type="button" ${fIdx === undefined ? 'disabled' : `onclick="toggleStop(${fIdx})"`}>
                     <span class="chain-times">${times}</span>
                     <span class="chain-marker"><span class="chain-dot"></span></span>
-                    <span class="chain-stop-text"><strong>${stop.name}</strong><small>Gl. ${stopData?.track || '-'}</small></span>
-                    <span class="stop-arrow" aria-hidden="true">›</span>
+                    ${rowBody}
+                    ${fIdx === undefined ? '' : '<span class="stop-arrow" aria-hidden="true">›</span>'}
                 </button>
-                <div class="formation-panel" id="formation-panel-${idx}"></div>
+                ${fIdx === undefined ? '' : `<div class="formation-panel" id="formation-panel-${fIdx}"></div>`}
             </section>`;
     }).join('');
 
     const now = Date.now();
-    let openIndex = stops.findIndex((stop, idx) => {
-        const data = stops[idx];
-        const time = idx === stops.length - 1 ? data.arrivalTime : data.departureTime;
+    let openIndex = rows.findIndex((row, rowIndex) => row.fIdx !== undefined && (() => {
+        const stop = stops[row.fIdx];
+        const time = rowIndex === rows.length - 1 ? row.arrival?.timetabled || stop.arrivalTime : row.departure?.timetabled || stop.departureTime;
         return time && new Date(time).getTime() >= now;
-    });
-    toggleStop(openIndex >= 0 ? openIndex : 0);
+    })());
+    toggleStop(openIndex >= 0 ? rows[openIndex].fIdx : (rows.find(row => row.fIdx !== undefined)?.fIdx ?? -1));
 }
 
 function toggleStop(stopIdx) {
     const openStop = document.querySelector('.formation-stop.is-open')?.dataset.stopIndex;
     if (String(stopIdx) === openStop) stopIdx = -1;
-    document.querySelectorAll('.formation-stop').forEach((stop, idx) => {
-        const open = idx === stopIdx;
+    document.querySelectorAll('.formation-stop').forEach((stop) => {
+        const formationIndex = stop.dataset.stopIndex;
+        const open = formationIndex !== '' && Number(formationIndex) === stopIdx;
         stop.classList.toggle('is-open', open);
         const panel = stop.querySelector('.formation-panel');
         if (open) {
-            panel.innerHTML = renderFormationStrip(idx);
+            panel.innerHTML = renderFormationStrip(stopIdx);
         } else {
             panel.innerHTML = '';
         }
