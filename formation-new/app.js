@@ -56,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function fetchFormation() {
+    stopTripRefresh();
     const resultDiv = document.getElementById('result');
     const train = document.getElementById('trainNumber').value;
     const date = document.getElementById('date').value;
@@ -228,8 +229,11 @@ function startTripRefresh() {
     tripRefreshTimer = window.setInterval(refreshTrip, 15000);
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) refreshTrip();
-    }, { once: true });
-    window.addEventListener('pagehide', stopTripRefresh, { once: true });
+    });
+    window.addEventListener('resize', () => {
+        if (!document.hidden) updateTripRows(window.formationData.trip);
+    });
+    window.addEventListener('pagehide', stopTripRefresh);
 }
 
 function createMasterRows(trip, stops) {
