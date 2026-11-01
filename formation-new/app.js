@@ -393,6 +393,7 @@ const FLIP_DIRECTION = true;
 
 const UNKNOWN_ATTRIBUTES = new Set();
 const FORMATION_ATTRIBUTES = new Set(['NF', 'VH', 'KW', 'BHP']);
+const BIKE_ICON = '<svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="16" r="3.5"/><circle cx="19" cy="16" r="3.5"/><path d="M5 16 9 9h6l4 7M9 9l2 7 4-7M5 16h6M7.5 7.5h3M14 7h2.5"/></svg>';
 
 function parseFormationShort(value) {
     if (!value) return [];
@@ -695,7 +696,7 @@ function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
         `${classes.includes('1') ? '<span class="class-badge first">1</span>' : ''}${classes.includes('2') ? '<span class="class-badge second">2</span>' : ''}`;
     const icons = [
         (parsed?.attrs.has('BHP') || accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet || props.pictoProperties?.wheelchairPicto) ? iconSvg('wheelchair') : '',
-        (parsed?.attrs.has('VH') || props.bikePlatform || props.pictoProperties?.bikePicto) ? '🚲' : '',
+        (parsed?.attrs.has('VH') || parsed?.attrs.has('VR') || props.bikePlatform || props.pictoProperties?.bikePicto) ? BIKE_ICON : '',
         (parsed?.attrs.has('KW') || props.pictoProperties?.strollerPicto) ? iconSvg('stroller') : '',
         (parsed?.attrs.has('NF') || props.lowFloorTrolley) ? '<strong>NF</strong>' : ''
     ].filter(Boolean).join('');
@@ -723,7 +724,7 @@ function showDetails(vehicle, stopData, vIdx) {
         <div class="modal-title">
             <div class="modal-title-main">${vehicle.vehicleIdentifier.typeCodeName}</div>
             <div class="modal-title-meta">
-                <span class="modal-badges">${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? '🚲' : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}</span>
+                <span class="modal-badges">${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? BIKE_ICON : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}</span>
                 ${Number(vehicle.number) > 0 ? `Wagen ${vehicle.number}` : ''} (Pos. ${vehicle.position || '-'})
                 ${props.closed === true ? '<span class="wagon-status">gesperrt</span>' : ''}${willBePutAwayHere ? '<span class="wagon-status">wird abgestellt</span>' : ''}
             </div>
