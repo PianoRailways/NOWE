@@ -64,6 +64,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
         .gtfs-table code { padding: 2px 5px; color: var(--text-via); background: rgba(0,0,0,0.2); font-family: monospace; font-size: 0.9em; }
         .btn-nowe { display: inline-block; padding: 5px 9px; border: 1px solid var(--sbb-orange); border-radius: 2px; color: var(--sbb-orange); text-decoration: none; font-size: 0.8em; font-weight: 700; white-space: nowrap; }
         .btn-nowe:hover { background: var(--sbb-orange); color: #000; }
+        #live-clock { cursor: pointer; }
         @media (max-width: 640px) {
             .gtfs-form { align-items: stretch; flex-direction: column; }
             .gtfs-field--number { flex: 1; }
@@ -79,7 +80,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
         <button id="btn-home" title="Startseite" onclick="window.location='../'">⌂ Home</button>
     </div>
     <div id="header-center">
-        <span id="live-clock">GTFS Trip Finder</span>
+        <span id="live-clock" title="Suche zurücksetzen" onclick="window.location.href = window.location.pathname"></span>
     </div>
     <div id="header-right">
         <span id="app-title">öV NOWE</span>
@@ -145,5 +146,18 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
     <?php endif; ?>
     </main>
 
+    <script>
+        function updateClock() {
+            const clock = document.getElementById('live-clock');
+            if (!clock) return;
+            const now = new Date();
+            clock.textContent = [now.getHours(), now.getMinutes(), now.getSeconds()]
+                .map(value => String(value).padStart(2, '0'))
+                .join(':');
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
 </body>
 </html>
