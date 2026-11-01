@@ -1,12 +1,34 @@
 <?php
 $number = trim($_GET['number'] ?? '');
-$date = trim($_GET['date'] ?? date('Ymd'));
+$dateInput = trim($_GET['date'] ?? '');
+$date = date('Ymd');
+$error = '';
+
+if ($dateInput === '') {
+    $dateInput = date('d.m.Y');
+} elseif (preg_match('/^(\d{2})\.(\d{2})\.(\d{4})$/', $dateInput, $dateParts) && checkdate((int) $dateParts[2], (int) $dateParts[1], (int) $dateParts[3])) {
+    $date = $dateParts[3] . $dateParts[2] . $dateParts[1];
+} elseif (preg_match('/^\d{8}$/', $dateInput)) {
+    $yearMonthDayValid = checkdate((int) substr($dateInput, 4, 2), (int) substr($dateInput, 6, 2), (int) substr($dateInput, 0, 4));
+    $dayMonthYearValid = checkdate((int) substr($dateInput, 2, 2), (int) substr($dateInput, 0, 2), (int) substr($dateInput, 4, 4));
+
+    if ($yearMonthDayValid) {
+        $date = $dateInput;
+        $dateInput = substr($dateInput, 6, 2) . '.' . substr($dateInput, 4, 2) . '.' . substr($dateInput, 0, 4);
+    } elseif ($dayMonthYearValid) {
+        $date = substr($dateInput, 4, 4) . substr($dateInput, 2, 2) . substr($dateInput, 0, 2);
+        $dateInput = substr($dateInput, 0, 2) . '.' . substr($dateInput, 2, 2) . '.' . substr($dateInput, 4, 4);
+    } else {
+        $error = 'Bitte ein gültiges Datum im Format TT.MM.JJJJ eingeben.';
+    }
+} else {
+    $error = 'Bitte ein gültiges Datum im Format TT.MM.JJJJ eingeben.';
+}
 
 $results = [];
-$error = '';
 $dbFile = __DIR__ . '/transit.sqlite';
 
-if ($number !== '' && file_exists($dbFile)) {
+if ($number !== '' && $error === '' && file_exists($dbFile)) {
     try {
         $pdo = new PDO('sqlite:' . $dbFile, null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -99,8 +121,8 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
                 <input type="text" id="number" name="number" value="<?= htmlspecialchars($number) ?>" placeholder="z.B. 450" required>
             </div>
             <div class="gtfs-field">
-                <label for="date">Datum (YYYYMMDD):</label>
-                <input type="text" id="date" name="date" value="<?= htmlspecialchars($date) ?>" placeholder="z.B. 20261102" required>
+                <label for="date">Datum (TT.MM.JJJJ):</label>
+                <input type="text" id="date" name="date" value="<?= htmlspecialchars($dateInput) ?>" placeholder="z.B. 02.11.2026" inputmode="numeric" maxlength="10" autocomplete="off" required>
             </div>
         <button type="submit">Suchen</button>
     </form>
@@ -147,6 +169,24 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
     </main>
 
     <script>
+        const dateInput = document.getElementById('date');
+        const searchButton = document.querySelector('.gtfs-form button[type="submit"]');
+
+        dateInput.addEventListener('input', () => {
+            const digits = dateInput.value.replace(/\D/g, '').slice(0, 8);
+            const parts = [];
+
+            if (digits.length > 0) parts.push(digits.slice(0, 2));
+            if (digits.length > 2) parts.push(digits.slice(2, 4));
+            if (digits.length > 4) parts.push(digits.slice(4, 8));
+
+            dateInput.value = parts.join('.');
+
+            if (digits.length === 8) {
+                searchButton.focus();
+            }
+        });
+
         function updateClock() {
             const clock = document.getElementById('live-clock');
             if (!clock) return;
