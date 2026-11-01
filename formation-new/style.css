@@ -184,6 +184,8 @@ input::focus {
     font-weight: 700;
 }
 
+.journey-date { color: var(--text-dim); font-weight: 400; }
+
 @media (max-width: 520px) {
     .related-journeys {
         grid-template-columns: 1fr;

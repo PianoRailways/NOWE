@@ -39,6 +39,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const trainParam = urlParams.get('train');
     const evuParam = urlParams.get('evu');
     const sjyidParam = urlParams.get('sjyid');
+    const dateParam = urlParams.get('date');
+
+    if (dateParam) document.getElementById('date').value = dateParam;
 
     if (evuParam && evuSelect) {
         evuSelect.value = evuParam;
@@ -195,16 +198,35 @@ async function fetchFormation() {
         formations: foundData.formations || [],
         stops: stops,
         trip,
+        journeyMeta,
         rows: createMasterRows(trip, stops),
         metaInformation: foundData.metaInformation || {},
         hints: foundData.hints,
         relationships: foundData.relationships || []
     };
+    syncFormationUrl(train, successfulEvu, operationDate);
 
     updateRelatedJourneys(foundData.relationships || []);
 
     renderStopChain();
     startTripRefresh();
+}
+
+function syncFormationUrl(train, evu, date) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('train', train);
+    if (evu) url.searchParams.set('evu', evu);
+    if (date) url.searchParams.set('date', date);
+    url.searchParams.delete('sjyid');
+    window.history.replaceState({}, '', url);
+}
+
+function operationDateLabel(date) {
+    if (!date) return '';
+    const current = window.formationData?.journeyMeta?.operationDate;
+    if (!current || date === current) return '';
+    const parsed = new Date(`${date}T12:00:00`);
+    return Number.isNaN(parsed.getTime()) ? '' : ` <small class="journey-date">${parsed.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit' })}</small>`;
 }
 
 function stopTripRefresh() {
@@ -304,6 +326,7 @@ function updateRelatedJourneys(relationships) {
         '73': 'TRN',
     };
 
+    const currentJourneyId = window.formationData?.journeyMeta?.SJYID || window.formationData?.journeyMeta?.sjyid;
     const previousJourney = relationships.find((relationship) =>
         relationship.vehicleRelationshipDetails?.direction === 'V'
     );
@@ -312,14 +335,30 @@ function updateRelatedJourneys(relationships) {
     );
 
     // Vorherige Fahrt verarbeiten
-    const prevMeta = previousJourney?.advancedJourneyInformation1?.trainMetaInformation;
+    const relationMeta = (direction) => {
+        const relation = direction === 'V' ? 'previousVehicleJourney' : 'nextVehicleJourney';
+        for (const formation of window.formationData?.formations || []) {
+            for (const vehicle of formation.formationVehicles || []) {
+                const info = vehicle.vehicleProperties?.vehicleRelation?.[relation];
+                const meta = info?.journeyMetaInformation;
+                const trainMeta = info?.trainMetaInformation;
+                if (meta?.SJYID && trainMeta?.trainNumber > 0 && meta.SJYID !== currentJourneyId) {
+                    return { ...trainMeta, operationDate: meta.operationDate };
+                }
+            }
+        }
+        return null;
+    };
+    const prevMeta = previousJourney?.advancedJourneyInformation1?.trainMetaInformation || relationMeta('V');
     const prevNumber = prevMeta?.trainNumber;
     const prevToCode = prevMeta?.toCode;
     const prevElement = document.getElementById('previousTrainNumber');
     
     if (prevNumber) {
-        prevElement.textContent = prevNumber;
+        prevElement.innerHTML = `${prevNumber}${operationDateLabel(prevMeta.operationDate)}`;
         let prevUrl = `./?train=${encodeURIComponent(prevNumber)}`;
+        if (toCodeMap[prevToCode]) prevUrl += `&evu=${encodeURIComponent(toCodeMap[prevToCode])}`;
+        if (prevMeta.operationDate) prevUrl += `&date=${encodeURIComponent(prevMeta.operationDate)}`;
         if (prevToCode && toCodeMap[prevToCode]) {
             prevUrl += `&evu=${encodeURIComponent(toCodeMap[prevToCode])}`;
         }
@@ -330,14 +369,16 @@ function updateRelatedJourneys(relationships) {
     }
 
     // Nachfolgende Fahrt verarbeiten
-    const nextMeta = nextJourney?.advancedJourneyInformation1?.trainMetaInformation;
+    const nextMeta = nextJourney?.advancedJourneyInformation1?.trainMetaInformation || relationMeta('N');
     const nextNumber = nextMeta?.trainNumber;
     const nextToCode = nextMeta?.toCode;
     const nextElement = document.getElementById('nextTrainNumber');
 
     if (nextNumber) {
-        nextElement.textContent = nextNumber;
+        nextElement.innerHTML = `${nextNumber}${operationDateLabel(nextMeta.operationDate)}`;
         let nextUrl = `./?train=${encodeURIComponent(nextNumber)}`;
+        if (toCodeMap[nextToCode]) nextUrl += `&evu=${encodeURIComponent(toCodeMap[nextToCode])}`;
+        if (nextMeta.operationDate) nextUrl += `&date=${encodeURIComponent(nextMeta.operationDate)}`;
         if (nextToCode && toCodeMap[nextToCode]) {
             nextUrl += `&evu=${encodeURIComponent(toCodeMap[nextToCode])}`;
         }
