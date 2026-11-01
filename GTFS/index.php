@@ -77,21 +77,23 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
         .gtfs-notice { margin: 12px 14px; padding: 10px 12px; border-left: 3px solid var(--live-red); background: rgba(255,59,48,0.15); color: #ffb0aa; }
         .gtfs-empty { padding: 18px 14px; color: var(--text-via); }
         .gtfs-results-title { padding: 16px 14px 8px; font-size: 1em; color: var(--text-main); }
-        .gtfs-table-wrap { overflow-x: auto; }
-        .gtfs-table { width: 100%; border-collapse: collapse; }
-        .gtfs-table th, .gtfs-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); text-align: left; font-size: 0.86em; vertical-align: middle; }
-        .gtfs-table th { background: var(--board-head); color: var(--text-via); font-size: 0.75em; letter-spacing: 0.03em; text-transform: uppercase; }
-        .gtfs-table tbody tr:nth-child(even) { background: var(--board-row); }
-        .gtfs-table tbody tr:nth-child(odd) { background: var(--board-alt); }
-        .gtfs-table code { padding: 2px 5px; color: var(--text-via); background: rgba(0,0,0,0.2); font-family: monospace; font-size: 0.9em; }
-        .btn-nowe { display: inline-block; padding: 5px 9px; border: 1px solid var(--sbb-orange); border-radius: 2px; color: var(--sbb-orange); text-decoration: none; font-size: 0.8em; font-weight: 700; white-space: nowrap; }
-        .btn-nowe:hover { background: var(--sbb-orange); color: #000; }
+        .gtfs-trips { display: flex; flex-direction: column; }
+        .gtfs-trip-row { display: block; padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-main); text-decoration: none; }
+        .gtfs-trip-row:nth-child(even) { background: var(--board-row); }
+        .gtfs-trip-row:nth-child(odd) { background: var(--board-alt); }
+        .gtfs-trip-top, .gtfs-trip-bottom { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+        .gtfs-trip-top { font-size: 0.9em; }
+        .gtfs-trip-sjyid { color: var(--text-via); font-family: monospace; font-size: 0.86em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .gtfs-trip-bottom { margin-top: 5px; font-size: 0.95em; }
+        .gtfs-trip-arrow { color: var(--sbb-orange); font-weight: 700; }
+        .gtfs-trip-destination { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .gtfs-trip-hints { margin-left: auto; color: var(--text-via); font-size: 0.8em; text-align: right; white-space: nowrap; }
         #live-clock { cursor: pointer; }
         @media (max-width: 640px) {
             .gtfs-form { align-items: stretch; flex-direction: column; }
             .gtfs-field--number { flex: 1; }
             .gtfs-form button { width: 100%; }
-            .gtfs-table th, .gtfs-table td { padding: 9px 10px; }
+            .gtfs-trip-row { padding: 10px; }
         }
     </style>
 </head>
@@ -137,33 +139,24 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
 
     <?php if (!empty($results)): ?>
         <h2 class="gtfs-results-title">Gefundene Fahrten (<?= count($results) ?>)</h2>
-        <div class="gtfs-table-wrap">
-        <table class="gtfs-table">
-            <thead>
-                <tr>
-                    <th>Fahrtziel</th>
-                    <th>Swiss Journey ID (sjyid)</th>
-                    <th>Hints</th>
-                    <th>Aktion</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($results as $row): ?>
-                    <?php 
-                        $sjyidEncoded = urlencode($row['sjyid']);
-                        $noweUrl = "https://nowe.stellwerksim.ch/trip/?sjyid=" . $sjyidEncoded . "&date=" . $formattedDate;
-                    ?>
-                    <tr>
-                        <td><strong><?= htmlspecialchars($row['destination'] ?: '-') ?></strong></td>
-                        <td><code><?= htmlspecialchars($row['sjyid']) ?></code></td>
-                        <td><?= htmlspecialchars($row['hints'] ?: '-') ?></td>
-                        <td>
-                            <a href="<?= htmlspecialchars($noweUrl) ?>" target="_blank" class="btn-nowe">NOWE Abfragen</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <div class="gtfs-trips">
+            <?php foreach ($results as $row): ?>
+                <?php 
+                    $sjyidEncoded = urlencode($row['sjyid']);
+                    $noweUrl = "https://nowe.stellwerksim.ch/trip/?sjyid=" . $sjyidEncoded . "&date=" . $formattedDate;
+                ?>
+                <a href="<?= htmlspecialchars($noweUrl) ?>" target="_blank" class="gtfs-trip-row">
+                    <span class="gtfs-trip-top">
+                        <strong><?= htmlspecialchars($number) ?></strong>
+                        <span class="gtfs-trip-sjyid">(<?= htmlspecialchars($row['sjyid']) ?>)</span>
+                    </span>
+                    <span class="gtfs-trip-bottom">
+                        <span class="gtfs-trip-arrow">--&gt;</span>
+                        <span class="gtfs-trip-destination"><?= htmlspecialchars($row['destination'] ?: '-') ?></span>
+                        <span class="gtfs-trip-hints"><?= htmlspecialchars($row['hints'] ?: '-') ?></span>
+                    </span>
+                </a>
+            <?php endforeach; ?>
         </div>
     <?php endif; ?>
     </main>
