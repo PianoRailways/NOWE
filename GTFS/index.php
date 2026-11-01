@@ -85,8 +85,8 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
         .gtfs-trip-top { font-size: 0.9em; }
         .gtfs-trip-sjyid { color: var(--text-via); font-family: monospace; font-size: 0.86em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .gtfs-trip-bottom { margin-top: 5px; font-size: 0.95em; }
-        .gtfs-trip-arrow { color: var(--sbb-orange); font-weight: 700; }
-        .gtfs-trip-destination { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .gtfs-trip-arrow { font-weight: 700; font-size: 1.2em;}
+        .gtfs-trip-destination { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700;}
         .gtfs-trip-hints { margin-left: auto; color: var(--text-via); font-size: 0.8em; text-align: right; white-space: nowrap; }
         #live-clock { cursor: pointer; }
         @media (max-width: 640px) {
@@ -146,7 +146,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
                 ?>
                 <a href="<?= htmlspecialchars($noweUrl) ?>" target="_blank" class="gtfs-trip-row">
                     <span class="gtfs-trip-top">
-                        <strong><?= htmlspecialchars($number) ?></strong>
+                        <?= htmlspecialchars($number) ?>
                         <span class="gtfs-trip-sjyid">(<?= htmlspecialchars($row['sjyid']) ?>)</span>
                     </span>
                     <span class="gtfs-trip-bottom">
