@@ -335,6 +335,14 @@ input::focus {
     border-bottom: 1px solid var(--border);
 }
 
+.day-separator {
+    padding: 5px 14px;
+    color: var(--text-dim);
+    background: var(--board-head);
+    font-size: .72rem;
+    letter-spacing: .04em;
+}
+
 .formation-stop-row {
     display: grid;
     grid-template-columns: 58px 20px minmax(0, 1fr) 24px;
@@ -397,12 +405,15 @@ input::focus {
 .sector-group { grid-column: span var(--span); display: flex; align-items: center; min-width: 0; color: var(--text-dim); }
 .sector-group::before, .sector-group::after { content: ''; height: 1px; background: var(--text-dim); flex: 1; }
 .sector-group b { padding: 0 5px; font-size: .68rem; font-weight: 500; white-space: nowrap; }
+.goal-bar { display: grid; grid-template-columns: repeat(var(--wagon-count, 1), minmax(58px, 1fr)); padding: 2px 12px 6px; }
+.goal-group { grid-column: span 1; overflow: hidden; color: var(--text-via); font-size: .66rem; text-align: center; white-space: nowrap; text-overflow: ellipsis; }
 .formation-direction { padding: 4px 14px 8px; color: var(--text-via); font-size: .78rem; }
 .wagon-row { display: flex; overflow-x: auto; gap: 0; padding-bottom: 4px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
 .wagon-unit { position: relative; flex: 0 0 58px; display: flex; flex-direction: column; align-items: center; scroll-snap-align: start; }
 .wagon-card { position: relative; width: 58px; height: 54px; padding: 5px; border: 1.5px solid var(--text-via); border-radius: 10px; background: transparent; color: var(--text-main); cursor: pointer; }
 .wagon-card:active { background: rgba(255,255,255,.1); }
 .wagon-empty { border-style: dashed; }
+.wagon-loco { width: 60%; margin: 0 auto; border-style: dashed; }
 .wagon-restaurant { border-color: #a78bfa; }
 .wagon-class-bar { display: block; width: 40%; height: 3px; margin: -5px auto 4px; background: transparent; border-radius: 2px; }
 .wagon-card:has(.first) .wagon-class-bar { background: var(--night-gold); }
@@ -413,6 +424,8 @@ input::focus {
 .restaurant-badge { color: #c4b5fd; border-color: #a78bfa; }
 .wagon-number { display: block; margin-top: 5px; color: var(--text-via); font: .65rem monospace; }
 .wagon-status { display: block; color: var(--sbb-red); font-size: .55rem; white-space: nowrap; }
+.wagon-kind, .attribute-chip { display: inline-flex; align-items: center; justify-content: center; padding: 1px 4px; border: 1px solid #7fa8d8; border-radius: 2px; color: #b7d2ef; font-size: .62rem; }
+.attribute-chip { border-color: var(--text-dim); color: var(--text-via); margin-left: 2px; }
 .wagon-closed { opacity: .45; border-color: var(--sbb-red); }
 .formation-meta, .formation-hints { padding: 8px 14px 0; color: var(--text-dim); font-size: .72rem; }
 .formation-hints { display: flex; flex-direction: column; gap: 3px; color: var(--text-via); }

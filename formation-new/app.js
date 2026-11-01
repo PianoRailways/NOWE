@@ -2,6 +2,7 @@ import { fetchTripInfo } from '../trip/trip-api-client.js';
 
 let tripRefreshTimer = null;
 let tripRefreshRunning = false;
+let stopNames = {};
 
 function updateClock() {
     const el = document.getElementById('live-clock');
@@ -167,7 +168,7 @@ async function fetchFormation() {
         const scheduledStop = entry.scheduledStop || entry;
         const point = scheduledStop.stopPoint || {};
         return {
-            name: point.name || '-',
+            name: point.name || null,
             uic: point.uic,
             index,
             arrivalTime: entry.stopTime?.arrivalTime,
@@ -177,6 +178,12 @@ async function fetchFormation() {
             vehicleGoals: entry.formationShort?.vehicleGoals || []
         };
     });
+    try {
+        const response = await fetch('./uic-namen.json');
+        if (response.ok) stopNames = await response.json();
+    } catch {
+        stopNames = {};
+    }
 
     const html = `
         <div class="stop-chain" id="stopChain"></div>
@@ -288,7 +295,7 @@ function startTripRefresh() {
 function createMasterRows(trip, stops) {
     if (!trip?.stops?.length) {
         return stops.map((stop, fIdx) => ({
-            name: stop.name,
+            name: stopLabel(stop.uic, stop.name),
             stopPointRef: String(stop.uic || ''),
             quay: stop.track,
             fIdx,
@@ -304,8 +311,9 @@ function createMasterRows(trip, stops) {
         const match = stops.findIndex((stop, index) => {
             if (index < formationCursor) return false;
             const ref = String(row.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
+            const stopName = stopLabel(stop.uic, stop.name);
             return (ref && Number(ref) === Number(stop.uic) % 100000)
-                || row.name?.trim().toLowerCase() === stop.name?.trim().toLowerCase();
+                || (row.name && stopName && row.name.trim().toLowerCase() === stopName.trim().toLowerCase());
         });
         if (match >= 0) formationCursor = match + 1;
         return { ...row, fIdx: match >= 0 ? match : undefined };
@@ -392,55 +400,66 @@ function updateRelatedJourneys(relationships) {
 const FLIP_DIRECTION = true;
 
 const UNKNOWN_ATTRIBUTES = new Set();
-const FORMATION_ATTRIBUTES = new Set(['NF', 'VH', 'KW', 'BHP']);
+const FORMATION_ATTRIBUTES = new Set(['NF', 'VH', 'VR', 'KW', 'BHP']);
 const BIKE_ICON = '<svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="16" r="3.5"/><circle cx="19" cy="16" r="3.5"/><path d="M5 16 9 9h6l4 7M9 9l2 7 4-7M5 16h6M7.5 7.5h3M14 7h2.5"/></svg>';
 
 function parseFormationShort(value) {
     if (!value) return [];
-    const normalized = String(value).replace(/@([A-Z]+)/g, ',$1,').replace(/,{2,}/g, ',');
+    const normalized = String(value).replace(/@([A-Z]+)/g, ',@$1,').replace(/,{2,}/g, ',');
     const result = [];
-    const stack = [[]];
+    const stack = [{ items: [] }];
     let sector = '';
-    const addToken = (token, inherited = []) => {
-        const clean = token.trim();
-        if (!clean || clean === 'F' || clean === '(' || clean === '[') return;
+    const addAttributes = (items, value) => {
+        String(value || '').replace(/^#/, '').split(';').filter(Boolean).forEach((attr) => {
+            if (!FORMATION_ATTRIBUTES.has(attr) && !UNKNOWN_ATTRIBUTES.has(attr)) {
+                UNKNOWN_ATTRIBUTES.add(attr);
+                console.warn(`Unbekanntes Formationsattribut: ${attr}`);
+            }
+            items.forEach((item) => item.attrs.add(attr));
+        });
+    };
+    const addToken = (token) => {
+        let clean = token.trim();
+        if (!clean || clean === 'F') return;
         if (clean.startsWith('@')) {
             sector = clean.slice(1);
             return;
         }
-        if (clean === ')' || clean === ']') return;
-        const [classPart, attrPart] = clean.split('#');
-        const classes = classPart.replace(/[^12]/g, '');
-        if (!classes && !attrPart) return;
-        const attrs = new Set(inherited);
-        (attrPart || '').split(';').filter(Boolean).forEach((attr) => {
-            if (!FORMATION_ATTRIBUTES.has(attr)) {
-                if (!UNKNOWN_ATTRIBUTES.has(attr)) {
-                    UNKNOWN_ATTRIBUTES.add(attr);
-                    console.warn(`Unbekanntes Formationsattribut: ${attr}`);
-                }
-            }
-            attrs.add(attr);
-        });
-        result.push({ classes: classes === '21' ? '12' : classes, attrs, sector });
+        const counted = !clean.startsWith('-');
+        clean = clean.replace(/^-/, '');
+        const [base, attrPart] = clean.split('#');
+        const [kindPart, numberPart] = base.split(':');
+        const kind = /^(WL|CC)$/i.test(kindPart) ? kindPart.toUpperCase() : '';
+        const type = /^LK$/i.test(kindPart) ? 'loco' : 'wagon';
+        const classes = /^\d+$/.test(kindPart) ? kindPart.replace(/[^12]/g, '') : '';
+        if (!classes && !kind && type === 'wagon' && !/^[A-Z]+$/i.test(kindPart)) return;
+        if (/^[A-Z]+$/i.test(kindPart) && !['WL', 'CC', 'LK'].includes(kindPart.toUpperCase()) && !UNKNOWN_ATTRIBUTES.has(kindPart)) {
+            UNKNOWN_ATTRIBUTES.add(kindPart);
+            console.warn(`Unbekannte Wagenart: ${kindPart}`);
+        }
+        const label = kind || (type === 'loco' ? 'Lok' : (!classes && /^[A-Z]+$/i.test(kindPart) ? kindPart.toUpperCase() : ''));
+        const item = { type, classes: classes === '21' ? '12' : classes, kind, label, number: numberPart && /^\d+$/.test(numberPart) ? Number(numberPart) : null, attrs: new Set(), sector, counted };
+        addAttributes([item], attrPart);
+        stack.at(-1).items.push(item);
     };
-    const tokens = normalized.split(/([()[\],])/).filter(Boolean);
+    const tokens = normalized.match(/@[^,()[\]]+|#[^,()[\]]+|[()[\],]|[^,()[\]]+/g) || [];
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i].trim();
         if (token === '(' || token === '[') {
-            stack.push([]);
+            stack.push({ items: [] });
         } else if (token === ')' || token === ']') {
-            const inherited = stack.pop() || [];
-            const following = tokens[i + 1]?.trim() || '';
-            const attrs = following.startsWith('#') ? following.slice(1).split(';') : [];
-            if (attrs.length) i++;
-            result.forEach((wagon) => {
-                if (wagon.attrs === inherited) attrs.forEach((attr) => wagon.attrs.add(attr));
-            });
+            const group = stack.length > 1 ? stack.pop() : stack[0];
+            const following = tokens[i + 1]?.trim();
+            if (following?.startsWith('#')) {
+                addAttributes(group.items, following);
+                i++;
+            }
+            stack.at(-1).items.push(...group.items);
         } else if (token !== ',') {
-            addToken(token, stack.at(-1));
+            addToken(token);
         }
     }
+    result.push(...stack[0].items);
     return result;
 }
 
@@ -450,29 +469,35 @@ function stopEntryFor(vehicle, stop) {
     );
 }
 
-function formationCoversStop(vehicle, stop, stopIndex) {
-    const props = vehicle.vehicleProperties || {};
-    const from = props.fromStop?.uic;
-    const to = props.toStop?.uic;
-    const fromIndex = stopsIndexByUic(from);
-    const toIndex = stopsIndexByUic(to);
-    return fromIndex <= stopIndex && stopIndex <= toIndex;
-}
-
-function stopsIndexByUic(uic) {
-    return window.formationData.stops.findIndex((stop) => stop.uic === uic);
-}
-
 function formationForStop(stopIdx) {
     const stop = window.formationData.stops[stopIdx];
-    for (let fIdx = window.formationData.formations.length - 1; fIdx >= 0; fIdx--) {
-        const formation = window.formationData.formations[fIdx];
-        const vehicles = (formation.formationVehicles || []).filter((vehicle) =>
-            formationCoversStop(vehicle, stop, stopIdx) && stopEntryFor(vehicle, stop)
-        );
-        if (vehicles.length) return { formation, vehicles };
+    const parserData = parseFormationShort(stop.formationShort?.formationShortString);
+    const candidates = window.formationData.formations.map((formation, index) => ({
+        formation, index,
+        vehicles: (formation.formationVehicles || []).filter((vehicle) => stopEntryFor(vehicle, stop))
+    })).filter((candidate) => candidate.vehicles.length);
+    if (!candidates.length) return { formation: null, vehicles: [], parserData };
+
+    const hasNumbers = parserData.some((token) => token.number !== null);
+    if (hasNumbers) {
+        for (let c = candidates.length - 1; c >= 0; c--) {
+            const candidate = candidates[c];
+            const vehicles = parserData.map((token) => token.number === null
+                ? null
+                : candidate.vehicles.find((vehicle) => Number(vehicle.number) === token.number) || null);
+            if (vehicles.some(Boolean)) return { formation: candidate.formation, vehicles, parserData };
+        }
+    } else {
+        const matching = candidates.filter((candidate) => candidate.vehicles.length === parserData.length);
+        const candidate = matching.at(-1) || candidates.at(-1);
+        const vehicles = [...candidate.vehicles].sort((a, b) => (a.position || 0) - (b.position || 0));
+        if (!parserData.length || vehicles.length === parserData.length) {
+            return { formation: candidate.formation, vehicles, parserData };
+        }
+        console.warn('FormationShort und Wagenanzahl stimmen nicht überein.');
+        return { formation: candidate.formation, vehicles, parserData: [] };
     }
-    return { formation: null, vehicles: [] };
+    return { formation: candidates.at(-1).formation, vehicles: candidates.at(-1).vehicles, parserData: [] };
 }
 
 function orderedFormation(vehicles, parserData) {
@@ -500,7 +525,11 @@ function accessIcon(type) {
 
 function stopLabel(uic, name) {
     if (name) return name;
-    return window.formationData?.stops.find((stop) => stop.uic === uic)?.name || `UIC ${uic || '-'}`;
+    const tripStop = window.formationData?.trip?.stops?.find((stop) => {
+        const ref = String(stop.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
+        return ref && Number(ref) === Number(uic) % 100000;
+    });
+    return tripStop?.name || stopNames[String(uic)] || `UIC ${uic || '-'}`;
 }
 
 function timeRow(value, estimated, delay, kind) {
@@ -512,6 +541,7 @@ function timeRow(value, estimated, delay, kind) {
 function renderStopChain() {
     const { stops, rows } = window.formationData;
     const chain = document.getElementById('stopChain');
+    let previousDay = null;
     chain.innerHTML = rows.map((row, idx) => {
         const fIdx = row.fIdx;
         const stop = fIdx === undefined ? row : stops[fIdx];
@@ -519,6 +549,14 @@ function renderStopChain() {
         const isLast = idx === rows.length - 1;
         const arrival = row.arrival?.timetabled || stop.arrivalTime;
         const departure = row.departure?.timetabled || stop.departureTime;
+        const rowTime = arrival || departure;
+        const day = rowTime ? rowTime.slice(0, 10) : null;
+        let daySeparator = '';
+        if (day && day !== previousDay && previousDay !== null) {
+            const date = new Date(`${day}T12:00:00`);
+            daySeparator = `<div class="day-separator">${date.toLocaleDateString('de-CH', { weekday: 'short', day: '2-digit', month: '2-digit' })}</div>`;
+        }
+        if (day) previousDay = day;
         const times = isFirst
             ? timeRow(departure, row.departure?.estimated, row.departure?.delaySec, 'dep')
             : isLast
@@ -526,8 +564,8 @@ function renderStopChain() {
                 : `${timeRow(arrival, row.arrival?.estimated, row.arrival?.delaySec, 'arr')}${timeRow(departure, row.departure?.estimated, row.departure?.delaySec, 'dep')}`;
         const quay = fIdx !== undefined ? stops[fIdx].track : row.quay;
         const link = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`;
-        const rowBody = `<span class="chain-stop-text"><a href="${link}">${row.name}</a>${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}<small>Gl. ${quay || '-'}</small></span>`;
-        return `
+        const rowBody = `<span class="chain-stop-text"><a href="${link}">${stopLabel(stop.uic, row.name)}</a>${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>Gl. ${quay}</small>` : ''}</span>`;
+        return `${daySeparator}
             <section class="formation-stop" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}">
                 <button class="formation-stop-row" type="button" data-formation-index="${fIdx ?? ''}" ${fIdx === undefined ? 'disabled' : ''}>
                     <span class="chain-times">${times}</span>
@@ -627,28 +665,18 @@ function updateVehicleMarker() {
     marker.hidden = false;
 }
 
-function stopFormationData(stopIdx) {
-    const stop = window.formationData.stops[stopIdx];
-    const firstVehicleStop = stop ? stopEntryFor(formationForStop(stopIdx).vehicles[0], stop) : null;
-    return firstVehicleStop || {
-        track: stop?.track,
-        stopTime: { arrivalTime: stop?.arrivalTime, departureTime: stop?.departureTime }
-    };
-}
-
 function renderFormationStrip(stopIdx) {
-    const { vehicles, formation } = formationForStop(stopIdx);
+    const { vehicles, parserData } = formationForStop(stopIdx);
     const stop = window.formationData.stops[stopIdx];
-    const parserData = parseFormationShort(stop.formationShort?.formationShortString);
     const parsed = parserData.length === vehicles.length ? parserData : [];
     if (parserData.length && !parsed.length) {
         console.warn('FormationShort und Wagenanzahl stimmen nicht überein.');
     }
     const available = vehicles.map((vehicle, index) => ({
         vehicle,
-        stopData: stopEntryFor(vehicle, stop),
+        stopData: vehicle ? stopEntryFor(vehicle, stop) : { sectors: parsed[index]?.sector },
         index
-    })).filter(item => item.stopData);
+    }));
     const ordered = orderedFormation(available.map((item) => item.vehicle), parsed)
         .map((item) => ({ ...available[item.sourceIndex], parsed: item.parsed }));
     const sectors = [];
@@ -660,7 +688,9 @@ function renderFormationStrip(stopIdx) {
     });
     const sectorHtml = sectors.map(group => `<span class="sector-group" style="--span:${group.count}">${group.sector ? `<b><span>Sektor ${group.sector}</span></b>` : ''}</span>`).join('');
     const goals = stop.vehicleGoals || [];
-    const direction = goals.length === 1 ? `← Richtung ${goals[0].toStop?.name || goals[0].name || goals[0]}` : '';
+    const goalName = (goal) => stopLabel(goal.toStop?.uic || goal.stopPoint?.uic, goal.toStop?.name || goal.stopPoint?.name || goal.name || goal.destination);
+    const direction = goals.length === 1 ? `← Richtung ${goalName(goals[0])}` : '';
+    const goalLabels = goals.length > 1 ? renderGoalLabels(goals, parserData, ordered.length) : '';
     const wagonHtml = ordered.map((item, index) => renderWagon(item.vehicle, item.stopData, item.index, index, ordered, stopIdx)).join('');
     const meta = window.formationData.metaInformation || {};
     const lastUpdate = meta.lastUpdate ? formatTime(meta.lastUpdate) : '';
@@ -668,12 +698,35 @@ function renderFormationStrip(stopIdx) {
     return `<div class="formation-strip" style="--wagon-count:${ordered.length}">
         <div class="sector-bar">${sectorHtml}</div>
         ${direction ? `<div class="formation-direction">${direction}</div>` : ''}
+        ${goalLabels}
         <div class="wagon-row">${wagonHtml}</div>
         <div class="formation-meta">
             ${meta.length ? `Länge ${meta.length} m` : ''}${meta.numberSeats ? ` · ${meta.numberSeats} Sitzplätze` : ''}${lastUpdate ? ` · Stand ${lastUpdate}` : ''}
         </div>
         ${hints ? `<div class="formation-hints">${Array.isArray(hints) ? hints.map(hint => `<span>${typeof hint === 'string' ? hint : JSON.stringify(hint)}</span>`).join('') : JSON.stringify(hints)}</div>` : ''}
     </div>`;
+}
+
+function renderGoalLabels(goals, parserData, wagonCount) {
+    const counted = [
+        parserData.filter((token) => token.counted).length,
+        parserData.filter((token) => token.counted && token.type !== 'loco').length,
+        parserData.length
+    ];
+    const maxPosition = Math.max(...goals.map((goal) => Number(goal.toVehicleAtPosition) || 0));
+    const total = counted.find((count) => count === maxPosition);
+    if (!total) {
+        console.warn('Zugteil-Ziele passen nicht zur Wagenreihung.');
+        return '';
+    }
+    return `<div class="goal-bar" style="--wagon-count:${wagonCount}">${goals.map((goal) => {
+        let from = Math.max(1, Number(goal.fromVehicleAtPosition) || 1);
+        let to = Math.max(from, Number(goal.toVehicleAtPosition) || from);
+        if (FLIP_DIRECTION) {
+            [from, to] = [wagonCount - to + 1, wagonCount - from + 1];
+        }
+        return `<span class="goal-group" style="grid-column:${from} / span ${to - from + 1}">${stopLabel(goal.toStop?.uic || goal.stopPoint?.uic, goal.toStop?.name || goal.stopPoint?.name || goal.name || goal.destination)}</span>`;
+    }).join('')}</div>`;
 }
 
 function iconSvg(type) {
@@ -686,27 +739,32 @@ function iconSvg(type) {
 }
 
 function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
+    if (!vehicle) {
+        const parsed = ordered[index].parsed || {};
+        return `<div class="wagon-unit wagon-placeholder"><span class="wagon-card wagon-empty"><span class="wagon-badges">${parsed.kind || parsed.classes || ''}</span>${parsed.number ? `<span class="wagon-number">${parsed.number}</span>` : ''}</span><span class="wagon-icons"></span>${index < ordered.length - 1 ? '<span class="wagon-connection"></span>' : ''}</div>`;
+    }
     const props = vehicle.vehicleProperties || {};
     const accessibility = props.accessibilityProperties || {};
     const parsed = ordered[index].parsed;
     const classes = parsed?.classes || `${props.number1class > 0 ? '1' : ''}${props.number2class > 0 ? '2' : ''}`;
+    const isLoco = parsed?.type === 'loco';
     const hasSeats = props.number1class > 0 || props.number2class > 0 || props.numberRestaurantSpace > 0;
-    const transitionOpen = index === 0 || ordered[index].stopData.accessToPreviousVehicle !== false;
-    const badges = props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' :
+    const transitionOpen = index === 0 || parsed?.type === 'loco' || ordered[index - 1]?.parsed?.type === 'loco' || ordered[index].stopData.accessToPreviousVehicle !== false;
+    const badges = isLoco ? '<span class="wagon-kind">Lok</span>' : parsed?.label ? `<span class="wagon-kind" title="${parsed.kind === 'WL' ? 'Schlafwagen' : parsed.kind === 'CC' ? 'Liegewagen' : ''}">${parsed.label}</span>` : props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' :
         `${classes.includes('1') ? '<span class="class-badge first">1</span>' : ''}${classes.includes('2') ? '<span class="class-badge second">2</span>' : ''}`;
     const icons = [
         (parsed?.attrs.has('BHP') || accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet || props.pictoProperties?.wheelchairPicto) ? iconSvg('wheelchair') : '',
-        (parsed?.attrs.has('VH') || parsed?.attrs.has('VR') || props.bikePlatform || props.pictoProperties?.bikePicto) ? BIKE_ICON : '',
+        (!isLoco && (parsed?.attrs.has('VH') || parsed?.attrs.has('VR') || props.bikePlatform || props.pictoProperties?.bikePicto)) ? BIKE_ICON : '',
         (parsed?.attrs.has('KW') || props.pictoProperties?.strollerPicto) ? iconSvg('stroller') : '',
         (parsed?.attrs.has('NF') || props.lowFloorTrolley) ? '<strong>NF</strong>' : ''
     ].filter(Boolean).join('');
-    const number = Number(vehicle.number) > 0 ? vehicle.number : '';
+    const number = Number(vehicle.number) > 0 ? vehicle.number : parsed?.number || '';
     const currentStop = window.formationData.stops[stopIdx];
     const willBePutAwayHere = props.vehicleWillBePutAway === true
         && props.toStop?.uic === currentStop?.uic;
     const status = props.closed === true ? 'gesperrt' : willBePutAwayHere ? 'wird abgestellt' : '';
     return `<div class="wagon-unit">
-        <button class="wagon-card ${!hasSeats ? 'wagon-empty' : ''} ${props.numberRestaurantSpace > 0 ? 'wagon-restaurant' : ''} ${props.closed === true ? 'wagon-closed' : ''}" type="button" onclick="event.stopPropagation(); showDetails(window.formationData.formations[${window.formationData.formations.findIndex(f => f.formationVehicles?.includes(vehicle))}].formationVehicles[${vIdx}], window.formationData.stops[${stopIdx}], ${vIdx})">
+        <button class="wagon-card ${isLoco ? 'wagon-loco' : ''} ${!hasSeats ? 'wagon-empty' : ''} ${props.numberRestaurantSpace > 0 ? 'wagon-restaurant' : ''} ${props.closed === true ? 'wagon-closed' : ''}" type="button" ${isLoco ? 'disabled' : `onclick="event.stopPropagation(); showDetails(window.formationData.formations[${window.formationData.formations.findIndex(f => f.formationVehicles?.includes(vehicle))}].formationVehicles[${vIdx}], window.formationData.stops[${stopIdx}], ${vIdx})"`}>
             <span class="wagon-class-bar"></span><span class="wagon-badges">${badges}</span><span class="wagon-number">${number}</span>${status ? `<small class="wagon-status">${status}</small>` : ''}
         </button>
         <span class="wagon-icons">${icons}</span>
@@ -717,6 +775,9 @@ function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
 function showDetails(vehicle, stopData, vIdx) {
     const props = vehicle.vehicleProperties || {};
     const accessibility = props.accessibilityProperties || {};
+    const parsed = parseFormationShort(stopData?.formationShort?.formationShortString)
+        .find((item) => item.number !== null && Number(vehicle.number) === item.number);
+    const parserChips = parsed ? [...parsed.attrs].map((attr) => `<span class="attribute-chip">${attr}</span>`).join('') : '';
 
     // Die "vehicle.number" entspricht der Anzeigennummer (Perron), 
     // "vehicle.position" ist die physische Reihung (z.B. 1. Wagen ab Lok).
@@ -724,7 +785,7 @@ function showDetails(vehicle, stopData, vIdx) {
         <div class="modal-title">
             <div class="modal-title-main">${vehicle.vehicleIdentifier.typeCodeName}</div>
             <div class="modal-title-meta">
-                <span class="modal-badges">${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? BIKE_ICON : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}</span>
+                <span class="modal-badges">${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${parsed?.kind ? `<span class="wagon-kind">${parsed.kind}</span>` : ''}${props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? BIKE_ICON : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}${parserChips}</span>
                 ${Number(vehicle.number) > 0 ? `Wagen ${vehicle.number}` : ''} (Pos. ${vehicle.position || '-'})
                 ${props.closed === true ? '<span class="wagon-status">gesperrt</span>' : ''}${willBePutAwayHere ? '<span class="wagon-status">wird abgestellt</span>' : ''}
             </div>
@@ -733,6 +794,7 @@ function showDetails(vehicle, stopData, vIdx) {
         <div class="modal-grid">
             <div class="detail-group">
                 <div class="detail-group-title">Allgemein</div>
+                ${parsed?.kind ? `<div class="detail-row"><span class="detail-label">Art:</span> <span class="detail-value">${parsed.kind} · ${vehicle.vehicleIdentifier?.typeCodeName || '-'}</span></div>` : ''}
                 <div class="detail-row"><span class="detail-label">Wagennummer:</span> <span class="detail-value">${vehicle.number || '-'}</span></div>
                 <div class="detail-row"><span class="detail-label">Physische Position:</span> <span class="detail-value">${vehicle.position || '-'}</span></div>
                 <div class="detail-row"><span class="detail-label">Tech. Wagennr.:</span> <span class="detail-value">${vehicle.vehicleIdentifier?.vehicleNumber || '-'}</span></div>
