@@ -155,7 +155,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
                     $sjyidEncoded = urlencode($row['sjyid']);
                     $noweUrl = "https://nowe.stellwerksim.ch/trip/?sjyid=" . $sjyidEncoded . "&date=" . $formattedDate;
                 ?>
-                <a href="<?= htmlspecialchars($noweUrl) ?>" target="_blank" class="gtfs-trip-row">
+                <a href="<?= htmlspecialchars($noweUrl) ?>" class="gtfs-trip-row">
                     <span class="gtfs-trip-top">
                         <?= htmlspecialchars($number) ?>
                         <span class="gtfs-trip-sjyid">(<?= htmlspecialchars($row['sjyid']) ?>)</span>
