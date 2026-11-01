@@ -151,7 +151,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
                         <span class="gtfs-trip-sjyid">(<?= htmlspecialchars($row['sjyid']) ?>)</span>
                     </span>
                     <span class="gtfs-trip-bottom">
-                        <span class="gtfs-trip-arrow">--&gt;</span>
+                        <span class="gtfs-trip-arrow">→</span>
                         <span class="gtfs-trip-destination"><?= htmlspecialchars($row['destination'] ?: '-') ?></span>
                         <span class="gtfs-trip-hints"><?= htmlspecialchars($row['hints'] ?: '-') ?></span>
                     </span>
