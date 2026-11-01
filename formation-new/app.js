@@ -456,6 +456,11 @@ function accessIcon(type) {
     return type ? `<span class="access-icon" title="${type}">♿</span>` : '';
 }
 
+function stopLabel(uic, name) {
+    if (name) return name;
+    return window.formationData?.stops.find((stop) => stop.uic === uic)?.name || `UIC ${uic || '-'}`;
+}
+
 function timeRow(value, estimated, delay, kind) {
     return `<div class="time-row" data-tt="${value || ''}" data-est="${estimated || ''}" data-delay="${delay || 0}">
         <span class="ps-time ps-time--${kind}">${fmtTime(value) || '--:--'}</span>${delayLabel(delay)}
@@ -654,7 +659,10 @@ function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
         (parsed?.attrs.has('NF') || props.lowFloorTrolley) ? '<strong>NF</strong>' : ''
     ].filter(Boolean).join('');
     const number = Number(vehicle.number) > 0 ? vehicle.number : '';
-    const status = props.closed === true ? 'gesperrt' : props.vehicleWillBePutAway === true ? 'wird abgehängt' : '';
+    const currentStop = window.formationData.stops[stopIdx];
+    const willBePutAwayHere = props.vehicleWillBePutAway === true
+        && props.toStop?.uic === currentStop?.uic;
+    const status = props.closed === true ? 'gesperrt' : willBePutAwayHere ? 'wird abgestellt' : '';
     return `<div class="wagon-unit">
         <button class="wagon-card ${!hasSeats ? 'wagon-empty' : ''} ${props.numberRestaurantSpace > 0 ? 'wagon-restaurant' : ''} ${props.closed === true ? 'wagon-closed' : ''}" type="button" onclick="event.stopPropagation(); showDetails(window.formationData.formations[${window.formationData.formations.findIndex(f => f.formationVehicles?.includes(vehicle))}].formationVehicles[${vIdx}], window.formationData.stops[${stopIdx}], ${vIdx})">
             <span class="wagon-class-bar"></span><span class="wagon-badges">${badges}</span><span class="wagon-number">${number}</span>${status ? `<small class="wagon-status">${status}</small>` : ''}
@@ -676,7 +684,7 @@ function showDetails(vehicle, stopData, vIdx) {
             <div class="modal-title-meta">
                 <span class="modal-badges">${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? '🚲' : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}</span>
                 ${Number(vehicle.number) > 0 ? `Wagen ${vehicle.number}` : ''} (Pos. ${vehicle.position || '-'})
-                ${props.closed === true ? '<span class="wagon-status">gesperrt</span>' : ''}${props.vehicleWillBePutAway === true ? '<span class="wagon-status">wird abgehängt</span>' : ''}
+                ${props.closed === true ? '<span class="wagon-status">gesperrt</span>' : ''}${willBePutAwayHere ? '<span class="wagon-status">wird abgestellt</span>' : ''}
             </div>
         </div>
 
@@ -690,6 +698,7 @@ function showDetails(vehicle, stopData, vIdx) {
                 ${vehicle.vehicleIdentifier?.parentEvn ? `<div class="detail-row"><span class="detail-label">Parent-EVN:</span> <span class="detail-value detail-value--small">${vehicle.vehicleIdentifier.parentEvn}</span></div>` : ''}
                 <div class="detail-row"><span class="detail-label">Velohaken:</span> <span class="detail-value">${props.numberBikeHooks || 0}</span></div>
                 <div class="detail-row"><span class="detail-label">Verkehrt ab/bis:</span> <span class="detail-value">${props.fromStop?.name || '-'} / ${props.toStop?.name || '-'}</span></div>
+                ${props.vehicleWillBePutAway === true ? `<div class="detail-row"><span class="detail-label">Wird abgestellt in:</span> <span class="detail-value">${stopLabel(props.toStop?.uic, props.toStop?.name)}</span></div>` : ''}
                 ${props.trolleyStatus && props.trolleyStatus !== 'Normal' ? `<div class="detail-row"><span class="detail-label">Zustand:</span> <span class="detail-value">${props.trolleyStatus}</span></div>` : ''}
                 <div class="detail-row"><span class="detail-label">Länge:</span> <span class="detail-value">${props.length || '-'} m</span></div>
                 <div class="detail-row"><span class="detail-label">Sektoren:</span> <span class="detail-value">${stopData.sectors || '-'}</span></div>
