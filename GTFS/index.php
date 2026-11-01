@@ -4,6 +4,10 @@ $dateInput = trim($_GET['date'] ?? '');
 $date = date('Ymd');
 $error = '';
 
+if ($number !== '' && !ctype_digit($number)) {
+    $error = 'Bitte eine gültige Fahrtnummer eingeben.';
+}
+
 if ($dateInput === '') {
     $dateInput = date('d.m.Y');
 } elseif (preg_match('/^(\d{2})\.(\d{2})\.(\d{4})$/', $dateInput, $dateParts) && checkdate((int) $dateParts[2], (int) $dateParts[1], (int) $dateParts[3])) {
@@ -19,10 +23,10 @@ if ($dateInput === '') {
         $date = substr($dateInput, 4, 4) . substr($dateInput, 2, 2) . substr($dateInput, 0, 2);
         $dateInput = substr($dateInput, 0, 2) . '.' . substr($dateInput, 2, 2) . '.' . substr($dateInput, 4, 4);
     } else {
-        $error = 'Bitte ein gültiges Datum im Format TT.MM.JJJJ eingeben.';
+        $error = $error ?: 'Bitte ein gültiges Datum im Format TT.MM.JJJJ eingeben.';
     }
 } else {
-    $error = 'Bitte ein gültiges Datum im Format TT.MM.JJJJ eingeben.';
+    $error = $error ?: 'Bitte ein gültiges Datum im Format TT.MM.JJJJ eingeben.';
 }
 
 $results = [];
@@ -72,6 +76,10 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
         .gtfs-form input { width: 100%; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.18); border-radius: 3px; background: rgba(255,255,255,0.06); color: var(--text-main); font: inherit; }
         .gtfs-form input:focus { outline: none; border-color: var(--sbb-orange); background: rgba(255,255,255,0.1); }
         .gtfs-form input::placeholder { color: var(--text-dim); }
+        .gtfs-date-fields { display: flex; gap: 6px; }
+        .gtfs-date-fields #date { flex: 1; min-width: 0; }
+        #date-picker { flex: 0 0 42px; width: 42px; padding: 8px 6px; cursor: pointer; }
+        #date-picker::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
         .gtfs-form button { padding: 8px 18px; border: 0; border-radius: 3px; background: var(--sbb-red); color: #fff; font-weight: 700; cursor: pointer; }
         .gtfs-form button:hover { background: #c90000; }
         .gtfs-notice { margin: 12px 14px; padding: 10px 12px; border-left: 3px solid var(--live-red); background: rgba(255,59,48,0.15); color: #ffb0aa; }
@@ -119,11 +127,14 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
     <form class="gtfs-form" method="GET" action="">
             <div class="gtfs-field gtfs-field--number">
                 <label for="number">Fahrtnummer:</label>
-                <input type="text" id="number" name="number" value="<?= htmlspecialchars($number) ?>" placeholder="z.B. 450" required>
+                <input type="text" id="number" name="number" value="<?= htmlspecialchars($number) ?>" placeholder="z.B. 450" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required>
             </div>
             <div class="gtfs-field">
                 <label for="date">Datum (TT.MM.JJJJ):</label>
-                <input type="text" id="date" name="date" value="<?= htmlspecialchars($dateInput) ?>" placeholder="z.B. 02.11.2026" inputmode="numeric" maxlength="10" autocomplete="off" required>
+                <div class="gtfs-date-fields">
+                    <input type="text" id="date" name="date" value="<?= htmlspecialchars($dateInput) ?>" placeholder="z.B. 02.11.2026" inputmode="numeric" pattern="[0-9.]*" maxlength="10" autocomplete="off" required>
+                    <input type="date" id="date-picker" value="<?= htmlspecialchars(substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2)) ?>" aria-label="Kalender öffnen" title="Kalender öffnen">
+                </div>
             </div>
         <button type="submit">Suchen</button>
     </form>
@@ -161,8 +172,14 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
     </main>
 
     <script>
+        const numberInput = document.getElementById('number');
         const dateInput = document.getElementById('date');
+        const datePicker = document.getElementById('date-picker');
         const searchButton = document.querySelector('.gtfs-form button[type="submit"]');
+
+        numberInput.addEventListener('input', () => {
+            numberInput.value = numberInput.value.replace(/\D/g, '');
+        });
 
         dateInput.addEventListener('input', () => {
             const digits = dateInput.value.replace(/\D/g, '').slice(0, 8);
@@ -175,6 +192,14 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
             dateInput.value = parts.join('.');
 
             if (digits.length === 8) {
+                searchButton.focus();
+            }
+        });
+
+        datePicker.addEventListener('change', () => {
+            const parts = datePicker.value.split('-');
+            if (parts.length === 3) {
+                dateInput.value = `${parts[2]}.${parts[1]}.${parts[0]}`;
                 searchButton.focus();
             }
         });
