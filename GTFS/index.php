@@ -59,7 +59,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
     <link rel="stylesheet" href="../style.css">
     <link rel="icon" type="image/png" href="../nowe.png">
     <link rel="apple-touch-icon" href="../nowe.png">
-    <title>öV NOWE - GTFS Trip Finder</title>
+    <title>öV NOWE • Fahrtensuche</title>
     <style>
         .gtfs-main { width: 100%; max-width: 1100px; margin: 0 auto; }
         .gtfs-heading { padding: 18px 14px 12px; background: var(--board-head); border-bottom: 1px solid var(--border); }
@@ -113,13 +113,12 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
 
 <main class="gtfs-main">
     <section class="gtfs-heading">
-        <h1>GTFS Trip Finder</h1>
-        <p>Fahrten über Zugnummer und Datum finden und direkt in NOWE öffnen.</p>
+        <h1>Fahrtensuche</h1>
     </section>
 
     <form class="gtfs-form" method="GET" action="">
             <div class="gtfs-field gtfs-field--number">
-                <label for="number">Zugnummer:</label>
+                <label for="number">Fahrtnummer:</label>
                 <input type="text" id="number" name="number" value="<?= htmlspecialchars($number) ?>" placeholder="z.B. 450" required>
             </div>
             <div class="gtfs-field">
