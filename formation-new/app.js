@@ -718,7 +718,7 @@ function renderFormationStrip(stopIdx) {
         index
     }));
     const ordered = orderedFormation(available.map((item) => item.vehicle), parsed)
-        .map((item) => ({ ...available[item.sourceIndex], parsed: item.parsed }));
+        .map((item) => ({ ...available[item.sourceIndex], sourceIndex: item.sourceIndex, parsed: item.parsed }));
     for (const key of window.wagonRegistry.keys()) {
         if (key.startsWith(`${stopIdx}-`)) window.wagonRegistry.delete(key);
     }
@@ -732,7 +732,7 @@ function renderFormationStrip(stopIdx) {
     const sectorHtml = sectors.map(group => `<span class="sector-group" style="--span:${group.count}">${group.sector ? `<b><span>Sektor ${group.sector}</span></b>` : ''}</span>`).join('');
     const goals = stop.vehicleGoals || [];
     const direction = goals.length === 1 ? `← Richtung ${goalName(goals[0])}` : '';
-    const goalLabels = goals.length > 1 ? renderGoalLabels(goals, parserData, ordered.length) : '';
+    const goalLabels = goals.length > 1 ? renderGoalLabels(goals, parserData, ordered.length, stopLabel(stop.uic, stop.name)) : '';
     const wagonHtml = ordered.map((item, index) => {
         if (item.vehicle) window.wagonRegistry.set(`${stopIdx}-${index}`, item.vehicle);
         return renderWagon(item.vehicle, item.stopData, item.index, index, ordered, stopIdx);
@@ -761,16 +761,23 @@ function goalName(goal) {
     );
 }
 
-function renderGoalLabels(goals, parserData, wagonCount) {
+function renderGoalLabels(goals, parserData, wagonCount, stopName) {
     const counted = [
         parserData.filter((token) => token.counted).length,
         parserData.filter((token) => token.counted && token.type !== 'loco').length,
         parserData.length
     ];
     const maxPosition = Math.max(...goals.map((goal) => Number(goal.toVehicleAtPosition) || 0));
+    counted.push(wagonCount);
     const total = counted.find((count) => count === maxPosition);
     if (!total) {
-        console.warn('Zugteil-Ziele passen nicht zur Wagenreihung.');
+        console.warn('Zugteil-Ziele passen nicht zur Wagenreihung.', {
+            halt: stopName,
+            maxPosition,
+            counted,
+            wagonCount,
+            goals: goals.length
+        });
         return '';
     }
     return `<div class="goal-bar" style="--wagon-count:${wagonCount}">${goals.map((goal) => {
@@ -804,12 +811,20 @@ function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
     const isLoco = parsed?.type === 'loco';
     const hasSeats = props.number1class > 0 || props.number2class > 0 || props.numberRestaurantSpace > 0;
     const nextItem = ordered[index + 1];
-    const transitionOpen = !nextItem
-        || parsed?.type === 'loco'
-        || nextItem.parsed?.type === 'loco'
-        || nextItem.stopData.accessToPreviousVehicle !== false;
-    const badges = isLoco ? '<span class="wagon-kind">Lok</span>' : parsed?.label ? `<span class="wagon-kind" title="${parsed.kind === 'WL' ? 'Schlafwagen' : parsed.kind === 'CC' ? 'Liegewagen' : ''}">${parsed.label}</span>` : props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' :
-        `${classes.includes('1') ? '<span class="class-badge first">1</span>' : ''}${classes.includes('2') ? '<span class="class-badge second">2</span>' : ''}`;
+    const transitionOpen = !nextItem || (() => {
+        const a = ordered[index];
+        const b = nextItem;
+        const later = a.sourceIndex > b.sourceIndex ? a : b;
+        return a.parsed?.type === 'loco'
+            || b.parsed?.type === 'loco'
+            || !a.vehicle
+            || !b.vehicle
+            || later.stopData?.accessToPreviousVehicle !== false;
+    })();
+    const restaurantBadge = parsed?.code?.startsWith('W')
+        ? `<span class="class-badge restaurant">${parsed.code}</span>`
+        : props.numberRestaurantSpace > 0 ? '<span class="class-badge restaurant">W</span>' : '';
+    const badges = isLoco ? '<span class="wagon-kind">Lok</span>' : parsed?.label ? `<span class="wagon-kind" title="${parsed.kind === 'WL' ? 'Schlafwagen' : parsed.kind === 'CC' ? 'Liegewagen' : ''}">${parsed.label}</span>` : `${restaurantBadge}${classes.includes('1') ? '<span class="class-badge first">1</span>' : ''}${classes.includes('2') ? '<span class="class-badge second">2</span>' : ''}`;
     const icons = [
         (parsed?.attrs.has('BHP') || accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet || props.pictoProperties?.wheelchairPicto) ? iconSvg('wheelchair') : '',
         (!isLoco && (parsed?.attrs.has('VH') || parsed?.attrs.has('VR') || props.bikePlatform || props.pictoProperties?.bikePicto)) ? BIKE_ICON : '',
@@ -846,7 +861,7 @@ function showDetails(vehicle, stop) {
         <div class="modal-title">
             <div class="modal-title-main">${vehicle.vehicleIdentifier.typeCodeName}</div>
             <div class="modal-title-meta">
-                <span class="modal-badges">${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${parsed?.kind ? `<span class="wagon-kind">${parsed.kind}</span>` : ''}${props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? BIKE_ICON : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}${parserChips}</span>
+                <span class="modal-badges">${parsed?.code?.startsWith('W') ? `<span class="class-badge restaurant">${parsed.code}</span>` : props.numberRestaurantSpace > 0 ? '<span class="class-badge restaurant">W</span>' : ''}${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${parsed?.kind ? `<span class="wagon-kind">${parsed.kind}</span>` : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? BIKE_ICON : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}${parserChips}</span>
                 ${Number(vehicle.number) > 0 ? `Wagen ${vehicle.number}` : ''} (Pos. ${vehicle.position || '-'})
                 ${props.closed === true ? '<span class="wagon-status">gesperrt</span>' : ''}${willBePutAwayHere ? '<span class="wagon-status">wird abgestellt</span>' : ''}
             </div>
