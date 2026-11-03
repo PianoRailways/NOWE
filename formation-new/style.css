@@ -410,6 +410,8 @@ input::focus {
 .goal-bar { padding: 2px 0 6px; }
 .goal-group { grid-column: span 1; overflow: hidden; border-top: 2px solid var(--text-dim); border-left: 1px solid var(--text-dim); padding-top: 3px; color: var(--text-via); font-size: .66rem; text-align: center; white-space: nowrap; text-overflow: ellipsis; }
 .formation-direction { padding: 4px 14px 8px; color: var(--text-via); font-size: .78rem; }
+.formation-direction--right { text-align: right; }
+.formation-direction--left { text-align: left; }
 .wagon-row { display: flex; gap: 0; padding: 0 0 4px; }
 .wagon-unit { position: relative; flex: 0 0 var(--wagon-w); display: flex; flex-direction: column; align-items: center; }
 .wagon-card { position: relative; width: var(--wagon-w); height: 54px; padding: 5px; border: 1.5px solid var(--text-via); border-radius: 10px; background: transparent; color: var(--text-main); cursor: pointer; }

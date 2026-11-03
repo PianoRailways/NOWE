@@ -425,6 +425,7 @@ function updateRelatedJourneys(relationships) {
 }
 
 const FLIP_DIRECTION = true;
+const DIRECTION_ARROW = FLIP_DIRECTION ? '→' : '←';
 
 const UNKNOWN_ATTRIBUTES = new Set();
 const KNOWN_WAGON_CODES = new Set(['W', 'W1', 'W2']);
@@ -762,7 +763,10 @@ function renderFormationStrip(stopIdx) {
     });
     const sectorHtml = sectors.map(group => `<span class="sector-group" style="--span:${group.count}">${group.sector ? `<b><span>Sektor ${group.sector}</span></b>` : ''}</span>`).join('');
     const goals = stop.vehicleGoals || [];
-    const direction = goals.length === 1 ? `← Richtung ${goalName(goals[0])}` : '';
+    const direction = goals.length === 1
+        ? `Richtung ${goalName(goals[0])} ${DIRECTION_ARROW}`
+        : goals.length > 1 ? `Fahrtrichtung ${DIRECTION_ARROW}` : '';
+    const directionClass = FLIP_DIRECTION ? 'formation-direction--right' : 'formation-direction--left';
     const goalLabels = goals.length > 1 ? renderGoalLabels(goals, parserData, ordered.length, stopLabel(stop.uic, stop.name), ordered) : '';
     const wagonHtml = ordered.map((item, index) => {
         if (item.vehicle) window.wagonRegistry.set(`${stopIdx}-${index}`, item.vehicle);
@@ -772,7 +776,7 @@ function renderFormationStrip(stopIdx) {
     const lastUpdate = meta.lastUpdate ? formatTime(meta.lastUpdate) : '';
     const hints = window.formationData.hints;
     return `<div class="formation-strip" style="--wagon-count:${ordered.length}">
-        ${direction ? `<div class="formation-direction">${direction}</div>` : ''}
+        ${direction ? `<div class="formation-direction ${directionClass}">${direction}</div>` : ''}
         <div class="formation-scroll"><div class="formation-inner">
             <div class="sector-bar">${sectorHtml}</div>
             ${goalLabels}
