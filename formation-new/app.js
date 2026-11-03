@@ -744,6 +744,12 @@ function renderFormationStrip(stopIdx) {
     }));
     const ordered = orderedFormation(available.map((item) => item.vehicle), parsed)
         .map((item) => ({ ...available[item.sourceIndex], sourceIndex: item.sourceIndex, parsed: item.parsed }));
+    console.table(ordered.map((item, index) => ({
+        anzeige: index,
+        nummer: item.vehicle?.number ?? null,
+        position: item.vehicle?.position ?? null,
+        accessToPrevious: item.stopData?.accessToPreviousVehicle ?? null
+    })));
     for (const key of window.wagonRegistry.keys()) {
         if (key.startsWith(`${stopIdx}-`)) window.wagonRegistry.delete(key);
     }
@@ -858,12 +864,12 @@ function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
     const transitionOpen = !nextItem || (() => {
         const a = ordered[index];
         const b = nextItem;
-        const later = a.sourceIndex > b.sourceIndex ? a : b;
         return a.parsed?.type === 'loco'
             || b.parsed?.type === 'loco'
             || !a.vehicle
             || !b.vehicle
-            || later.stopData?.accessToPreviousVehicle !== false;
+            || !(a.stopData?.accessToPreviousVehicle === false
+                && b.stopData?.accessToPreviousVehicle === false);
     })();
     const restaurantClass = parsed?.unserved ? ' is-unserved' : '';
     const restaurantTitle = parsed?.unserved ? ' title="Restaurant nicht bedient"' : '';
