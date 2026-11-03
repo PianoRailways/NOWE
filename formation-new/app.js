@@ -3,6 +3,7 @@ import { fetchTripInfo } from '../trip/trip-api-client.js';
 let tripRefreshTimer = null;
 let tripRefreshRunning = false;
 let stopNames = {};
+window.wagonRegistry = new Map();
 
 function updateClock() {
     const el = document.getElementById('live-clock');
@@ -13,6 +14,12 @@ function updateClock() {
 
 function closeModal() {
     document.getElementById('modal-overlay')?.classList.remove('active');
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (character) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[character]));
 }
 
 window.toggleStop = toggleStop;
@@ -28,6 +35,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('modal-close')?.addEventListener('click', closeModal);
     document.getElementById('modal-overlay')?.addEventListener('click', (event) => {
         if (event.target === event.currentTarget) closeModal();
+    });
+    document.addEventListener('click', (event) => {
+        const card = event.target.closest('#stopChain .wagon-card:not([disabled])');
+        if (!card) return;
+        event.stopPropagation();
+        const vehicle = window.wagonRegistry.get(`${card.dataset.stopIndex}-${card.dataset.wagonIndex}`);
+        const stop = window.formationData?.stops[Number(card.dataset.stopIndex)];
+        if (vehicle && stop) showDetails(vehicle, stop);
     });
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') closeModal();
@@ -63,27 +78,28 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        async function loadTripOnly(sjyid, date) {
-            try {
-                const trip = await fetchTripInfo(sjyid, date);
-                if (!trip?.stops?.length) return;
-                const stops = [];
-                const rows = trip.stops.map((stop) => ({
-                    ...stop,
-                    fIdx: undefined
-                }));
-                document.getElementById('result').innerHTML = `
-                    <div class="trip-only-status">${trip.category || ''} ${trip.line || ''} · ${trip.trainNumber || ''}</div>
-                    <div class="stop-chain" id="stopChain"></div>`;
-                window.formationData = { formations: [], stops, rows, trip, relationships: [] };
-                renderStopChain();
-                startTripRefresh();
-            } catch {
-                // Ein Trip-Link darf die Formationsseite nicht stoeren.
-            }
-        }
     }
 });
+
+async function loadTripOnly(sjyid, date) {
+    try {
+        const trip = await fetchTripInfo(sjyid, date);
+        if (!trip?.stops?.length) return;
+        const stops = [];
+        const rows = trip.stops.map((stop) => ({
+            ...stop,
+            fIdx: undefined
+        }));
+        document.getElementById('result').innerHTML = `
+            <div class="trip-only-status">${trip.category || ''} ${trip.line || ''} · ${trip.trainNumber || ''}</div>
+            <div class="stop-chain" id="stopChain"></div>`;
+        window.formationData = { formations: [], stops, rows, trip, relationships: [] };
+        renderStopChain();
+        startTripRefresh();
+    } catch {
+        // Ein Trip-Link darf die Formationsseite nicht stoeren.
+    }
+}
 
 async function fetchFormation() {
     stopTripRefresh();
@@ -103,6 +119,7 @@ async function fetchFormation() {
     let foundData = null;
     let successfulEvu = '';
     let rateLimitHit = false;
+    const errors = [];
 
     for (const operator of operators) {
         resultDiv.innerHTML = `<div class="info-message">⏳ Suche bei ${operator}...</div>`;
@@ -117,7 +134,6 @@ async function fetchFormation() {
                     const cleanJson = responseText.substring(jsonStartIndex);
                     const data = JSON.parse(cleanJson);
 
-                    // Rate Limit erkannt
                     const errorMessage = typeof data.error === 'string'
                         ? data.error
                         : data.error?.message;
@@ -126,19 +142,25 @@ async function fetchFormation() {
                         continue;
                     }
 
-                    // Andere Fehler ignorieren (z.B. "There were no formation data.")
-                    if (data.error) continue;
+                    if (data.error) {
+                        errors.push({ operator, message: errorMessage || 'Unbekannter API-Fehler' });
+                        continue;
+                    }
 
                     if (data.formations && data.formations.length > 0) {
                         foundData = data;
                         successfulEvu = operator;
                         break;
                     }
+                } else {
+                    errors.push({ operator, message: `HTTP ${response.status}: ${responseText.slice(0, 150)}` });
                 }
             } catch (jsonError) {
+                errors.push({ operator, message: `HTTP ${response.status}: ${responseText.slice(0, 150)}` });
                 console.warn(`Kein JSON bei ${operator}`);
             }
         } catch (error) {
+            errors.push({ operator, message: error.message || 'Netzwerkfehler' });
             console.warn(`Fehler bei ${operator}`);
         }
     }
@@ -147,7 +169,9 @@ async function fetchFormation() {
         if (rateLimitHit) {
             resultDiv.innerHTML = `<div class="error-message">⚠ API Rate Limit erreicht. Bitte versuchen Sie es in einer Minute erneut.</div>`;
         } else {
-            resultDiv.innerHTML = `<div class="error-message">❌ Keine Formationsdaten gefunden.</div>`;
+            const groupedErrors = [...new Map(errors.map(({ message }) => [message, errors.filter((error) => error.message === message).map((error) => error.operator)])).entries()]
+                .map(([message, operatorsForError]) => `<small>${escapeHtml(message)} (${operatorsForError.join(', ')})</small>`).join('<br>');
+            resultDiv.innerHTML = `<div class="error-message">❌ Keine Formationsdaten gefunden.${groupedErrors ? `<br>${groupedErrors}` : ''}</div>`;
         }
         return;
     }
@@ -171,8 +195,8 @@ async function fetchFormation() {
             name: point.name || null,
             uic: point.uic,
             index,
-            arrivalTime: entry.stopTime?.arrivalTime,
-            departureTime: entry.stopTime?.departureTime,
+            arrivalTime: (scheduledStop.stopTime || entry.stopTime || {}).arrivalTime,
+            departureTime: (scheduledStop.stopTime || entry.stopTime || {}).departureTime,
             track: entry.track || entry.stopTime?.track || scheduledStop.track || scheduledStop.quay || point.track || point.quay,
             formationShort: entry.formationShort || {},
             vehicleGoals: entry.formationShort?.vehicleGoals || []
@@ -679,6 +703,9 @@ function renderFormationStrip(stopIdx) {
     }));
     const ordered = orderedFormation(available.map((item) => item.vehicle), parsed)
         .map((item) => ({ ...available[item.sourceIndex], parsed: item.parsed }));
+    for (const key of window.wagonRegistry.keys()) {
+        if (key.startsWith(`${stopIdx}-`)) window.wagonRegistry.delete(key);
+    }
     const sectors = [];
     ordered.forEach((item, index) => {
         const sector = item.parsed?.sector || (item.stopData.sectors || '').charAt(0);
@@ -688,10 +715,12 @@ function renderFormationStrip(stopIdx) {
     });
     const sectorHtml = sectors.map(group => `<span class="sector-group" style="--span:${group.count}">${group.sector ? `<b><span>Sektor ${group.sector}</span></b>` : ''}</span>`).join('');
     const goals = stop.vehicleGoals || [];
-    const goalName = (goal) => stopLabel(goal.toStop?.uic || goal.stopPoint?.uic, goal.toStop?.name || goal.stopPoint?.name || goal.name || goal.destination);
     const direction = goals.length === 1 ? `← Richtung ${goalName(goals[0])}` : '';
     const goalLabels = goals.length > 1 ? renderGoalLabels(goals, parserData, ordered.length) : '';
-    const wagonHtml = ordered.map((item, index) => renderWagon(item.vehicle, item.stopData, item.index, index, ordered, stopIdx)).join('');
+    const wagonHtml = ordered.map((item, index) => {
+        if (item.vehicle) window.wagonRegistry.set(`${stopIdx}-${index}`, item.vehicle);
+        return renderWagon(item.vehicle, item.stopData, item.index, index, ordered, stopIdx);
+    }).join('');
     const meta = window.formationData.metaInformation || {};
     const lastUpdate = meta.lastUpdate ? formatTime(meta.lastUpdate) : '';
     const hints = window.formationData.hints;
@@ -705,6 +734,13 @@ function renderFormationStrip(stopIdx) {
         </div>
         ${hints ? `<div class="formation-hints">${Array.isArray(hints) ? hints.map(hint => `<span>${typeof hint === 'string' ? hint : JSON.stringify(hint)}</span>`).join('') : JSON.stringify(hints)}</div>` : ''}
     </div>`;
+}
+
+function goalName(goal) {
+    return stopLabel(
+        goal.destinationStopPoint?.uic || goal.toStop?.uic || goal.stopPoint?.uic,
+        goal.destinationStopPoint?.name || goal.toStop?.name || goal.stopPoint?.name || goal.name || goal.destination
+    );
 }
 
 function renderGoalLabels(goals, parserData, wagonCount) {
@@ -725,7 +761,7 @@ function renderGoalLabels(goals, parserData, wagonCount) {
         if (FLIP_DIRECTION) {
             [from, to] = [wagonCount - to + 1, wagonCount - from + 1];
         }
-        return `<span class="goal-group" style="grid-column:${from} / span ${to - from + 1}">${stopLabel(goal.toStop?.uic || goal.stopPoint?.uic, goal.toStop?.name || goal.stopPoint?.name || goal.name || goal.destination)}</span>`;
+        return `<span class="goal-group" style="grid-column:${from} / span ${to - from + 1}">${goalName(goal)}</span>`;
     }).join('')}</div>`;
 }
 
@@ -764,18 +800,19 @@ function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
         && props.toStop?.uic === currentStop?.uic;
     const status = props.closed === true ? 'gesperrt' : willBePutAwayHere ? 'wird abgestellt' : '';
     return `<div class="wagon-unit">
-        <button class="wagon-card ${isLoco ? 'wagon-loco' : ''} ${!hasSeats ? 'wagon-empty' : ''} ${props.numberRestaurantSpace > 0 ? 'wagon-restaurant' : ''} ${props.closed === true ? 'wagon-closed' : ''}" type="button" ${isLoco ? 'disabled' : `onclick="event.stopPropagation(); showDetails(window.formationData.formations[${window.formationData.formations.findIndex(f => f.formationVehicles?.includes(vehicle))}].formationVehicles[${vIdx}], window.formationData.stops[${stopIdx}], ${vIdx})"`}>
+        <button class="wagon-card ${isLoco ? 'wagon-loco' : ''} ${!hasSeats ? 'wagon-empty' : ''} ${props.numberRestaurantSpace > 0 ? 'wagon-restaurant' : ''}" type="button" data-stop-index="${stopIdx}" data-wagon-index="${index}" ${isLoco ? 'disabled' : ''}>
             <span class="wagon-class-bar"></span><span class="wagon-badges">${badges}</span><span class="wagon-number">${number}</span>${status ? `<small class="wagon-status">${status}</small>` : ''}
         </button>
         <span class="wagon-icons">${icons}</span>
-        ${index < ordered.length - 1 ? `<span class="wagon-connection ${transitionOpen ? '' : 'is-closed'}">${transitionOpen ? '' : '✕'}</span>` : ''}
+        ${index < ordered.length - 1 ? `<span class="wagon-connection ${transitionOpen ? '' : 'is-closed'}"></span>` : ''}
     </div>`;
 }
 
-function showDetails(vehicle, stopData, vIdx) {
+function showDetails(vehicle, stop) {
     const props = vehicle.vehicleProperties || {};
     const accessibility = props.accessibilityProperties || {};
-    const parsed = parseFormationShort(stopData?.formationShort?.formationShortString)
+    const stopData = stopEntryFor(vehicle, stop);
+    const parsed = parseFormationShort(stop.formationShort?.formationShortString)
         .find((item) => item.number !== null && Number(vehicle.number) === item.number);
     const parserChips = parsed ? [...parsed.attrs].map((attr) => `<span class="attribute-chip">${attr}</span>`).join('') : '';
 
@@ -805,7 +842,7 @@ function showDetails(vehicle, stopData, vIdx) {
                 ${props.vehicleWillBePutAway === true ? `<div class="detail-row"><span class="detail-label">Wird abgestellt in:</span> <span class="detail-value">${stopLabel(props.toStop?.uic, props.toStop?.name)}</span></div>` : ''}
                 ${props.trolleyStatus && props.trolleyStatus !== 'Normal' ? `<div class="detail-row"><span class="detail-label">Zustand:</span> <span class="detail-value">${props.trolleyStatus}</span></div>` : ''}
                 <div class="detail-row"><span class="detail-label">Länge:</span> <span class="detail-value">${props.length || '-'} m</span></div>
-                <div class="detail-row"><span class="detail-label">Sektoren:</span> <span class="detail-value">${stopData.sectors || '-'}</span></div>
+                <div class="detail-row"><span class="detail-label">Sektoren:</span> <span class="detail-value">${stopData?.sectors || '-'}</span></div>
             </div>
 
             <div class="detail-group">
