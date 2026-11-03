@@ -817,9 +817,12 @@ function renderFormationStrip(stopIdx) {
 }
 
 function goalName(goal) {
+    const destination = goal.destinationStopPoint;
+    if (destination?.uic && destination.name) return destination.name;
+    if (destination?.uic) return stopLabel(destination.uic);
     return stopLabel(
-        goal.destinationStopPoint?.uic || goal.toStop?.uic || goal.stopPoint?.uic,
-        goal.destinationStopPoint?.name || goal.toStop?.name || goal.stopPoint?.name || goal.name || goal.destination
+        goal.toStop?.uic || goal.stopPoint?.uic,
+        goal.toStop?.name || goal.stopPoint?.name || goal.name || goal.destination
     );
 }
 
