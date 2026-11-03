@@ -703,6 +703,7 @@ function toggleStop(stopIdx) {
         const open = formationIndex !== '' && Number(formationIndex) === stopIdx;
         stop.classList.toggle('is-open', open);
         const panel = stop.querySelector('.formation-panel');
+        if (!panel) return;
         if (open) {
             panel.innerHTML = renderFormationStrip(stopIdx);
         } else {
