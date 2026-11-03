@@ -427,6 +427,7 @@ function updateRelatedJourneys(relationships) {
 const FLIP_DIRECTION = true;
 
 const UNKNOWN_ATTRIBUTES = new Set();
+const KNOWN_WAGON_CODES = new Set(['W', 'W1', 'W2']);
 const FORMATION_ATTRIBUTES = new Set(['NF', 'VH', 'VR', 'KW', 'BHP', 'FZ', 'BZ']);
 const BIKE_ICON = '<svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="16" r="3.5"/><circle cx="19" cy="16" r="3.5"/><path d="M5 16 9 9h6l4 7M9 9l2 7 4-7M5 16h6M7.5 7.5h3M14 7h2.5"/></svg>';
 
@@ -462,7 +463,7 @@ function parseFormationShort(value) {
         const classes = /^\d+$/.test(kindPart) ? kindPart.replace(/[^12]/g, '') : '';
         const code = percentKind ? kindPart.slice(1).toUpperCase() : '';
         if (!classes && !kind && type === 'wagon' && !percentKind && !/^[A-Z]+$/i.test(kindPart)) return;
-        if (percentKind && !UNKNOWN_ATTRIBUTES.has(code)) {
+        if (percentKind && !KNOWN_WAGON_CODES.has(code) && !UNKNOWN_ATTRIBUTES.has(code)) {
             UNKNOWN_ATTRIBUTES.add(code);
             console.warn(`Unbekannter Formationscode: ${code}`);
         } else if (/^[A-Z]+$/i.test(kindPart) && !['WL', 'CC', 'LK'].includes(kindPart.toUpperCase()) && !UNKNOWN_ATTRIBUTES.has(kindPart)) {
@@ -732,7 +733,7 @@ function renderFormationStrip(stopIdx) {
     const sectorHtml = sectors.map(group => `<span class="sector-group" style="--span:${group.count}">${group.sector ? `<b><span>Sektor ${group.sector}</span></b>` : ''}</span>`).join('');
     const goals = stop.vehicleGoals || [];
     const direction = goals.length === 1 ? `← Richtung ${goalName(goals[0])}` : '';
-    const goalLabels = goals.length > 1 ? renderGoalLabels(goals, parserData, ordered.length, stopLabel(stop.uic, stop.name)) : '';
+    const goalLabels = goals.length > 1 ? renderGoalLabels(goals, parserData, ordered.length, stopLabel(stop.uic, stop.name), ordered) : '';
     const wagonHtml = ordered.map((item, index) => {
         if (item.vehicle) window.wagonRegistry.set(`${stopIdx}-${index}`, item.vehicle);
         return renderWagon(item.vehicle, item.stopData, item.index, index, ordered, stopIdx);
@@ -761,7 +762,7 @@ function goalName(goal) {
     );
 }
 
-function renderGoalLabels(goals, parserData, wagonCount, stopName) {
+function renderGoalLabels(goals, parserData, wagonCount, stopName, ordered) {
     const counted = [
         parserData.filter((token) => token.counted).length,
         parserData.filter((token) => token.counted && token.type !== 'loco').length,
@@ -771,14 +772,33 @@ function renderGoalLabels(goals, parserData, wagonCount, stopName) {
     counted.push(wagonCount);
     const total = counted.find((count) => count === maxPosition);
     if (!total) {
-        console.warn('Zugteil-Ziele passen nicht zur Wagenreihung.', {
+        console.warn('Zugteil-Ziele passen nicht zur Wagenreihung. Fallback über vehicle.position', {
             halt: stopName,
             maxPosition,
             counted,
             wagonCount,
             goals: goals.length
         });
-        return '';
+        console.table(ordered.map((item, index) => ({
+            anzeige: index,
+            nummer: item.vehicle?.number ?? null,
+            position: item.vehicle?.position ?? null,
+            typ: item.parsed?.type ?? null
+        })));
+        const fallbackGroups = goals.map((goal) => {
+            const from = Number(goal.fromVehicleAtPosition);
+            const to = Number(goal.toVehicleAtPosition);
+            const indexes = ordered
+                .map((item, index) => ({ item, index }))
+                .filter(({ item }) => Number.isFinite(from) && Number.isFinite(to)
+                    && item.vehicle?.position >= from && item.vehicle.position <= to)
+                .map(({ index }) => index);
+            if (!indexes.length) return '';
+            const first = Math.min(...indexes);
+            const last = Math.max(...indexes);
+            return `<span class="goal-group" style="grid-column:${first + 1} / span ${last - first + 1}">${goalName(goal)}</span>`;
+        }).join('');
+        return fallbackGroups ? `<div class="goal-bar" style="--wagon-count:${wagonCount}">${fallbackGroups}</div>` : '';
     }
     return `<div class="goal-bar" style="--wagon-count:${wagonCount}">${goals.map((goal) => {
         let from = Math.max(1, Number(goal.fromVehicleAtPosition) || 1);
