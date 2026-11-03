@@ -376,7 +376,14 @@ input::focus {
 .formation-stop:first-child .chain-marker::before { top: 50%; }
 .formation-stop:last-child .chain-marker::before { bottom: 50%; }
 .chain-dot { z-index: 1; width: 11px; height: 11px; border: 2px solid var(--sbb-orange); border-radius: 50%; background: var(--board-bg); }
+.formation-stop--first .formation-stop-row,
+.formation-stop--last .formation-stop-row { background: rgba(232, 78, 16, .08); }
+.formation-stop--first .chain-dot,
+.formation-stop--last .chain-dot { width: 15px; height: 15px; background: var(--sbb-orange); border-color: var(--sbb-orange); }
+.formation-stop--first .ps-time--dep,
+.formation-stop--last .ps-time--arr { color: var(--sbb-orange); }
 .stop-unplanned { color: var(--sbb-red); }
+.chain-stop-text a.stop-unplanned { color: var(--sbb-red); }
 .stop-cancelled { text-decoration: line-through; }
 .chain-stop-text small.stop-cancelled, .chain-stop-text a.stop-cancelled { color: var(--sbb-red); }
 .formation-stop-row.stop-cancelled { opacity: .55; text-decoration: line-through; }
