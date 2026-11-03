@@ -221,8 +221,9 @@ async function fetchFormation() {
         };
     });
     try {
-        const response = await fetch('./uic-namen.json');
-        if (response.ok) stopNames = await response.json();
+        const response = await fetch(new URL('./uic-namen.json', import.meta.url));
+        if (!response.ok) throw new Error(`UIC-Namensmapping konnte nicht geladen werden: HTTP ${response.status}`);
+        stopNames = await response.json();
     } catch {
         stopNames = {};
     }
