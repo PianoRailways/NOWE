@@ -5,6 +5,8 @@
 
 /* ─────── Eingabe-Bereich ────────────────────────────────────────────────────── */
 
+html, body { touch-action: manipulation; }
+
 #trip-input-wrapper {
     padding: 12px 14px;
     background: var(--board-head);
@@ -30,6 +32,7 @@
     color: var(--text-main);
     background: rgba(255,255,255,0.05);
     transition: background .15s, border-color .15s;
+    font-size: 16px;
 }
 
 #trip-input::placeholder {

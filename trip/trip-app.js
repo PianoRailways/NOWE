@@ -455,6 +455,17 @@ function stopPositionUpdates() {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+    // Browser-Zoom über das Menü lässt sich nicht vollständig verhindern.
+    document.addEventListener('gesturestart', (event) => event.preventDefault());
+    document.addEventListener('gesturechange', (event) => event.preventDefault());
+    document.addEventListener('wheel', (event) => {
+        if (event.ctrlKey) event.preventDefault();
+    }, { passive: false });
+    document.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && ['+', '-', '=', '0'].includes(event.key)) {
+            event.preventDefault();
+        }
+    });
     updateClock();
     setInterval(updateClock, 1000);
 

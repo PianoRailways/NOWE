@@ -27,6 +27,7 @@ html {
     scrollbar-gutter: stable;
 }
 
+html, body { touch-action: manipulation; }
 body {
     font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
     background: var(--board-bg);
@@ -126,6 +127,7 @@ input::focus {
     padding: 8px 12px;
     border-radius: 2px;
     font-family: inherit;
+    font-size: 16px;
 }
 
 #evu { flex: 0 1 120px; }
