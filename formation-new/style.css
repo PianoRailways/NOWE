@@ -371,8 +371,8 @@ input::focus {
 .delay-badge--early { color: #4fc3f7; }
 .chain-marker { position: relative; display: flex; justify-content: center; align-items: center; }
 .chain-marker::before { content: ''; position: absolute; top: -5px; bottom: -5px; width: 2px; background: var(--text-dim); }
-.formation-stop:first-child .chain-marker::before { top: 50%; }
-.formation-stop:last-child .chain-marker::before { bottom: 50%; }
+.formation-stop--first .chain-marker::before { top: 50%; }
+.formation-stop--last .chain-marker::before { bottom: 50%; }
 .chain-dot { z-index: 1; width: 11px; height: 11px; border: 2px solid var(--sbb-orange); border-radius: 50%; background: var(--board-bg); }
 .stop-unplanned { color: var(--sbb-red); }
 .chain-stop-text a.stop-unplanned { color: var(--sbb-red); }

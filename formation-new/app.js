@@ -609,12 +609,14 @@ function accessIcon(type) {
 function stopLabel(uic, name) {
     const uicText = uic === undefined || uic === null ? '' : String(uic);
     const uicNumber = uicText.match(/\d{7}/)?.[0] || '';
-    const mappedName = stopNames[uicText] || stopNames[uicNumber] || stopNames[Number(uicText)] || '';
+    const mappedName = Object.entries(stopNames).find(([key]) =>
+        key === uicText || key === uicNumber || key.replace(/\D/g, '') === uicNumber
+    )?.[1] || '';
     if (mappedName) return mappedName;
     if (name && !/^UIC\s+\d+$/i.test(String(name).trim())) return name;
     const tripStop = window.formationData?.trip?.stops?.find((stop) => {
         const ref = String(stop.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
-        return ref && Number(ref) === Number(uic) % 100000;
+        return ref && uicNumber && Number(ref) === Number(uicNumber) % 100000;
     });
     return tripStop?.name || mappedName || `UIC ${uic || '-'}`;
 }
