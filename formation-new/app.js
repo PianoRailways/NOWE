@@ -875,8 +875,9 @@ function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
             || !(a.stopData?.accessToPreviousVehicle === false
                 && b.stopData?.accessToPreviousVehicle === false);
     })();
-    const restaurantClass = parsed?.unserved ? ' is-unserved' : '';
-    const restaurantTitle = parsed?.unserved ? ' title="Restaurant nicht bedient"' : '';
+    const restaurantUnserved = parsed?.unserved === true || props.trolleyStatus === 'RestaurantUnbedient';
+    const restaurantClass = restaurantUnserved ? ' is-unserved' : '';
+    const restaurantTitle = restaurantUnserved ? ' title="Restaurant nicht bedient"' : '';
     const restaurantCode = parsed?.code?.startsWith('W') ? parsed.code : props.numberRestaurantSpace > 0 ? 'W' : '';
     const restaurantBadge = restaurantCode ? `<span class="class-badge restaurant${restaurantClass}"${restaurantTitle}>${restaurantCode}</span>` : '';
     const badges = isLoco ? '<span class="wagon-kind">Lok</span>' : parsed?.label ? `<span class="wagon-kind" title="${parsed.kind === 'WL' ? 'Schlafwagen' : parsed.kind === 'CC' ? 'Liegewagen' : ''}">${parsed.label}</span>` : `${restaurantBadge}${classes.includes('1') ? '<span class="class-badge first">1</span>' : ''}${classes.includes('2') ? '<span class="class-badge second">2</span>' : ''}`;
@@ -916,7 +917,7 @@ function showDetails(vehicle, stop) {
         <div class="modal-title">
             <div class="modal-title-main">${vehicle.vehicleIdentifier.typeCodeName}</div>
             <div class="modal-title-meta">
-                <span class="modal-badges">${parsed?.code?.startsWith('W') ? `<span class="class-badge restaurant${parsed.unserved ? ' is-unserved' : ''}"${parsed.unserved ? ' title="Restaurant nicht bedient"' : ''}>${parsed.code}</span>` : props.numberRestaurantSpace > 0 ? '<span class="class-badge restaurant">W</span>' : ''}${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${parsed?.kind ? `<span class="wagon-kind">${parsed.kind}</span>` : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? BIKE_ICON : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}${parserChips}</span>
+                <span class="modal-badges">${parsed?.code?.startsWith('W') ? `<span class="class-badge restaurant${(parsed.unserved === true || props.trolleyStatus === 'RestaurantUnbedient') ? ' is-unserved' : ''}"${(parsed.unserved === true || props.trolleyStatus === 'RestaurantUnbedient') ? ' title="Restaurant nicht bedient"' : ''}>${parsed.code}</span>` : props.numberRestaurantSpace > 0 ? `<span class="class-badge restaurant${props.trolleyStatus === 'RestaurantUnbedient' ? ' is-unserved' : ''}"${props.trolleyStatus === 'RestaurantUnbedient' ? ' title="Restaurant nicht bedient"' : ''}>W</span>` : ''}${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${parsed?.kind ? `<span class="wagon-kind">${parsed.kind}</span>` : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? BIKE_ICON : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}${parserChips}</span>
                 ${Number(vehicle.number) > 0 ? `Wagen ${vehicle.number}` : ''} (Pos. ${vehicle.position || '-'})
                 ${props.closed === true ? '<span class="wagon-status">gesperrt</span>' : ''}${willBePutAwayHere ? '<span class="wagon-status">wird abgestellt</span>' : ''}
             </div>

@@ -426,6 +426,7 @@ input::focus {
 .class-badge.first { color: var(--night-gold); border-color: var(--night-gold); }
 .class-badge.second { color: var(--text-via); }
 .class-badge.restaurant { color: #c4b5fd; border-color: #a78bfa; padding: 0 3px; }
+.class-badge.restaurant.is-unserved { text-decoration: line-through; text-decoration-thickness: 2px; opacity: .8; border-style: solid; }
 .restaurant-badge { color: #c4b5fd; border-color: #a78bfa; }
 .wagon-number { display: block; margin-top: 5px; color: var(--text-via); font: .65rem monospace; }
 .wagon-status { display: block; color: var(--sbb-red); font-size: .55rem; white-space: nowrap; }
