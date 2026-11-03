@@ -376,6 +376,12 @@ input::focus {
 .formation-stop:first-child .chain-marker::before { top: 50%; }
 .formation-stop:last-child .chain-marker::before { bottom: 50%; }
 .chain-dot { z-index: 1; width: 11px; height: 11px; border: 2px solid var(--sbb-orange); border-radius: 50%; background: var(--board-bg); }
+.stop-unplanned { color: var(--sbb-red); }
+.stop-cancelled { text-decoration: line-through; }
+.chain-stop-text small.stop-cancelled, .chain-stop-text a.stop-cancelled { color: var(--sbb-red); }
+.formation-stop-row.stop-cancelled { opacity: .55; text-decoration: line-through; }
+.formation-stop-row.stop-cancelled .chain-dot { border-style: dashed; }
+.formation-stop-row.stop-cancelled small.stop-cancelled { text-decoration: none; }
 .vehicle-position-marker {
     position: absolute;
     width: 18px;

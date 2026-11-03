@@ -391,6 +391,12 @@ html, body { touch-action: manipulation; }
     color: var(--sob-green);
 }
 .chain-name a.stop-unplanned, .chain-name .stop-unplanned { color: var(--sbb-red); }
+.stop-unplanned { color: var(--sbb-red); }
+.stop-cancelled { text-decoration: line-through; }
+.chain-stop.stop-cancelled { opacity: .55; text-decoration: line-through; }
+.chain-stop.stop-cancelled .ps-dot { border: 2px dashed var(--text-dim); }
+.chain-stop.stop-cancelled .stop-cancelled { color: var(--sbb-red); }
+.chain-stop.stop-cancelled small.stop-cancelled { text-decoration: none; }
 
 .ps-quay-line {
     font-size: 0.7em;

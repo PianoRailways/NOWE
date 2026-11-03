@@ -632,6 +632,7 @@ function renderStopChain() {
         const isLast = idx === rows.length - 1;
         const arrival = row.arrival?.timetabled || stop.arrivalTime;
         const departure = row.departure?.timetabled || stop.departureTime;
+        const cancelled = row.cancelled === true;
         const rowTime = arrival || departure;
         const day = rowTime ? rowTime.slice(0, 10) : null;
         let daySeparator = '';
@@ -641,17 +642,18 @@ function renderStopChain() {
         }
         if (day) previousDay = day;
         const times = isFirst
-            ? timeRow(departure, row.departure?.estimated, row.departure?.delaySec, 'dep')
+            ? timeRow(departure, row.departure?.estimated, cancelled ? null : row.departure?.delaySec, 'dep')
             : isLast
-                ? timeRow(arrival, row.arrival?.estimated, row.arrival?.delaySec, 'arr')
-                : `${timeRow(arrival, row.arrival?.estimated, row.arrival?.delaySec, 'arr')}${timeRow(departure, row.departure?.estimated, row.departure?.delaySec, 'dep')}`;
+                ? timeRow(arrival, row.arrival?.estimated, cancelled ? null : row.arrival?.delaySec, 'arr')
+                : `${timeRow(arrival, row.arrival?.estimated, cancelled ? null : row.arrival?.delaySec, 'arr')}${timeRow(departure, row.departure?.estimated, cancelled ? null : row.departure?.delaySec, 'dep')}`;
         const quay = fIdx !== undefined ? stops[fIdx].track : row.quay;
         const link = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`;
         const unplanned = row.unplannedStop === true;
-        const rowBody = `<span class="chain-stop-text"><a class="${unplanned ? 'stop-unplanned' : ''}" href="${link}">${stopLabel(stop.uic, row.name)}</a>${unplanned ? '<small class="stop-unplanned">Zusatzhalt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>Gl. ${quay}</small>` : ''}</span>`;
+        const stopClasses = [unplanned ? 'stop-unplanned' : '', cancelled ? 'stop-cancelled' : ''].filter(Boolean).join(' ');
+        const rowBody = `<span class="chain-stop-text"><a class="${stopClasses}" href="${link}">${stopLabel(stop.uic, row.name)}</a>${unplanned ? '<small class="stop-unplanned">Zusatzhalt</small>' : ''}${cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>Gl. ${quay}</small>` : ''}</span>`;
         return `${daySeparator}
             <section class="formation-stop" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}">
-                <button class="formation-stop-row" type="button" data-formation-index="${fIdx ?? ''}" ${fIdx === undefined ? 'disabled' : ''}>
+                <button class="formation-stop-row ${cancelled ? 'stop-cancelled' : ''}" type="button" data-formation-index="${fIdx ?? ''}" ${fIdx === undefined ? 'disabled' : ''}>
                     <span class="chain-times">${times}</span>
                     <span class="chain-marker"><span class="chain-dot"></span></span>
                     ${rowBody}

@@ -173,8 +173,8 @@ function renderPerlschnur(trip) {
         const arrivalTimeForUrl = arrTT;
 
         // Verspätungs-/Verfrühungs-Badges
-        const arrDelay = delayLabel(stop.arrival?.delaySec);
-        const depDelay = delayLabel(stop.departure?.delaySec);
+        const arrDelay = stop.cancelled ? '' : delayLabel(stop.arrival?.delaySec);
+        const depDelay = stop.cancelled ? '' : delayLabel(stop.departure?.delaySec);
 
         // HTML für Zeitspalte (mit SOLL-Zeiten im Span & Data-Attributen für Prognose-Klick)
         let timesHtml = '';
@@ -236,14 +236,16 @@ function renderPerlschnur(trip) {
 
         // Wechselt die URL direkt im selben Fenster
         const unplannedLabel = stop.unplannedStop ? '<small class="stop-unplanned">Zusatzhalt</small>' : '';
+        const stopClasses = [stop.unplannedStop ? 'stop-unplanned' : '', stop.cancelled ? 'stop-cancelled' : ''].filter(Boolean).join(' ');
+        const cancelledLabel = stop.cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : '';
         const chainInfo = `<div class="chain-info">
             <span class="chain-name">
-                <a class="${stop.unplannedStop ? 'stop-unplanned' : ''}" href="${stsUrl}">${stop.name}</a> ${unplannedLabel}${accessIcon(stop.accessibility)}${requestStopBadge}
+                <a class="${stopClasses}" href="${stsUrl}">${stop.name}</a> ${unplannedLabel}${cancelledLabel}${accessIcon(stop.accessibility)}${requestStopBadge}
             </span>
             ${quayLine}
         </div>`;
 
-        const rowClass = isThisStop ? 'chain-stop this-call' : 'chain-stop';
+        const rowClass = `${isThisStop ? 'chain-stop this-call' : 'chain-stop'}${stop.cancelled ? ' stop-cancelled' : ''}`;
         html += `
             <div class="${rowClass}" data-stop-index="${idx}">
                 ${timesHtml}
