@@ -803,7 +803,11 @@ function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
     const classes = parsed?.classes || `${props.number1class > 0 ? '1' : ''}${props.number2class > 0 ? '2' : ''}`;
     const isLoco = parsed?.type === 'loco';
     const hasSeats = props.number1class > 0 || props.number2class > 0 || props.numberRestaurantSpace > 0;
-    const transitionOpen = index === 0 || parsed?.type === 'loco' || ordered[index - 1]?.parsed?.type === 'loco' || ordered[index].stopData.accessToPreviousVehicle !== false;
+    const nextItem = ordered[index + 1];
+    const transitionOpen = !nextItem
+        || parsed?.type === 'loco'
+        || nextItem.parsed?.type === 'loco'
+        || nextItem.stopData.accessToPreviousVehicle !== false;
     const badges = isLoco ? '<span class="wagon-kind">Lok</span>' : parsed?.label ? `<span class="wagon-kind" title="${parsed.kind === 'WL' ? 'Schlafwagen' : parsed.kind === 'CC' ? 'Liegewagen' : ''}">${parsed.label}</span>` : props.numberRestaurantSpace > 0 ? '<span class="restaurant-badge">R</span>' :
         `${classes.includes('1') ? '<span class="class-badge first">1</span>' : ''}${classes.includes('2') ? '<span class="class-badge second">2</span>' : ''}`;
     const icons = [
@@ -830,6 +834,8 @@ function showDetails(vehicle, stop) {
     const props = vehicle.vehicleProperties || {};
     const accessibility = props.accessibilityProperties || {};
     const stopData = stopEntryFor(vehicle, stop);
+    const willBePutAwayHere = props.vehicleWillBePutAway === true
+        && props.toStop?.uic === stop?.uic;
     const parsed = parseFormationShort(stop.formationShort?.formationShortString)
         .find((item) => item.number !== null && Number(vehicle.number) === item.number);
     const parserChips = parsed ? [...parsed.attrs].map((attr) => `<span class="attribute-chip">${attr}</span>`).join('') : '';
