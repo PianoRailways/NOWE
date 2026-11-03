@@ -214,9 +214,10 @@ function parseTripInfoResponse(xmlString) {
         const name = c.getElementsByTagName('StopPointName')[0]
                       ?.getElementsByTagName('Text')[0]?.textContent?.trim() || 'Unbekannt';
 
-        // Quay-Extraktion: Versuche mehrere Orte
-        // 1. PlannedQuay direkt im Call
-        let quay = c.getElementsByTagName('PlannedQuay')[0]?.textContent?.trim() || '';
+        const plannedQuay = c.getElementsByTagName('PlannedQuay')[0]?.textContent?.trim() || '';
+        const estimatedQuay = c.getElementsByTagName('EstimatedQuay')[0]?.textContent?.trim() || '';
+        // Quay-Extraktion: geplantes Gleis, mit Fallback auf Referenz oder IST-Gleis
+        let quay = plannedQuay;
         
         // 2. Falls leer, versuche im StopPoint/PlannedQuayRef
         if (!quay) {
@@ -226,7 +227,7 @@ function parseTripInfoResponse(xmlString) {
         
         // 3. Falls noch leer, versuche EstimatedQuay
         if (!quay) {
-            quay = c.getElementsByTagName('EstimatedQuay')[0]?.textContent?.trim() || '';
+            quay = estimatedQuay;
         }
 
         const nameSuffix = c.getElementsByTagName('NameSuffix')[0]
@@ -268,6 +269,9 @@ function parseTripInfoResponse(xmlString) {
             name,
 			stopPointRef,
             quay,
+            plannedQuay,
+            estimatedQuay,
+            platformChanged: Boolean(plannedQuay && estimatedQuay && plannedQuay !== estimatedQuay),
             accessibility,  // 'ACCESSIBLE' | 'ALT_TRANSPORT' | null
             requestStop:    isRequestStop,  // Halt auf Verlangen
             unplannedStop,
