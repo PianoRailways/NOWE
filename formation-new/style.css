@@ -363,21 +363,19 @@ input::focus {
 
 .formation-stop-row:active { background: var(--board-row); }
 .chain-times { display: flex; flex-direction: column; justify-content: center; gap: 2px; text-align: right; padding-right: 8px; }
-.time-row { display: flex; justify-content: flex-end; align-items: baseline; gap: 4px; white-space: nowrap; cursor: pointer; }
-.ps-time { font: .72rem monospace; color: var(--text-main); }
+.time-row { display: flex; justify-content: flex-end; align-items: baseline; gap: 4px; min-height: 1.1em; white-space: nowrap; cursor: pointer; }
+.ps-time { width: 3.7em; font: .72rem monospace; color: var(--text-main); text-align: right; }
 .ps-time--arr { color: var(--text-via); }
 .ps-time--dep { font-weight: 600; }
-.delay-badge { color: var(--sbb-red); font-size: .62rem; }
+.delay-badge { min-width: 3.2em; color: var(--sbb-red); font-size: .62rem; text-align: left; }
 .delay-badge--early { color: #4fc3f7; }
 .chain-marker { position: relative; display: flex; justify-content: center; align-items: center; }
 .chain-marker::before { content: ''; position: absolute; top: -5px; bottom: -5px; width: 2px; background: var(--text-dim); }
 .formation-stop:first-child .chain-marker::before { top: 50%; }
 .formation-stop:last-child .chain-marker::before { bottom: 50%; }
 .chain-dot { z-index: 1; width: 11px; height: 11px; border: 2px solid var(--sbb-orange); border-radius: 50%; background: var(--board-bg); }
-.formation-stop--first .formation-stop-row,
-.formation-stop--last .formation-stop-row { background: rgba(232, 78, 16, .08); }
-.formation-stop--first .chain-dot,
-.formation-stop--last .chain-dot { width: 15px; height: 15px; background: var(--sbb-orange); border-color: var(--sbb-orange); }
+.formation-stop--first .formation-stop-row { background: rgba(232, 78, 16, .08); }
+.formation-stop--first .chain-dot { width: 15px; height: 15px; background: var(--sbb-orange); border-color: var(--sbb-orange); }
 .stop-unplanned { color: var(--sbb-red); }
 .chain-stop-text a.stop-unplanned { color: var(--sbb-red); }
 .stop-cancelled { text-decoration: line-through; }
