@@ -2,6 +2,7 @@ import { fetchTripInfo } from '../trip/trip-api-client.js';
 
 let tripRefreshTimer = null;
 let tripRefreshRunning = false;
+let tripListenersBound = false;
 let stopNames = {};
 window.wagonRegistry = new Map();
 
@@ -307,11 +308,13 @@ function startTripRefresh() {
     stopTripRefresh();
     if (!window.formationData?.trip) return;
     tripRefreshTimer = window.setInterval(refreshTrip, 15000);
+    if (tripListenersBound) return;
+    tripListenersBound = true;
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) refreshTrip();
     });
     window.addEventListener('resize', () => {
-        if (!document.hidden) updateTripRows(window.formationData.trip);
+        if (!document.hidden) updateTripRows(window.formationData?.trip);
     });
     window.addEventListener('pagehide', stopTripRefresh);
 }
