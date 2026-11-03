@@ -741,10 +741,12 @@ function renderFormationStrip(stopIdx) {
     const lastUpdate = meta.lastUpdate ? formatTime(meta.lastUpdate) : '';
     const hints = window.formationData.hints;
     return `<div class="formation-strip" style="--wagon-count:${ordered.length}">
-        <div class="sector-bar">${sectorHtml}</div>
         ${direction ? `<div class="formation-direction">${direction}</div>` : ''}
-        ${goalLabels}
-        <div class="wagon-row">${wagonHtml}</div>
+        <div class="formation-scroll"><div class="formation-inner">
+            <div class="sector-bar">${sectorHtml}</div>
+            ${goalLabels}
+            <div class="wagon-row">${wagonHtml}</div>
+        </div></div>
         <div class="formation-meta">
             ${meta.length ? `Länge ${meta.length} m` : ''}${meta.numberSeats ? ` · ${meta.numberSeats} Sitzplätze` : ''}${lastUpdate ? ` · Stand ${lastUpdate}` : ''}
         </div>
