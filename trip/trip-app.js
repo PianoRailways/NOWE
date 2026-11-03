@@ -8,6 +8,14 @@ let positionRequestRunning = false;
 let positionErrorShown = false;
 let positionRequestKey = 0;
 
+const FORMATION_OPERATOR_CODES = new Map([
+    ['ojp:11', 'SBBP'],
+    ['ojp:33', 'BLSP'],
+    ['ojp:53', 'TPF'],
+    ['ojp:72', 'RhB'],
+    ['ojp:82', 'SOB'],
+]);
+
 // ─── Uhr ──────────────────────────────────────────────────────────────────────
 function updateClock() {
     const el = $('live-clock'); // Diese Zeile muss existieren
@@ -88,7 +96,7 @@ async function loadTrip() {
             showStatus('Keine Fahrtdaten gefunden.', 'error');
             return;
         }
-        
+        trip.operatingDay = operatingDay || trip.stops[0].departure?.timetabled?.slice(0, 10) || null;
         renderTrip(trip);
         activeTrip = trip;
         positionErrorShown = false;
@@ -115,11 +123,21 @@ async function loadTrip() {
 // ─── Fahrt-Header mit Line-Badge ──────────────────────────────────────────────
 function renderHeader(trip) {
     const lineType = trip.category.replace(/[0-9\s]/g, '').trim();
+    const operatorRef = (trip.operatorRef || '').toString().trim().toLowerCase();
+    const evuCode = FORMATION_OPERATOR_CODES.get(operatorRef);
+    const agencyName = trip.operatorName || trip.operatorRef || '';
+    const lineBadge = `<span class="line-badge" data-type="${lineType}" operator="${agencyName}" agency-name="${agencyName}" data-line="${trip.line || ''}">${trip.line}</span>`;
+    const formationLink = evuCode && trip.trainNumber
+        ? `/formation-new/?train=${encodeURIComponent(trip.trainNumber)}&evu=${encodeURIComponent(evuCode)}${trip.operatingDay ? `&date=${encodeURIComponent(trip.operatingDay)}` : ''}`
+        : '';
+    const trainNumber = formationLink
+        ? `<a href="${formationLink}" class="trip-header__num">${trip.trainNumber}</a>`
+        : `<span class="trip-header__num">${trip.trainNumber}</span>`;
     return `
         <div class="trip-header">
             <div class="line-container">
-                <span class="line-badge" data-type="${lineType}">${trip.line}</span>
-                <span class="trip-header__num">${trip.trainNumber}</span>
+                ${lineBadge}
+                ${trainNumber}
             </div>
             <span class="trip-header__dest">→ ${trip.destination}</span>
         </div>
