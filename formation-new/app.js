@@ -209,13 +209,18 @@ async function fetchFormation() {
     const stops = (foundData.formationsAtScheduledStops || []).map((entry, index) => {
         const scheduledStop = entry.scheduledStop || entry;
         const point = scheduledStop.stopPoint || {};
+        const tripStop = trip?.stops?.find((candidate) => {
+            const ref = String(candidate.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
+            return ref && point.uic && Number(ref) === Number(point.uic) % 100000;
+        });
         return {
             name: point.name || null,
             uic: point.uic,
             index,
             arrivalTime: (scheduledStop.stopTime || entry.stopTime || {}).arrivalTime,
             departureTime: (scheduledStop.stopTime || entry.stopTime || {}).departureTime,
-            track: entry.track || entry.stopTime?.track || scheduledStop.track || scheduledStop.quay || point.track || point.quay,
+            track: entry.track || entry.stopTime?.track || scheduledStop.track || scheduledStop.quay
+                || point.track || point.quay || tripStop?.quay,
             formationShort: entry.formationShort || {},
             vehicleGoals: entry.formationShort?.vehicleGoals || []
         };
