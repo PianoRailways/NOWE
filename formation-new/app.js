@@ -647,7 +647,8 @@ function renderStopChain() {
                 : `${timeRow(arrival, row.arrival?.estimated, row.arrival?.delaySec, 'arr')}${timeRow(departure, row.departure?.estimated, row.departure?.delaySec, 'dep')}`;
         const quay = fIdx !== undefined ? stops[fIdx].track : row.quay;
         const link = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`;
-        const rowBody = `<span class="chain-stop-text"><a href="${link}">${stopLabel(stop.uic, row.name)}</a>${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>Gl. ${quay}</small>` : ''}</span>`;
+        const unplanned = row.unplannedStop === true;
+        const rowBody = `<span class="chain-stop-text"><a class="${unplanned ? 'stop-unplanned' : ''}" href="${link}">${stopLabel(stop.uic, row.name)}</a>${unplanned ? '<small class="stop-unplanned">Zusatzhalt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>Gl. ${quay}</small>` : ''}</span>`;
         return `${daySeparator}
             <section class="formation-stop" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}">
                 <button class="formation-stop-row" type="button" data-formation-index="${fIdx ?? ''}" ${fIdx === undefined ? 'disabled' : ''}>

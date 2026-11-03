@@ -261,6 +261,7 @@ function parseTripInfoResponse(xmlString) {
 
         // Request Stop (Halt auf Verlangen)
         const isRequestStop = c.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
+        const unplannedStop = c.getElementsByTagName('UnplannedStop')[0]?.textContent?.trim().toLowerCase() === 'true';
 
         stops.push({
             name,
@@ -268,6 +269,7 @@ function parseTripInfoResponse(xmlString) {
             quay,
             accessibility,  // 'ACCESSIBLE' | 'ALT_TRANSPORT' | null
             requestStop:    isRequestStop,  // Halt auf Verlangen
+            unplannedStop,
             isThisCall: callData.isThisCall,  // Markiert den aktuellen Stop
             arrival: {
                 timetabled: arrTT  ? utcToLocalISO(arrTT)  : null,

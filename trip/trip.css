@@ -390,6 +390,7 @@ html, body { touch-action: manipulation; }
 .chain-name a:hover {
     color: var(--sob-green);
 }
+.chain-name a.stop-unplanned, .chain-name .stop-unplanned { color: var(--sbb-red); }
 
 .ps-quay-line {
     font-size: 0.7em;

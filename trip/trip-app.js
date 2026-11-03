@@ -235,9 +235,10 @@ function renderPerlschnur(trip) {
             : '';
 
         // Wechselt die URL direkt im selben Fenster
+        const unplannedLabel = stop.unplannedStop ? '<small class="stop-unplanned">Zusatzhalt</small>' : '';
         const chainInfo = `<div class="chain-info">
             <span class="chain-name">
-                <a href="${stsUrl}">${stop.name}</a> ${accessIcon(stop.accessibility)}${requestStopBadge}
+                <a class="${stop.unplannedStop ? 'stop-unplanned' : ''}" href="${stsUrl}">${stop.name}</a> ${unplannedLabel}${accessIcon(stop.accessibility)}${requestStopBadge}
             </span>
             ${quayLine}
         </div>`;
