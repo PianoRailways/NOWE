@@ -349,11 +349,11 @@ input::focus {
 
 .formation-stop-row {
     display: grid;
-    grid-template-columns: 58px 20px minmax(0, 1fr) 24px;
+    grid-template-columns: 78px 20px minmax(0, 1fr) 24px;
     align-items: stretch;
     width: 100%;
     min-height: 54px;
-    padding: 5px 8px 5px 0;
+    padding: 5px 8px 5px 4px;
     color: var(--text-main);
     background: var(--board-bg);
     border: 0;
@@ -374,8 +374,6 @@ input::focus {
 .formation-stop:first-child .chain-marker::before { top: 50%; }
 .formation-stop:last-child .chain-marker::before { bottom: 50%; }
 .chain-dot { z-index: 1; width: 11px; height: 11px; border: 2px solid var(--sbb-orange); border-radius: 50%; background: var(--board-bg); }
-.formation-stop--first .formation-stop-row { background: rgba(232, 78, 16, .08); }
-.formation-stop--first .chain-dot { width: 15px; height: 15px; background: var(--sbb-orange); border-color: var(--sbb-orange); }
 .stop-unplanned { color: var(--sbb-red); }
 .chain-stop-text a.stop-unplanned { color: var(--sbb-red); }
 .stop-cancelled { text-decoration: line-through; }
