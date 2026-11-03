@@ -1,7 +1,7 @@
 // ─── Konfiguration ────────────────────────────────────────────────────────────
 
 const TRIP_API_CONFIG = {
-    PROXY_URL:     './trip-proxy.php',
+    PROXY_URL:     new URL('./trip-proxy.php', import.meta.url).href,
     REQUESTOR_REF: 'NOWE26'
 };
 
@@ -162,6 +162,7 @@ function parseTripInfoResponse(xmlString) {
     const operatorRef  = svc.getElementsByTagName('siri:OperatorRef')[0]?.textContent?.trim()
                       || svc.getElementsByTagName('OperatorRef')[0]?.textContent?.trim()
                       || '';
+    const operatorName = g(svc, 'OperatorName') || operatorRef;
 
     // Kategorie: ProductCategory/ShortName/Text, Fallback Mode/ShortName/Text
     const prodCat = svc.getElementsByTagName('ProductCategory')[0];
@@ -287,6 +288,7 @@ function parseTripInfoResponse(xmlString) {
         category, 
         destination, 
         operatorRef, 
+        operatorName,
         stops,
         situations    // ← Situations hinzufügen
     };

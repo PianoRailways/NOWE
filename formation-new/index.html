@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>öV NOWE • Formation</title>
+</head>
+<body>
+    <!-- ═══════════════ HEADER ═══════════════ -->
+    <header id="app-header">
+        <div id="header-left">
+            <button id="btn-home" title="Startseite">⌂ Home</button>
+        </div>
+        <div id="header-center">
+            <span id="live-clock">18:04:00</span>
+        </div>
+        <div id="header-right">
+            <span id="app-title">öV NOWE</span>
+        </div>
+    </header>
+
+    <!-- ═══════════════ EINGABE ═══════════════ -->
+    <div id="input-section">
+        <input id="evu" type="text" placeholder="fak. EVU (z.B. SBBP)">
+        <input id="trainNumber" type="tel" placeholder="Zugnummer (z.B. 4713)">
+        <input id="date" type="date">
+        <button class="fetch-button" id="fetch-button">GO</button>
+    </div>
+
+    <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+    <div id="main-content">
+        <div id="result"></div>
+    </div>
+
+    <!-- ═══════════════ MODAL OVERLAY ═══════════════ -->
+    <div id="modal-overlay">
+        <div id="modal-content">
+            <button id="modal-close">✕ Schliessen</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="../trip/trip-position.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
