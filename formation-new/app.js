@@ -436,6 +436,7 @@ function parseFormationShort(value) {
     const normalized = String(value).replace(/@([A-Z]+)/g, ',@$1,').replace(/,{2,}/g, ',');
     const result = [];
     const stack = [{ items: [] }];
+    let pendingUncounted = false;
     let sector = '';
     const addAttributes = (items, value) => {
         String(value || '').replace(/^#/, '').split(';').filter(Boolean).forEach((attr) => {
@@ -453,15 +454,23 @@ function parseFormationShort(value) {
             sector = clean.slice(1);
             return;
         }
-        const counted = !clean.startsWith('-');
+        const counted = !clean.startsWith('-') && !stack.some((group) => group.uncounted);
         clean = clean.replace(/^-/, '');
         const [base, attrPart] = clean.split('#');
         const [kindPart, numberPart] = base.split(':');
         const percentKind = /^%[A-Z0-9]+$/i.test(kindPart);
+        const restaurantKind = /^%?W[12]?$/i.test(kindPart);
         const kind = /^(WL|CC)$/i.test(kindPart) ? kindPart.toUpperCase() : '';
         const type = /^LK$/i.test(kindPart) ? 'loco' : 'wagon';
         const classes = /^\d+$/.test(kindPart) ? kindPart.replace(/[^12]/g, '') : '';
-        const code = percentKind ? kindPart.slice(1).toUpperCase() : '';
+        const code = restaurantKind ? kindPart.replace(/^%/, '').toUpperCase() : percentKind ? kindPart.slice(1).toUpperCase() : '';
+        const unserved = restaurantKind && kindPart.startsWith('%');
+        if (restaurantKind) {
+            const item = { type: 'wagon', classes: '', kind: '', label: '', code, unserved, number: numberPart && /^\d+$/.test(numberPart) ? Number(numberPart) : null, attrs: new Set(), sector, counted };
+            addAttributes([item], attrPart);
+            stack.at(-1).items.push(item);
+            return;
+        }
         if (!classes && !kind && type === 'wagon' && !percentKind && !/^[A-Z]+$/i.test(kindPart)) return;
         if (percentKind && !KNOWN_WAGON_CODES.has(code) && !UNKNOWN_ATTRIBUTES.has(code)) {
             UNKNOWN_ATTRIBUTES.add(code);
@@ -471,7 +480,7 @@ function parseFormationShort(value) {
             console.warn(`Unbekannte Wagenart: ${kindPart}`);
         }
         const label = percentKind ? '' : kind || (type === 'loco' ? 'Lok' : (!classes && /^[A-Z]+$/i.test(kindPart) ? kindPart.toUpperCase() : ''));
-        const item = { type, classes: classes === '21' ? '12' : classes, kind, label, code, number: numberPart && /^\d+$/.test(numberPart) ? Number(numberPart) : null, attrs: new Set(), sector, counted };
+        const item = { type, classes: classes === '21' ? '12' : classes, kind, label, code, unserved: false, number: numberPart && /^\d+$/.test(numberPart) ? Number(numberPart) : null, attrs: new Set(), sector, counted };
         addAttributes([item], attrPart);
         stack.at(-1).items.push(item);
     };
@@ -479,7 +488,8 @@ function parseFormationShort(value) {
     for (let i = 0; i < tokens.length; i++) {
         const token = tokens[i].trim();
         if (token === '(' || token === '[') {
-            stack.push({ items: [] });
+            stack.push({ items: [], uncounted: token === '(' ? pendingUncounted : false });
+            pendingUncounted = false;
         } else if (token === ')' || token === ']') {
             const group = stack.length > 1 ? stack.pop() : stack[0];
             const following = tokens[i + 1]?.trim();
@@ -496,7 +506,10 @@ function parseFormationShort(value) {
                 i++;
             }
             stack.at(-1).items.push(...group.items);
+        } else if (token === '-') {
+            pendingUncounted = true;
         } else if (token !== ',') {
+            if (pendingUncounted) pendingUncounted = false;
             addToken(token);
         }
     }
@@ -510,12 +523,23 @@ function stopEntryFor(vehicle, stop) {
     );
 }
 
+function stopIndexByUic(uic) {
+    return window.formationData.stops.findIndex((item) => item.uic === uic);
+}
+
+function vehicleCoversStop(vehicle, stopIdx, stop) {
+    if (!stopEntryFor(vehicle, stop)) return false;
+    const from = stopIndexByUic(vehicle.vehicleProperties?.fromStop?.uic);
+    const to = stopIndexByUic(vehicle.vehicleProperties?.toStop?.uic);
+    return from === -1 || to === -1 || (from <= stopIdx && stopIdx <= to);
+}
+
 function formationForStop(stopIdx) {
     const stop = window.formationData.stops[stopIdx];
     const parserData = parseFormationShort(stop.formationShort?.formationShortString);
     const candidates = window.formationData.formations.map((formation, index) => ({
         formation, index,
-        vehicles: (formation.formationVehicles || []).filter((vehicle) => stopEntryFor(vehicle, stop))
+        vehicles: (formation.formationVehicles || []).filter((vehicle) => vehicleCoversStop(vehicle, stopIdx, stop))
     })).filter((candidate) => candidate.vehicles.length);
     if (!candidates.length) return { formation: null, vehicles: [], parserData };
 
@@ -523,9 +547,9 @@ function formationForStop(stopIdx) {
     if (hasNumbers) {
         for (let c = candidates.length - 1; c >= 0; c--) {
             const candidate = candidates[c];
-            const vehicles = parserData.map((token) => token.number === null
-                ? null
-                : candidate.vehicles.find((vehicle) => Number(vehicle.number) === token.number) || null);
+            const vehicles = parserData.map((token, index) => token.number !== null
+                ? candidate.vehicles.find((vehicle) => Number(vehicle.number) === token.number) || null
+                : candidate.vehicles.find((vehicle) => Number(vehicle.position) === index + 1) || null);
             if (vehicles.some(Boolean)) return { formation: candidate.formation, vehicles, parserData };
         }
     } else {
@@ -841,9 +865,10 @@ function renderWagon(vehicle, stopData, vIdx, index, ordered, stopIdx) {
             || !b.vehicle
             || later.stopData?.accessToPreviousVehicle !== false;
     })();
-    const restaurantBadge = parsed?.code?.startsWith('W')
-        ? `<span class="class-badge restaurant">${parsed.code}</span>`
-        : props.numberRestaurantSpace > 0 ? '<span class="class-badge restaurant">W</span>' : '';
+    const restaurantClass = parsed?.unserved ? ' is-unserved' : '';
+    const restaurantTitle = parsed?.unserved ? ' title="Restaurant nicht bedient"' : '';
+    const restaurantCode = parsed?.code?.startsWith('W') ? parsed.code : props.numberRestaurantSpace > 0 ? 'W' : '';
+    const restaurantBadge = restaurantCode ? `<span class="class-badge restaurant${restaurantClass}"${restaurantTitle}>${restaurantCode}</span>` : '';
     const badges = isLoco ? '<span class="wagon-kind">Lok</span>' : parsed?.label ? `<span class="wagon-kind" title="${parsed.kind === 'WL' ? 'Schlafwagen' : parsed.kind === 'CC' ? 'Liegewagen' : ''}">${parsed.label}</span>` : `${restaurantBadge}${classes.includes('1') ? '<span class="class-badge first">1</span>' : ''}${classes.includes('2') ? '<span class="class-badge second">2</span>' : ''}`;
     const icons = [
         (parsed?.attrs.has('BHP') || accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet || props.pictoProperties?.wheelchairPicto) ? iconSvg('wheelchair') : '',
@@ -881,7 +906,7 @@ function showDetails(vehicle, stop) {
         <div class="modal-title">
             <div class="modal-title-main">${vehicle.vehicleIdentifier.typeCodeName}</div>
             <div class="modal-title-meta">
-                <span class="modal-badges">${parsed?.code?.startsWith('W') ? `<span class="class-badge restaurant">${parsed.code}</span>` : props.numberRestaurantSpace > 0 ? '<span class="class-badge restaurant">W</span>' : ''}${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${parsed?.kind ? `<span class="wagon-kind">${parsed.kind}</span>` : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? BIKE_ICON : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}${parserChips}</span>
+                <span class="modal-badges">${parsed?.code?.startsWith('W') ? `<span class="class-badge restaurant${parsed.unserved ? ' is-unserved' : ''}"${parsed.unserved ? ' title="Restaurant nicht bedient"' : ''}>${parsed.code}</span>` : props.numberRestaurantSpace > 0 ? '<span class="class-badge restaurant">W</span>' : ''}${props.number1class > 0 ? '<span class="class-badge first">1</span>' : ''}${props.number2class > 0 ? '<span class="class-badge second">2</span>' : ''}${parsed?.kind ? `<span class="wagon-kind">${parsed.kind}</span>` : ''}${accessibility.numberWheelchairSpaces > 0 || accessibility.wheelchairToilet ? iconSvg('wheelchair') : ''}${props.bikePlatform ? BIKE_ICON : ''}${props.pictoProperties?.strollerPicto ? iconSvg('stroller') : ''}${props.lowFloorTrolley ? '<strong>NF</strong>' : ''}${parserChips}</span>
                 ${Number(vehicle.number) > 0 ? `Wagen ${vehicle.number}` : ''} (Pos. ${vehicle.position || '-'})
                 ${props.closed === true ? '<span class="wagon-status">gesperrt</span>' : ''}${willBePutAwayHere ? '<span class="wagon-status">wird abgestellt</span>' : ''}
             </div>
@@ -899,7 +924,8 @@ function showDetails(vehicle, stop) {
                 <div class="detail-row"><span class="detail-label">Velohaken:</span> <span class="detail-value">${props.numberBikeHooks || 0}</span></div>
                 <div class="detail-row"><span class="detail-label">Verkehrt ab/bis:</span> <span class="detail-value">${props.fromStop?.name || '-'} / ${props.toStop?.name || '-'}</span></div>
                 ${props.vehicleWillBePutAway === true ? `<div class="detail-row"><span class="detail-label">Wird abgestellt in:</span> <span class="detail-value">${stopLabel(props.toStop?.uic, props.toStop?.name)}</span></div>` : ''}
-                ${props.trolleyStatus && props.trolleyStatus !== 'Normal' ? `<div class="detail-row"><span class="detail-label">Zustand:</span> <span class="detail-value">${props.trolleyStatus}</span></div>` : ''}
+                ${((props.trolleyStatus && props.trolleyStatus !== 'Normal') && props.trolleyStatus !== 'RestaurantUnbedient') ? `<div class="detail-row"><span class="detail-label">Zustand:</span> <span class="detail-value">${props.trolleyStatus}</span></div>` : ''}
+                ${(parsed?.unserved || props.trolleyStatus === 'RestaurantUnbedient') ? '<div class="detail-row"><span class="detail-label">Restaurant:</span> <span class="detail-value">nicht bedient</span></div>' : ''}
                 <div class="detail-row"><span class="detail-label">Länge:</span> <span class="detail-value">${props.length || '-'} m</span></div>
                 <div class="detail-row"><span class="detail-label">Sektoren:</span> <span class="detail-value">${stopData?.sectors || '-'}</span></div>
             </div>
