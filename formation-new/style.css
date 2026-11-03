@@ -153,8 +153,6 @@ input::focus {
 #main-content {
     flex: 1;
     padding: 14px;
-    overscroll-behavior-y: contain;
-    overflow-y: auto;
     background: var(--board-bg);
 }
 
@@ -380,8 +378,6 @@ input::focus {
 .formation-stop--last .formation-stop-row { background: rgba(232, 78, 16, .08); }
 .formation-stop--first .chain-dot,
 .formation-stop--last .chain-dot { width: 15px; height: 15px; background: var(--sbb-orange); border-color: var(--sbb-orange); }
-.formation-stop--first .ps-time--dep,
-.formation-stop--last .ps-time--arr { color: var(--sbb-orange); }
 .stop-unplanned { color: var(--sbb-red); }
 .chain-stop-text a.stop-unplanned { color: var(--sbb-red); }
 .stop-cancelled { text-decoration: line-through; }
