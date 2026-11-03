@@ -431,9 +431,16 @@ input::focus {
 .formation-hints { display: flex; flex-direction: column; gap: 3px; color: var(--text-via); }
 .wagon-icons { display: flex; align-items: center; gap: 4px; min-height: 18px; margin-top: 3px; color: var(--text-via); font-size: .68rem; }
 .wagon-icons svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.4; }
-.wagon-connection { width: 10px; height: 2px; margin-top: 27px; background: var(--text-dim); }
-.wagon-connection.is-closed { position: relative; background: var(--sbb-red); }
-.wagon-connection.is-closed::after { position: absolute; top: -9px; left: 0; color: var(--sbb-red); font-size: .7rem; }
+.wagon-connection {
+    position: absolute;
+    top: 0;
+    right: -1px;
+    width: 2px;
+    height: 54px;
+    margin: 0;
+    background: transparent;
+}
+.wagon-connection.is-closed { background: var(--sbb-red); }
 
 @media (min-width: 700px) {
     .wagon-row { justify-content: center; }
