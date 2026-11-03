@@ -607,7 +607,11 @@ function accessIcon(type) {
 }
 
 function stopLabel(uic, name) {
-    if (name) return name;
+    const mappedName = uic !== undefined && uic !== null
+        ? stopNames[String(uic)] || stopNames[Number(uic)]
+        : '';
+    if (mappedName) return mappedName;
+    if (name && !/^UIC\s+\d+$/i.test(String(name).trim())) return name;
     const tripStop = window.formationData?.trip?.stops?.find((stop) => {
         const ref = String(stop.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
         return ref && Number(ref) === Number(uic) % 100000;
