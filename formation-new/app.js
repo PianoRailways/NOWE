@@ -427,7 +427,7 @@ function updateRelatedJourneys(relationships) {
 const FLIP_DIRECTION = true;
 
 const UNKNOWN_ATTRIBUTES = new Set();
-const FORMATION_ATTRIBUTES = new Set(['NF', 'VH', 'VR', 'KW', 'BHP']);
+const FORMATION_ATTRIBUTES = new Set(['NF', 'VH', 'VR', 'KW', 'BHP', 'FZ', 'BZ']);
 const BIKE_ICON = '<svg class="ic" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="16" r="3.5"/><circle cx="19" cy="16" r="3.5"/><path d="M5 16 9 9h6l4 7M9 9l2 7 4-7M5 16h6M7.5 7.5h3M14 7h2.5"/></svg>';
 
 function parseFormationShort(value) {
@@ -456,16 +456,21 @@ function parseFormationShort(value) {
         clean = clean.replace(/^-/, '');
         const [base, attrPart] = clean.split('#');
         const [kindPart, numberPart] = base.split(':');
+        const percentKind = /^%[A-Z0-9]+$/i.test(kindPart);
         const kind = /^(WL|CC)$/i.test(kindPart) ? kindPart.toUpperCase() : '';
         const type = /^LK$/i.test(kindPart) ? 'loco' : 'wagon';
         const classes = /^\d+$/.test(kindPart) ? kindPart.replace(/[^12]/g, '') : '';
-        if (!classes && !kind && type === 'wagon' && !/^[A-Z]+$/i.test(kindPart)) return;
-        if (/^[A-Z]+$/i.test(kindPart) && !['WL', 'CC', 'LK'].includes(kindPart.toUpperCase()) && !UNKNOWN_ATTRIBUTES.has(kindPart)) {
+        const code = percentKind ? kindPart.slice(1).toUpperCase() : '';
+        if (!classes && !kind && type === 'wagon' && !percentKind && !/^[A-Z]+$/i.test(kindPart)) return;
+        if (percentKind && !UNKNOWN_ATTRIBUTES.has(code)) {
+            UNKNOWN_ATTRIBUTES.add(code);
+            console.warn(`Unbekannter Formationscode: ${code}`);
+        } else if (/^[A-Z]+$/i.test(kindPart) && !['WL', 'CC', 'LK'].includes(kindPart.toUpperCase()) && !UNKNOWN_ATTRIBUTES.has(kindPart)) {
             UNKNOWN_ATTRIBUTES.add(kindPart);
             console.warn(`Unbekannte Wagenart: ${kindPart}`);
         }
-        const label = kind || (type === 'loco' ? 'Lok' : (!classes && /^[A-Z]+$/i.test(kindPart) ? kindPart.toUpperCase() : ''));
-        const item = { type, classes: classes === '21' ? '12' : classes, kind, label, number: numberPart && /^\d+$/.test(numberPart) ? Number(numberPart) : null, attrs: new Set(), sector, counted };
+        const label = percentKind ? '' : kind || (type === 'loco' ? 'Lok' : (!classes && /^[A-Z]+$/i.test(kindPart) ? kindPart.toUpperCase() : ''));
+        const item = { type, classes: classes === '21' ? '12' : classes, kind, label, code, number: numberPart && /^\d+$/.test(numberPart) ? Number(numberPart) : null, attrs: new Set(), sector, counted };
         addAttributes([item], attrPart);
         stack.at(-1).items.push(item);
     };
@@ -477,7 +482,15 @@ function parseFormationShort(value) {
         } else if (token === ')' || token === ']') {
             const group = stack.length > 1 ? stack.pop() : stack[0];
             const following = tokens[i + 1]?.trim();
-            if (following?.startsWith('#')) {
+            if (following?.startsWith(':')) {
+                const suffix = following.match(/^:(\d+)(?:#(.+))?$/);
+                const last = group.items.at(-1);
+                if (suffix && last && last.number === null) {
+                    last.number = Number(suffix[1]);
+                    if (suffix[2]) addAttributes([last], suffix[2]);
+                }
+                i++;
+            } else if (following?.startsWith('#')) {
                 addAttributes(group.items, following);
                 i++;
             }
