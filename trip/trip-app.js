@@ -9,6 +9,13 @@ let positionErrorShown = false;
 let positionRequestKey = 0;
 
 const FORMATION_OPERATOR_CODES = new Map([
+    ['bls', 'BLSP'],
+    ['blsp', 'BLSP'],
+    ['sbb', 'SBBP'],
+    ['sbbp', 'SBBP'],
+    ['sob', 'SOB'],
+    ['tpf', 'TPF'],
+    ['rhb', 'RhB'],
     ['ojp:11', 'SBBP'],
     ['ojp:33', 'BLSP'],
     ['ojp:53', 'TPF'],
@@ -128,7 +135,7 @@ function renderHeader(trip) {
     const agencyName = trip.operatorName || trip.operatorRef || '';
     const lineBadge = `<span class="line-badge" data-type="${lineType}" operator="${agencyName}" agency-name="${agencyName}" data-line="${trip.line || ''}">${trip.line}</span>`;
     const formationLink = evuCode && trip.trainNumber
-        ? `/formation-new/?train=${encodeURIComponent(trip.trainNumber)}&evu=${encodeURIComponent(evuCode)}${trip.operatingDay ? `&date=${encodeURIComponent(trip.operatingDay)}` : ''}`
+        ? `./formation-new/?train=${encodeURIComponent(trip.trainNumber)}&evu=${encodeURIComponent(evuCode)}${trip.operatingDay ? `&date=${encodeURIComponent(trip.operatingDay)}` : ''}`
         : '';
     const trainNumber = formationLink
         ? `<a href="${formationLink}" class="trip-header__num">${trip.trainNumber}</a>`
