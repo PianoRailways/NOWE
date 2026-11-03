@@ -467,6 +467,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     updateClock();
+    const header = $('app-header');
+    if (header && 'ResizeObserver' in window) {
+        const updateHeaderHeight = () => document.documentElement.style.setProperty('--header-h', `${header.getBoundingClientRect().height}px`);
+        new ResizeObserver(updateHeaderHeight).observe(header);
+        updateHeaderHeight();
+    }
     setInterval(updateClock, 1000);
 
     // Standardmäßig das aktuelle Datum setzen

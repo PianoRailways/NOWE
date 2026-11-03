@@ -27,7 +27,7 @@ html {
     scrollbar-gutter: stable;
 }
 
-html, body { touch-action: manipulation; }
+html, body { touch-action: manipulation; overscroll-behavior-y: none; }
 body {
     font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
     background: var(--board-bg);
@@ -35,6 +35,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    padding-top: var(--header-h, 52px);
 }
 
 /* HEADER */
@@ -45,7 +46,9 @@ body {
     padding: 8px 14px;
     background: var(--header-bg);
     border-bottom: 1px solid rgba(255,255,255,0.1);
-    position: sticky;
+    position: fixed;
+    left: 0;
+    right: 0;
     top: 0;
     z-index: 20;
     gap: 10px;
@@ -150,6 +153,7 @@ input::focus {
 #main-content {
     flex: 1;
     padding: 14px;
+    overscroll-behavior-y: contain;
     overflow-y: auto;
     background: var(--board-bg);
 }
