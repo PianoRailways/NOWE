@@ -654,7 +654,7 @@ function renderStopChain() {
         const link = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`;
         const unplanned = row.unplannedStop === true;
         const stopClasses = [unplanned ? 'stop-unplanned' : '', cancelled ? 'stop-cancelled' : ''].filter(Boolean).join(' ');
-        const rowBody = `<span class="chain-stop-text"><a class="${stopClasses}" href="${link}">${stopLabel(stop.uic, row.name)}</a>${unplanned ? '<small class="stop-unplanned">Zusatzhalt</small>' : ''}${cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>Gl. ${quay}</small>` : ''}</span>`;
+        const rowBody = `<span class="chain-stop-text"><a class="${stopClasses}" href="${link}">${stopLabel(stop.uic, row.name)}</a>${cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>Gl. ${quay}</small>` : ''}</span>`;
         return `${daySeparator}
             <section class="formation-stop" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}">
                 <button class="formation-stop-row ${cancelled ? 'stop-cancelled' : ''}" type="button" data-formation-index="${fIdx ?? ''}" ${fIdx === undefined ? 'disabled' : ''}>
