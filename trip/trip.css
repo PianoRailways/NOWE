@@ -4,6 +4,13 @@
     border-bottom: 1px solid var(--border);
 }
 
+#main-content {
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
 .trip-input-row {
     display: flex;
     gap: 8px;
