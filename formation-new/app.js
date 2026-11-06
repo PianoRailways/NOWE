@@ -218,8 +218,9 @@ async function fetchFormation() {
             name: point.name || null,
             uic: point.uic,
             index,
-            arrivalTime: (scheduledStop.stopTime || entry.stopTime || {}).arrivalTime,
-            departureTime: (scheduledStop.stopTime || entry.stopTime || {}).departureTime,
+            arrivalTime: scheduledStop.stopTime?.arrivalTime ?? entry.stopTime?.arrivalTime,
+            departureTime: scheduledStop.stopTime?.departureTime ?? entry.stopTime?.departureTime,
+            stopType: scheduledStop.stopType,
             track: entry.track || entry.stopTime?.track || scheduledStop.track || scheduledStop.quay
                 || point.track || point.quay || tripStop?.quay,
             formationShort: entry.formationShort || {},
@@ -846,7 +847,7 @@ function renderFormationStrip(stopIdx) {
 
 function goalName(goal) {
     const destination = goal.destinationStopPoint;
-    if (destination?.uic && destination.name) return destination.name;
+    if (destination?.name) return destination.name;
     if (destination?.uic) return stopLabel(destination.uic);
     return stopLabel(
         goal.toStop?.uic || goal.stopPoint?.uic,
