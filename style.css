@@ -473,8 +473,8 @@ body {
 
 .gtfs-search-button {
     display: inline-block;
-    padding: 10px 16px;
-    border-radius: 4px;
+    padding: 20px 16px;
+    border-radius: 8px;
     background: var(--pifas-timenav);
     color: var(--sbb-blue);
     font-weight: 700;
