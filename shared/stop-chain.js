@@ -108,9 +108,10 @@ export function setupTimeRows(root = document) {
             const estimate = row.dataset.est;
             if (!estimate) return;
             const time = row.querySelector('.ps-time');
-            const original = time.textContent;
-            time.textContent = fmtTime(estimate) || original;
-            window.setTimeout(() => { time.textContent = original; }, 5000);
+            time.textContent = fmtTime(estimate) || time.textContent;
+            window.setTimeout(() => {
+                time.textContent = fmtTime(row.dataset.tt) || '--:--';
+            }, 5000);
         });
     });
 }
@@ -121,13 +122,26 @@ export function updateTripRows(state, trip) {
     trip.stops.forEach((stop, index) => {
         const row = document.querySelector(`.formation-stop[data-trip-index="${index}"]`);
         if (!row) return;
-        row.querySelectorAll('.time-row').forEach((time, timeIndex) => {
-            const value = [stop.arrival, stop.departure].filter(Boolean)[timeIndex];
+        row.querySelectorAll('.time-row').forEach((time) => {
+            const kind = time.querySelector('.ps-time--arr') ? 'arrival' : 'departure';
+            const value = stop[kind];
             if (!value) return;
+            if (!value.timetabled) return;
+            time.dataset.tt = value.timetabled;
             time.dataset.est = value.estimated || '';
             time.dataset.delay = value.delaySec || 0;
             time.querySelector('.ps-time').textContent = fmtTime(value.timetabled) || '--:--';
+            time.querySelector('.delay-slot').innerHTML = delayLabel(value.delaySec);
         });
+        const quay = row.querySelector('.chain-stop-text small:not(.stop-cancelled):not(.no-formation-hint)');
+        const quayHtml = stop.platformChanged
+            ? `<del class="planned-quay">Gl. ${stop.plannedQuay}</del><strong class="estimated-quay">Gl. ${stop.estimatedQuay}</strong>`
+            : (stop.quay ? `Gl. ${stop.quay}` : '');
+        if (quay) quay.innerHTML = quayHtml;
+        row.classList.toggle('stop-cancelled', stop.cancelled === true);
+        row.querySelector('.formation-stop-row')?.classList.toggle('stop-cancelled', stop.cancelled === true);
+        row.querySelector('.chain-stop-text a')?.classList.toggle('stop-cancelled', stop.cancelled === true);
+        row.querySelector('.chain-stop-text small.stop-cancelled')?.classList.toggle('stop-cancelled', stop.cancelled === true);
     });
     updateVehicleMarker(state);
 }

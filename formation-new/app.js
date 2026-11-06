@@ -316,27 +316,6 @@ function stopMarkerRefresh() {
     markerRefreshTimer = null;
 }
 
-function updateTripRows(trip) {
-    if (!trip?.stops) return;
-    window.formationData.trip = trip;
-    trip.stops.forEach((row, index) => {
-        const element = document.querySelector(`.formation-stop[data-trip-index="${index}"]`);
-        if (!element) return;
-        const timeRows = element.querySelectorAll('.time-row');
-        const values = [row.arrival, row.departure].filter(Boolean);
-        timeRows.forEach((timeRow, timeIndex) => {
-            const value = values[timeIndex];
-            if (!value) return;
-            timeRow.dataset.est = value.estimated || '';
-            timeRow.dataset.delay = value.delaySec || 0;
-            const time = timeRow.querySelector('.ps-time');
-            if (time) time.textContent = fmtTime(value.timetabled) || '--:--';
-        });
-    });
-    setupTimeRows();
-    updateVehicleMarker();
-}
-
 async function refreshTrip() {
     if (tripRefreshRunning || document.hidden || !window.formationData?.trip) return;
     const meta = window.formationData.trip;
@@ -347,7 +326,7 @@ async function refreshTrip() {
         const operationDate = window.formationData.journeyMeta?.operationDate
             || document.getElementById('date').value;
         const updated = await fetchTripInfo(journeyId, operationDate);
-        updateTripRows(updated);
+        sharedStopChain.updateTripRows(window.formationData, updated);
         if (updated?.isFinal) stopTripRefresh();
     } catch {
         // Live-Daten sind optional.
@@ -372,8 +351,8 @@ function startTripRefresh() {
     });
     window.addEventListener('resize', () => {
         if (!document.hidden) {
-            updateTripRows(window.formationData?.trip);
-            updateVehicleMarker();
+            sharedStopChain.updateTripRows(window.formationData, window.formationData?.trip);
+            sharedStopChain.updateVehicleMarker(window.formationData);
         }
     });
     window.addEventListener('pagehide', () => {
