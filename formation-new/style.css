@@ -381,6 +381,8 @@ input::focus {
 .formation-stop--first .chain-marker::before { top: 50%; }
 .formation-stop--last .chain-marker::before { bottom: 50%; }
 .chain-dot { z-index: 1; width: 11px; height: 11px; border: 2px solid var(--sbb-orange); border-radius: 50%; background: var(--board-bg); }
+.service-name { background: #000; color: #fff; padding: 1px 6px; border-radius: 3px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.formation-stop.is-service .chain-dot { border-color: var(--text-dim); }
 .stop-unplanned { color: var(--sbb-red); }
 .chain-stop-text a.stop-unplanned { color: var(--sbb-red); }
 .stop-cancelled { text-decoration: line-through; }
