@@ -25,6 +25,7 @@
 
 html {
     scrollbar-gutter: stable;
+    background: var(--header-bg);
 }
 
 html, body { touch-action: manipulation; overscroll-behavior-y: none; }
@@ -33,6 +34,7 @@ body {
     background: var(--board-bg);
     color: var(--text-main);
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     padding-top: var(--header-h, 52px);
@@ -43,7 +45,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 14px;
+    padding: calc(8px + env(safe-area-inset-top)) calc(8px + env(safe-area-inset-right)) 8px calc(14px + env(safe-area-inset-left));
     background: var(--header-bg);
     border-bottom: 1px solid rgba(255,255,255,0.1);
     position: fixed;
@@ -115,7 +117,7 @@ input::focus {
 }
 
 #input-section {
-    padding: 14px;
+    padding: 14px env(safe-area-inset-right) 14px env(safe-area-inset-left);
     background: var(--header-bg);
     border-bottom: 1px solid var(--border);
     display: flex;
@@ -130,8 +132,11 @@ input::focus {
     padding: 8px 12px;
     border-radius: 2px;
     font-family: inherit;
-    font-size: 16px;
 }
+
+#input-section input,
+#input-section select,
+#input-section button { font-size: 16px; }
 
 #evu { flex: 0 1 120px; }
 #trainNumber { flex: 1; min-width: 100px; }
@@ -152,7 +157,7 @@ input::focus {
 
 #main-content {
     flex: 1;
-    padding: 14px;
+    padding: 14px env(safe-area-inset-right) calc(14px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
     background: var(--board-bg);
 }
 
@@ -205,6 +210,7 @@ input::focus {
     z-index: 1000;
     justify-content: center;
     align-items: center;
+    padding-bottom: env(safe-area-inset-bottom);
     padding: 20px;
 }
 
