@@ -368,10 +368,10 @@ input::focus {
 }
 
 .formation-stop-row:active { background: var(--board-row); }
-.chain-times { display: flex; flex-direction: column; justify-content: center; gap: 2px; text-align: right; padding-right: 8px; }
+.chain-times { display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0; text-align: right; padding-right: 8px; }
 .time-row { display: flex; justify-content: flex-end; align-items: baseline; gap: 4px; min-height: 1.1em; white-space: nowrap; cursor: pointer; }
 .ps-time { width: 3.7em; font: .72rem monospace; color: var(--text-main); text-align: right; }
-.delay-slot { display: inline-block; min-width: 3.6em; text-align: left; }
+.delay-slot { display: inline-block; min-width: 3.6em; font-size: .62rem; text-align: left; }
 .ps-time--arr { color: var(--text-via); }
 .ps-time--dep { font-weight: 600; }
 .delay-badge { min-width: 3.2em; color: var(--sbb-red); font-size: .62rem; text-align: left; }
