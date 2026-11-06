@@ -1,4 +1,5 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
+import * as sharedStopChain from '../shared/stop-chain.js';
 
 let tripRefreshTimer = null;
 let markerRefreshTimer = null;
