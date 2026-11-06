@@ -4,15 +4,9 @@
     border-bottom: 1px solid var(--border);
 }
 
-html, body {
-    overflow-y: auto;
-    touch-action: pan-y;
-}
-
 #main-content {
     flex: none;
     overflow: visible;
-    touch-action: pan-y;
 }
 
 .trip-input-row {

@@ -25,11 +25,16 @@ html {
     background: var(--header-bg);
 }
 
-html, body {
-    touch-action: manipulation;
-    overscroll-behavior-y: none;
+html {
     overflow-x: hidden;
     overflow-y: auto;
+    overscroll-behavior-y: none;
+    touch-action: manipulation;
+}
+
+body {
+    overflow: visible;
+    touch-action: manipulation;
 }
 
 body {

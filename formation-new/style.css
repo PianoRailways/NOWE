@@ -28,11 +28,13 @@ html {
     background: var(--header-bg);
 }
 
-html, body {
+html {
     touch-action: manipulation;
     overscroll-behavior-y: none;
     overflow-x: hidden;
 }
+
+body { overflow: visible; touch-action: manipulation; }
 body {
     font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
     background: var(--board-bg);
