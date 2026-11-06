@@ -28,7 +28,11 @@ html {
     background: var(--header-bg);
 }
 
-html, body { touch-action: manipulation; overscroll-behavior-y: none; }
+html, body {
+    touch-action: manipulation;
+    overscroll-behavior-y: none;
+    overflow-x: hidden;
+}
 body {
     font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
     background: var(--board-bg);
