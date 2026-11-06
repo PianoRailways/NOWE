@@ -1,6 +1,7 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
 
 let tripRefreshTimer = null;
+let markerRefreshTimer = null;
 let tripRefreshRunning = false;
 let tripListenersBound = false;
 let stopNames = {};
@@ -289,6 +290,11 @@ function stopTripRefresh() {
     tripRefreshTimer = null;
 }
 
+function stopMarkerRefresh() {
+    if (markerRefreshTimer) window.clearInterval(markerRefreshTimer);
+    markerRefreshTimer = null;
+}
+
 function updateTripRows(trip) {
     if (!trip?.stops) return;
     window.formationData.trip = trip;
@@ -317,7 +323,9 @@ async function refreshTrip() {
     if (!journeyId) return;
     tripRefreshRunning = true;
     try {
-        const updated = await fetchTripInfo(journeyId, document.getElementById('date').value);
+        const operationDate = window.formationData.journeyMeta?.operationDate
+            || document.getElementById('date').value;
+        const updated = await fetchTripInfo(journeyId, operationDate);
         updateTripRows(updated);
         if (updated?.isFinal) stopTripRefresh();
     } catch {
@@ -329,17 +337,28 @@ async function refreshTrip() {
 
 function startTripRefresh() {
     stopTripRefresh();
+    stopMarkerRefresh();
     if (!window.formationData?.trip) return;
     tripRefreshTimer = window.setInterval(refreshTrip, 15000);
+    markerRefreshTimer = window.setInterval(updateVehicleMarker, 10000);
     if (tripListenersBound) return;
     tripListenersBound = true;
     document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) refreshTrip();
+        if (!document.hidden) {
+            refreshTrip();
+            updateVehicleMarker();
+        }
     });
     window.addEventListener('resize', () => {
-        if (!document.hidden) updateTripRows(window.formationData?.trip);
+        if (!document.hidden) {
+            updateTripRows(window.formationData?.trip);
+            updateVehicleMarker();
+        }
     });
-    window.addEventListener('pagehide', stopTripRefresh);
+    window.addEventListener('pagehide', () => {
+        stopTripRefresh();
+        stopMarkerRefresh();
+    });
 }
 
 function createMasterRows(trip, stops) {
