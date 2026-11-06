@@ -183,16 +183,26 @@ foreach ($pdo->query('SELECT DISTINCT service_id FROM service_dates') as $row) {
 }
 writeLog('Services mit Betrieb im Fenster: ' . count($active) . ' von ' . count($serviceIds));
 
+// Fahrten ohne SJYID: OJP-ID aus trip_id und direction_id ableiten
+// .ojp-91-44-B.1.TA.45.j26 + direction 0  ->  ojp:91044:B:H:j26:45
+function deriveOjpId(string $tripId, string $direction): string {
+    if (!preg_match('/^\.ojp-(\d+)-(\d+)-([A-Za-z]+)\.\d+\.[A-Za-z]+\.(\d+)\.(j\d+)$/', $tripId, $m)) return '';
+    $dir = $direction === '1' ? 'R' : 'H';
+    return sprintf('ojp:%s%03d:%s:%s:%s:%s', $m[1], (int)$m[2], $m[3], $dir, $m[5], $m[4]);
+}
+
 // 3. Trips: eine Zeile pro Fahrt, nur wenn sie im Fenster fährt
 writeLog('Verarbeite trips.txt...');
 [$fp, $c, $n] = openCsv($zip, 'trips.txt', [
-    'service_id', 'trip_headsign', 'trip_short_name', 'original_trip_id',
+    'service_id', 'trip_id', 'trip_headsign', 'trip_short_name', 'direction_id', 'original_trip_id',
 ]);
 $iHints = $c['hints'] ?? null;
 $insTrip = $pdo->prepare('INSERT INTO trips VALUES (?, ?, ?, ?, ?)');
 $pdo->beginTransaction();
 $count = 0;
 $skipped = 0;
+$derived = 0;
+$unresolved = 0;
 while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
     if (count($r) < $n) continue;
     $short = trim($r[$c['trip_short_name']]);
@@ -201,11 +211,16 @@ while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
         $skipped++;
         continue;
     }
+    $sjyid = $r[$c['original_trip_id']];
+    if ($sjyid === '') {
+        $sjyid = deriveOjpId($r[$c['trip_id']], $r[$c['direction_id']]);
+        if ($sjyid !== '') $derived++; else $unresolved++;
+    }
     $insTrip->execute([
         $short,
         $id,
         $r[$c['trip_headsign']],
-        $r[$c['original_trip_id']],
+        $sjyid,
         $iHints !== null ? $r[$iHints] : '',
     ]);
     $count++;
@@ -214,6 +229,7 @@ fclose($fp);
 $pdo->commit();
 $zip->close();
 writeLog("Trips gespeichert: $count, übersprungen: $skipped");
+writeLog("Ohne SJYID: $derived abgeleitet (ojp:...), $unresolved nicht ableitbar");
 
 writeLog('Erstelle Index...');
 $pdo->exec('CREATE INDEX idx_trips_name ON trips(trip_short_name)');
