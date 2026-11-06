@@ -76,20 +76,22 @@ export function renderStopChain(state, { expandable = false, stopLabel = stopNam
             ? `<del class="planned-quay">Gl. ${row.plannedQuay}</del><strong class="estimated-quay">Gl. ${row.estimatedQuay}</strong>`
             : (row.quay ? `Gl. ${row.quay}` : '');
         const service = row.serviceStop === true;
+        const noFormation = row.noFormation === true;
         const classes = [row.unplannedStop ? 'stop-unplanned' : '', row.cancelled ? 'stop-cancelled' : '', service ? 'service-name' : ''].filter(Boolean).join(' ');
+        const formationHint = noFormation ? '<small class="no-formation-hint">Keine Formation (Halt entfällt?)</small>' : '';
+        const canExpand = expandable && !noFormation && row.fIdx !== undefined;
         return `${daySeparator}<section class="formation-stop ${isFirst ? 'formation-stop--first' : ''} ${isLast ? 'formation-stop--last' : ''} ${service ? 'is-service' : ''}" data-stop-index="${row.fIdx ?? ''}" data-trip-index="${row.tripIndex ?? index}" data-row-index="${index}">
-            <${expandable ? 'button' : 'div'} class="formation-stop-row ${row.cancelled ? 'stop-cancelled' : ''}" type="${expandable ? 'button' : ''}" data-formation-index="${row.fIdx ?? ''}">
+            <${canExpand ? 'button' : 'div'} class="formation-stop-row ${row.cancelled ? 'stop-cancelled' : ''}" type="${canExpand ? 'button' : ''}" data-formation-index="${row.fIdx ?? ''}" ${canExpand ? '' : 'disabled'}>
                 <span class="chain-times">${times}</span>
                 <span class="chain-marker"><span class="chain-dot"></span></span>
-                <span class="chain-stop-text"><a class="${classes}" href="${stopLink}">${name}</a>${row.cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>${quay}</small>` : ''}</span>
-                ${expandable ? '<span class="stop-arrow" aria-hidden="true">›</span>' : ''}
-            </${expandable ? 'button' : 'div'}>
-            ${expandable ? `<div class="formation-panel" id="formation-panel-${row.fIdx ?? index}"></div>` : ''}
+                <span class="chain-stop-text"><a class="${classes}" href="${stopLink}">${name}</a>${row.cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${formationHint}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>${quay}</small>` : ''}</span>
+                ${canExpand ? '<span class="stop-arrow" aria-hidden="true">›</span>' : ''}
+            </${canExpand ? 'button' : 'div'}>
+            ${canExpand ? `<div class="formation-panel" id="formation-panel-${row.fIdx}"></div>` : ''}
         </section>`;
     }).join('');
     if (expandable && onToggle) {
-        chain.querySelectorAll('.formation-stop-row').forEach((row) => {
-            if (row.dataset.formationIndex === '') return;
+        chain.querySelectorAll('.formation-stop-row:not([disabled])').forEach((row) => {
             row.addEventListener('click', (event) => {
                 if (!event.target.closest('a')) onToggle(Number(row.dataset.formationIndex));
             });

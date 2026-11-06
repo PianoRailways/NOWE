@@ -210,6 +210,14 @@ async function fetchFormation() {
     const stops = (foundData.formationsAtScheduledStops || []).map((entry, index) => {
         const scheduledStop = entry.scheduledStop || entry;
         const point = scheduledStop.stopPoint || {};
+        const hasVehicleFormation = (foundData.formations || []).some((formation) =>
+            (formation.formationVehicles || []).some((vehicle) =>
+                (vehicle.formationVehicleAtScheduledStops || []).some((scheduled) => {
+                    const scheduledPoint = scheduled.scheduledStop?.stopPoint || scheduled.stopPoint || {};
+                    return point.uic && Number(scheduledPoint.uic) === Number(point.uic);
+                })
+            )
+        );
         const tripStop = trip?.stops?.find((candidate) => {
             const ref = String(candidate.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
             return ref && point.uic && Number(ref) === Number(point.uic) % 100000;
@@ -221,12 +229,16 @@ async function fetchFormation() {
             arrivalTime: scheduledStop.stopTime?.arrivalTime ?? entry.stopTime?.arrivalTime,
             departureTime: scheduledStop.stopTime?.departureTime ?? entry.stopTime?.departureTime,
             stopType: scheduledStop.stopType,
+            stopModifications: scheduledStop.stopModifications,
+            hasFormation: Boolean(entry.formationShort?.formationShortString) || hasVehicleFormation,
             track: entry.track || entry.stopTime?.track || scheduledStop.track || scheduledStop.quay
                 || point.track || point.quay || tripStop?.quay,
             formationShort: entry.formationShort || {},
             vehicleGoals: entry.formationShort?.vehicleGoals || []
         };
     });
+    console.table(stops.map(({ uic, name, stopType, stopModifications, hasFormation }) =>
+        ({ uic, name, stopType, stopModifications, hasFormation })));
     try {
         const response = await fetch(new URL('./uic-namen.json', import.meta.url));
         if (!response.ok) throw new Error(`UIC-Namensmapping konnte nicht geladen werden: HTTP ${response.status}`);
@@ -382,7 +394,8 @@ function createMasterRows(trip, stops) {
             accessibility: null,
             requestStop: false,
             isThisCall: false,
-            serviceStop: String(stop.stopType || '').startsWith('-')
+            serviceStop: String(stop.stopType || '').startsWith('-'),
+            noFormation: stop.hasFormation === false
         }));
     }
     let formationCursor = 0;
@@ -395,7 +408,13 @@ function createMasterRows(trip, stops) {
                 || (row.name && stopName && row.name.trim().toLowerCase() === stopName.trim().toLowerCase());
         });
         if (match >= 0) formationCursor = match + 1;
-        return { ...row, fIdx: match >= 0 ? match : undefined, tripIndex };
+        const matchedStop = match >= 0 ? stops[match] : null;
+        return {
+            ...row,
+            fIdx: match >= 0 ? match : undefined,
+            tripIndex,
+            noFormation: Boolean(matchedStop?.hasFormation === false && row.cancelled !== true)
+        };
     });
     const rows = [...tripRows];
     stops.forEach((stop, fIdx) => {
@@ -409,7 +428,8 @@ function createMasterRows(trip, stops) {
             departure: { timetabled: stop.departureTime, estimated: null, delaySec: null },
             accessibility: null,
             requestStop: false,
-            serviceStop: true
+            serviceStop: true,
+            noFormation: stop.hasFormation === false
         };
         const nextIndex = rows.findIndex((row) => row.fIdx !== undefined && row.fIdx > fIdx);
         rows.splice(nextIndex >= 0 ? nextIndex : rows.length, 0, serviceRow);
