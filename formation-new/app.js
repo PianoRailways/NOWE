@@ -300,7 +300,7 @@ function updateTripRows(trip) {
     if (!trip?.stops) return;
     window.formationData.trip = trip;
     trip.stops.forEach((row, index) => {
-        const element = document.querySelectorAll('.formation-stop')[index];
+        const element = document.querySelector(`.formation-stop[data-trip-index="${index}"]`);
         if (!element) return;
         const timeRows = element.querySelectorAll('.time-row');
         const values = [row.arrival, row.departure].filter(Boolean);
@@ -708,7 +708,7 @@ function renderStopChain() {
         const rowBody = `<span class="chain-stop-text"><a class="${stopClasses}" href="${link}">${stopLabel(stop.uic, row.name)}</a>${cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quayHtml ? `<small class="${row.platformChanged ? 'platform-changed' : ''}">${quayHtml}</small>` : ''}</span>`;
         const stopClass = [isFirst ? 'formation-stop--first' : '', isLast ? 'formation-stop--last' : '', service ? 'is-service' : ''].filter(Boolean).join(' ');
         return `${daySeparator}
-            <section class="formation-stop ${stopClass}" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}">
+            <section class="formation-stop ${stopClass}" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}" data-trip-index="${row.tripIndex ?? ''}">
                 <button class="formation-stop-row ${cancelled ? 'stop-cancelled' : ''}" type="button" data-formation-index="${fIdx ?? ''}" ${fIdx === undefined ? 'disabled' : ''}>
                     <span class="chain-times">${times}</span>
                     <span class="chain-marker"><span class="chain-dot"></span></span>
@@ -789,14 +789,14 @@ function updateVehicleMarker() {
     }
 
     const rows = [...chain.querySelectorAll('.formation-stop')];
-    const currentRow = rows.find((row) => Number(row.dataset.rowIndex) === position.stopIndex);
+    const currentRow = rows.find((row) => Number(row.dataset.tripIndex) === position.stopIndex);
     if (!currentRow) {
         marker.hidden = true;
         return;
     }
     const nextRow = position.nextStopIndex === undefined
         ? currentRow
-        : rows.find((row) => Number(row.dataset.rowIndex) === position.nextStopIndex) || currentRow;
+        : rows.find((row) => Number(row.dataset.tripIndex) === position.nextStopIndex) || currentRow;
     const chainRect = chain.getBoundingClientRect();
     const currentDot = currentRow.querySelector('.chain-dot').getBoundingClientRect();
     const nextDot = nextRow.querySelector('.chain-dot').getBoundingClientRect();
