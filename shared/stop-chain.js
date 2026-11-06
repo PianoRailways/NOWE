@@ -59,6 +59,9 @@ export function renderStopChain(state, { expandable = false, stopLabel = stopNam
                 ? timeRow(arrival, row.arrival?.estimated, row.arrival?.delaySec, 'arr')
                 : `${timeRow(arrival, row.arrival?.estimated, row.arrival?.delaySec, 'arr')}${timeRow(departure, row.departure?.estimated, row.departure?.delaySec, 'dep')}`;
         const name = stopLabel(row);
+        const stopReference = row.stopPointRef || row.name;
+        const operatingDay = state.trip?.operatingDay || state.journeyMeta?.operationDate || '';
+        const stopLink = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(stopReference || '')}&date=${encodeURIComponent(operatingDay)}${dateValue ? `&time=${encodeURIComponent(formatTime(dateValue))}` : ''}`;
         const quay = row.platformChanged
             ? `<del class="planned-quay">Gl. ${row.plannedQuay}</del><strong class="estimated-quay">Gl. ${row.estimatedQuay}</strong>`
             : (row.quay ? `Gl. ${row.quay}` : '');
@@ -68,7 +71,7 @@ export function renderStopChain(state, { expandable = false, stopLabel = stopNam
             <${expandable ? 'button' : 'div'} class="formation-stop-row ${row.cancelled ? 'stop-cancelled' : ''}" type="${expandable ? 'button' : ''}">
                 <span class="chain-times">${times}</span>
                 <span class="chain-marker"><span class="chain-dot"></span></span>
-                <span class="chain-stop-text"><a class="${classes}" href="./?sjyid=${encodeURIComponent(row.swissJourneyId || '')}">${name}</a>${row.cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>${quay}</small>` : ''}</span>
+                <span class="chain-stop-text"><a class="${classes}" href="${stopLink}">${name}</a>${row.cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>${quay}</small>` : ''}</span>
                 ${expandable ? '<span class="stop-arrow" aria-hidden="true">›</span>' : ''}
             </${expandable ? 'button' : 'div'}>
             ${expandable ? '<div class="formation-panel"></div>' : ''}
