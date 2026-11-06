@@ -45,3 +45,5 @@
 - Behandle Fehlerwerte robust, weil `error` sowohl String als auch Objekt mit `message` sein kann.
 - Staple keine `visibilitychange`-, `resize-` oder `pagehide`-Listener bei wiederholten Aktualisierungen auf.
 - Setze Formation-Links relativ auf `./formation-new/?train=...&evu=...&date=...` und lasse nicht unterstützte Betreiber ohne Link.
+- Behandle alle Apps als iOS-Webclip im Standalone-Modus: binde `shared/HEAD-SNIPPET.html` sinngemäss und `shared/webclip.css` ein, versehe feste Header mit Safe-Area-Inset und Formularfelder mit mindestens 16px Schrift.
+- Führe Node.js und PHP lokal nicht aus, chatte nicht unnötig und committe mehrstufige Änderungen nach jedem Schritt einzeln.
