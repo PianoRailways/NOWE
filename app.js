@@ -378,6 +378,12 @@ function getDelayClass(delayMinutes) {
     return '';                                              // ≥1 Min (rot, default)
 }
 
+function updateBoardControls(hasBoard) {
+    document.getElementById('departure-time-controls')?.classList.toggle('hidden', !hasBoard);
+    document.getElementById('departure-time-controls-next')?.classList.toggle('hidden', !hasBoard);
+    document.getElementById('gtfs-search-control')?.classList.toggle('hidden', hasBoard);
+}
+
 function renderBoard(departures) {
 	//console.log("Sichtbare Stationen:", departures.map(d => d.stopName));
     // 1. Filtern der Abfahrten (Unterstützt Multi-Select Sets)
@@ -393,12 +399,6 @@ function renderBoard(departures) {
     if (visible.length === 0) {
         board.innerHTML = '<p class="empty">Keine Abfahrten für diesen Filter gefunden.</p>';
         return;
-    }
-
-    function updateBoardControls(hasBoard) {
-        document.getElementById('departure-time-controls')?.classList.toggle('hidden', !hasBoard);
-        document.getElementById('departure-time-controls-next')?.classList.toggle('hidden', !hasBoard);
-        document.getElementById('gtfs-search-control')?.classList.toggle('hidden', hasBoard);
     }
 
     // Prüfen, ob wir Daten von verschiedenen Stationen haben (für den StationHint)
