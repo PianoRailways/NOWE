@@ -40,11 +40,12 @@ if ($number !== '' && $error === '' && file_exists($dbFile)) {
         ]);
 
         $stmt = $pdo->prepare("
-            SELECT trip_id, destination, sjyid, hints, date 
-            FROM trips 
-            WHERE trip_short_name = :number AND date = :date
+            SELECT DISTINCT t.destination, t.sjyid, t.hints
+            FROM trips t
+            JOIN service_dates d ON d.service_id = t.service_id
+            WHERE t.trip_short_name = :number AND d.date = :date
         ");
-        $stmt->execute([':number' => $number, ':date' => $date]);
+        $stmt->execute([':number' => $number, ':date' => (int) $date]);
         $results = $stmt->fetchAll();
 
     } catch (Exception $e) {
@@ -151,7 +152,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
         <h2 class="gtfs-results-title">Gefundene Fahrten (<?= count($results) ?>)</h2>
         <div class="gtfs-trips">
             <?php foreach ($results as $row): ?>
-                <?php 
+                <?php
                     $sjyidEncoded = urlencode($row['sjyid']);
                     $noweUrl = "https://nowe.stellwerksim.ch/trip/?sjyid=" . $sjyidEncoded . "&date=" . $formattedDate;
                 ?>
