@@ -4,10 +4,14 @@
     border-bottom: 1px solid var(--border);
 }
 
-#main-content {
-    min-height: 0;
+html, body {
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+#main-content {
+    flex: none;
+    overflow: visible;
     touch-action: pan-y;
 }
 
