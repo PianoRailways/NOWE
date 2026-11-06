@@ -7,6 +7,7 @@ import {
     updateClock,
     initHeaderHeight
 } from '../shared/stop-chain.js';
+import { renderTripHeader } from '../shared/trip-header.js';
 
 const state = {
     trip: null,
@@ -24,16 +25,10 @@ function showMessage(message, type = 'info') {
     result.innerHTML = `<div class="${type === 'error' ? 'error-message' : 'info-message'}">${message}</div>`;
 }
 
-function renderTripHeader(trip) {
-    const type = (trip.category || '').replace(/[0-9\s]/g, '').trim();
-    return `<div class="trip-only-status"><span class="line-badge" data-type="${type}">${trip.line || trip.category || ''}</span> · ${trip.trainNumber || ''} · ${trip.destination || ''}</div>
-        <div class="stop-chain" id="stopChain"></div>`;
-}
-
 function renderTrip(trip) {
     state.trip = trip;
     state.rows = trip.stops.map((stop, tripIndex) => ({ ...stop, tripIndex }));
-    $('result').innerHTML = renderTripHeader(trip);
+    $('result').innerHTML = `${renderTripHeader(trip, { links: 'trip' })}<div class="stop-chain" id="stopChain"></div>`;
     renderStopChain(state, { expandable: false, stopLabel: (row) => row.name || row.stopName || 'Unbekannter Halt' });
     updateVehicleMarker(state);
 }
