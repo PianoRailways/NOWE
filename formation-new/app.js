@@ -629,7 +629,7 @@ function stopLabel(uic, name) {
 
 function timeRow(value, estimated, delay, kind) {
     return `<div class="time-row" data-tt="${value || ''}" data-est="${estimated || ''}" data-delay="${delay || 0}">
-        <span class="ps-time ps-time--${kind}">${fmtTime(value) || '--:--'}</span>${delayLabel(delay)}
+        <span class="ps-time ps-time--${kind}">${fmtTime(value) || '--:--'}</span><span class="delay-slot">${delayLabel(delay)}</span>
     </div>`;
 }
 
