@@ -4,7 +4,8 @@ import {
     startTripRefresh,
     stopTripRefresh,
     updateVehicleMarker,
-    updateClock
+    updateClock,
+    initHeaderHeight
 } from '../shared/stop-chain.js';
 
 const state = {
@@ -61,6 +62,7 @@ async function loadTrip(journeyId, date) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initHeaderHeight();
     const dateInput = $('trip-date');
     const params = new URLSearchParams(window.location.search);
     const journeyId = params.get('sjyid') || '';

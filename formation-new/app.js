@@ -41,12 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     document.getElementById('date').valueAsDate = new Date();
-    const header = document.getElementById('app-header');
-    if (header && 'ResizeObserver' in window) {
-        const updateHeaderHeight = () => document.documentElement.style.setProperty('--header-h', `${header.getBoundingClientRect().height}px`);
-        new ResizeObserver(updateHeaderHeight).observe(header);
-        updateHeaderHeight();
-    }
+    sharedStopChain.initHeaderHeight();
     updateClock();
     setInterval(updateClock, 1000);
     document.getElementById('btn-home')?.addEventListener('click', () => { window.location = '../'; });

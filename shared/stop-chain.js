@@ -1,5 +1,15 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
 
+export function initHeaderHeight() {
+    const header = document.getElementById('app-header');
+    if (!header) return;
+    const update = () => document.documentElement.style.setProperty('--header-h', `${header.getBoundingClientRect().height}px`);
+    update();
+    if ('ResizeObserver' in window) new ResizeObserver(update).observe(header);
+    window.addEventListener('resize', update);
+    window.addEventListener('orientationchange', update);
+}
+
 export function updateClock() {
     const element = document.getElementById('live-clock');
     if (element) element.textContent = new Date().toLocaleTimeString('de-CH');
