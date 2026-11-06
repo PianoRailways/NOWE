@@ -129,7 +129,7 @@ function parseSituations(xmlDoc) {
 
 // ─── Parser ───────────────────────────────────────────────────────────────────
 
-function parseTripInfoResponse(xmlString) {
+function parseTripInfoResponse(xmlString, swissJourneyId, operatingDay) {
     const parser  = new DOMParser();
     const xmlDoc  = parser.parseFromString(xmlString, 'text/xml');
 
@@ -156,6 +156,8 @@ function parseTripInfoResponse(xmlString) {
     };
 
     const trainNumber  = g(svc, 'TrainNumber');
+    const serviceJourneyId = g(svc, 'JourneyRef') || swissJourneyId;
+    const serviceOperatingDay = g(svc, 'OperatingDayRef') || operatingDay;
     const publicCode   = g(svc, 'PublicCode');
     const destination  = svc.getElementsByTagName('DestinationText')[0]
                             ?.getElementsByTagName('Text')[0]?.textContent?.trim() || '';
@@ -290,7 +292,12 @@ function parseTripInfoResponse(xmlString) {
         });
     });
 
-    const trip = { 
+    const lastArrival = stops.at(-1)?.arrival?.estimated || stops.at(-1)?.arrival?.timetabled;
+    const isFinal = Boolean(lastArrival && Date.now() - new Date(lastArrival).getTime() > 10 * 60 * 1000);
+    const trip = {
+        swissJourneyId: serviceJourneyId,
+        operatingDay: serviceOperatingDay,
+        isFinal,
         trainNumber, 
         line: publicCode, 
         category, 
@@ -339,5 +346,5 @@ export async function fetchTripInfo(swissJourneyId, operatingDay = null) {
     }
 
     const xml = await response.text();
-    return parseTripInfoResponse(xml);
+    return parseTripInfoResponse(xml, swissJourneyId.trim(), operatingDay);
 }
