@@ -81,12 +81,15 @@
     <div id="status-message"></div>
 
     <!-- ═══════════════ ABFAHRTSTAFEL ═══════════════ -->
-	<div class="time-controls"><button id="btn-time-prev">↑ Früher (20')</button></div> 
+    <div class="time-controls" id="departure-time-controls"><button id="btn-time-prev">↑ Früher (20')</button></div>
     <main id="board-container">
         <div id="departure-board"></div>
     </main>
-<div class="time-controls">
+<div class="time-controls" id="departure-time-controls-next">
     <button id="btn-time-next">↓ Später (20')</button>
+</div>
+<div class="gtfs-search-control" id="gtfs-search-control">
+    <a class="gtfs-search-button" href="./GTFS/">Fahrt über Fahrtnummer suchen</a>
 </div>
 	<script src="./didokMappingNOWE.js"></script>
 	<script src="./includedStationsNOWE.js"></script>
