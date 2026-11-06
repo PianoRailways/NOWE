@@ -475,14 +475,14 @@ body {
     display: inline-block;
     padding: 10px 16px;
     border-radius: 4px;
-    background: var(--sbb-red);
-    color: #fff;
+    background: var(--pifas-timenav);
+    color: var(--sbb-blue);
     font-weight: 700;
     text-decoration: none;
 }
 
 .gtfs-search-button:hover {
-    background: var(--sbb-blue);
+    background: #fff;
 }
 
 .departure-table thead tr {

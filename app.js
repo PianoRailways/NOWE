@@ -388,7 +388,7 @@ function renderBoard(departures) {
     
     const board = DOM.board();
     if (!board) return;
-    updateBoardControls(departures.length > 0);
+    updateBoardControls(visible.length > 0);
 
     if (visible.length === 0) {
         board.innerHTML = '<p class="empty">Keine Abfahrten für diesen Filter gefunden.</p>';
