@@ -114,8 +114,11 @@ async function loadTripOnly(sjyid, date) {
             <div class="trip-only-status">${trip.category || ''} ${trip.line || ''} · ${trip.trainNumber || ''}</div>
             <div class="stop-chain" id="stopChain"></div>`;
         window.formationData = { formations: [], stops, rows, trip, relationships: [] };
-        renderStopChain();
-        startTripRefresh();
+        sharedStopChain.renderStopChain(window.formationData, {
+            expandable: false,
+            stopLabel: (row) => stopLabel(row.uic, row.name)
+        });
+        sharedStopChain.startTripRefresh(window.formationData);
     } catch {
         // Ein Trip-Link darf die Formationsseite nicht stoeren.
     }
@@ -266,8 +269,12 @@ async function fetchFormation() {
 
     updateRelatedJourneys(foundData.relationships || []);
 
-    renderStopChain();
-    startTripRefresh();
+    sharedStopChain.renderStopChain(window.formationData, {
+        expandable: true,
+        stopLabel: (row) => stopLabel(row.uic, row.name),
+        onToggle: toggleStop
+    });
+    sharedStopChain.startTripRefresh(window.formationData);
 }
 
 function syncFormationUrl(train, evu, date) {

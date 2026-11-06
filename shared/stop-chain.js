@@ -37,7 +37,7 @@ function stopName(row) {
     return row.name || row.stopName || 'Unbekannter Halt';
 }
 
-export function renderStopChain(state, { expandable = false, stopLabel = stopName } = {}) {
+export function renderStopChain(state, { expandable = false, stopLabel = stopName, onToggle, renderPanel } = {}) {
     const chain = document.getElementById('stopChain');
     if (!chain) return;
     const rows = state.rows || state.trip?.stops || [];
@@ -67,16 +67,24 @@ export function renderStopChain(state, { expandable = false, stopLabel = stopNam
             : (row.quay ? `Gl. ${row.quay}` : '');
         const service = row.serviceStop === true;
         const classes = [row.unplannedStop ? 'stop-unplanned' : '', row.cancelled ? 'stop-cancelled' : '', service ? 'service-name' : ''].filter(Boolean).join(' ');
-        return `${daySeparator}<section class="formation-stop ${isFirst ? 'formation-stop--first' : ''} ${isLast ? 'formation-stop--last' : ''} ${service ? 'is-service' : ''}" data-trip-index="${row.tripIndex ?? index}" data-row-index="${index}">
-            <${expandable ? 'button' : 'div'} class="formation-stop-row ${row.cancelled ? 'stop-cancelled' : ''}" type="${expandable ? 'button' : ''}">
+        return `${daySeparator}<section class="formation-stop ${isFirst ? 'formation-stop--first' : ''} ${isLast ? 'formation-stop--last' : ''} ${service ? 'is-service' : ''}" data-stop-index="${row.fIdx ?? ''}" data-trip-index="${row.tripIndex ?? index}" data-row-index="${index}">
+            <${expandable ? 'button' : 'div'} class="formation-stop-row ${row.cancelled ? 'stop-cancelled' : ''}" type="${expandable ? 'button' : ''}" data-formation-index="${row.fIdx ?? ''}">
                 <span class="chain-times">${times}</span>
                 <span class="chain-marker"><span class="chain-dot"></span></span>
                 <span class="chain-stop-text"><a class="${classes}" href="${stopLink}">${name}</a>${row.cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>${quay}</small>` : ''}</span>
                 ${expandable ? '<span class="stop-arrow" aria-hidden="true">›</span>' : ''}
             </${expandable ? 'button' : 'div'}>
-            ${expandable ? '<div class="formation-panel"></div>' : ''}
+            ${expandable ? `<div class="formation-panel" id="formation-panel-${row.fIdx ?? index}"></div>` : ''}
         </section>`;
     }).join('');
+    if (expandable && onToggle) {
+        chain.querySelectorAll('.formation-stop-row').forEach((row) => {
+            if (row.dataset.formationIndex === '') return;
+            row.addEventListener('click', (event) => {
+                if (!event.target.closest('a')) onToggle(Number(row.dataset.formationIndex));
+            });
+        });
+    }
     setupTimeRows(chain);
     updateVehicleMarker(state);
 }
