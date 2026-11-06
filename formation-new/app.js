@@ -373,11 +373,12 @@ function createMasterRows(trip, stops) {
             departure: { timetabled: stop.departureTime, estimated: null, delaySec: null },
             accessibility: null,
             requestStop: false,
-            isThisCall: false
+            isThisCall: false,
+            serviceStop: String(stop.stopType || '').startsWith('-')
         }));
     }
     let formationCursor = 0;
-    return trip.stops.map((row) => {
+    const tripRows = trip.stops.map((row, tripIndex) => {
         const match = stops.findIndex((stop, index) => {
             if (index < formationCursor) return false;
             const ref = String(row.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
@@ -386,8 +387,26 @@ function createMasterRows(trip, stops) {
                 || (row.name && stopName && row.name.trim().toLowerCase() === stopName.trim().toLowerCase());
         });
         if (match >= 0) formationCursor = match + 1;
-        return { ...row, fIdx: match >= 0 ? match : undefined };
+        return { ...row, fIdx: match >= 0 ? match : undefined, tripIndex };
     });
+    const rows = [...tripRows];
+    stops.forEach((stop, fIdx) => {
+        if (tripRows.some((row) => row.fIdx === fIdx)) return;
+        const serviceRow = {
+            name: stopLabel(stop.uic, stop.name),
+            stopPointRef: '',
+            quay: stop.track,
+            fIdx,
+            arrival: { timetabled: stop.arrivalTime, estimated: null, delaySec: null },
+            departure: { timetabled: stop.departureTime, estimated: null, delaySec: null },
+            accessibility: null,
+            requestStop: false,
+            serviceStop: true
+        };
+        const nextIndex = rows.findIndex((row) => row.fIdx !== undefined && row.fIdx > fIdx);
+        rows.splice(nextIndex >= 0 ? nextIndex : rows.length, 0, serviceRow);
+    });
+    return rows;
 }
 
 function updateRelatedJourneys(relationships) {
