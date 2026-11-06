@@ -53,33 +53,6 @@
     cursor: pointer;
 }
 
-.trip-only-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 48px;
-}
-
-.line-badge {
-    display: inline-block;
-    min-width: 44px;
-    padding: 2px 8px;
-    border: 1px solid #000;
-    border-radius: 2px;
-    background: var(--sbb-red);
-    color: #fff;
-    font-weight: 600;
-    text-align: center;
-}
-
-.line-badge[data-type="RE"],
-.line-badge[data-type="IR"],
-.line-badge[data-type="R"],
-.line-badge[data-type="S"] {
-    background: #fff;
-    color: #000;
-}
-
 @media (max-width: 520px) {
     .trip-input-row { flex-wrap: wrap; }
     #trip-input { flex-basis: calc(100% - 58px); }
