@@ -1,5 +1,6 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
 import * as sharedStopChain from '../shared/stop-chain.js';
+import { renderTripHeader } from '../shared/trip-header.js';
 
 let tripRefreshTimer = null;
 let markerRefreshTimer = null;
@@ -106,7 +107,7 @@ async function loadTripOnly(sjyid, date) {
             fIdx: undefined
         }));
         document.getElementById('result').innerHTML = `
-            <div class="trip-only-status">${trip.category || ''} ${trip.line || ''} · ${trip.trainNumber || ''}</div>
+            ${renderTripHeader(trip, { links: 'formation' })}
             <div class="stop-chain" id="stopChain"></div>`;
         window.formationData = { formations: [], stops, rows, trip, relationships: [] };
         sharedStopChain.renderStopChain(window.formationData, {
@@ -234,7 +235,11 @@ async function fetchFormation() {
         stopNames = {};
     }
 
+    const header = trip
+        ? renderTripHeader(trip, { links: 'formation' })
+        : `<div class="trip-header"><div class="line-container"><span class="trip-header__num">${escapeHtml(journeyMeta.trainNumber || foundData.trainMetaInformation?.trainNumber || train)}</span></div></div>`;
     const html = `
+        ${header}
         <div class="stop-chain" id="stopChain"></div>
         <div class="related-journeys" aria-label="Verbundene Fahrten">
             <div class="related-journey">
