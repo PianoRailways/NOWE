@@ -4,10 +4,10 @@ import {
     startTripRefresh,
     stopTripRefresh,
     updateVehicleMarker,
-    updateClock,
-    initHeaderHeight
+    updateClock
 } from '../shared/stop-chain.js';
 import { renderTripHeader } from '../shared/trip-header.js';
+import { initHeaderHeight, blockZoom } from '../shared/header.js?v=1';
 
 const state = {
     trip: null,
@@ -58,6 +58,7 @@ async function loadTrip(journeyId, date) {
 
 document.addEventListener('DOMContentLoaded', () => {
     initHeaderHeight();
+    blockZoom();
     const dateInput = $('trip-date');
     const params = new URLSearchParams(window.location.search);
     const journeyId = params.get('sjyid') || '';

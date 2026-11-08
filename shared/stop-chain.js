@@ -1,15 +1,6 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
 import { formatCountdown, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from './countdown.js';
-
-export function initHeaderHeight() {
-    const header = document.getElementById('app-header');
-    if (!header) return;
-    const update = () => document.documentElement.style.setProperty('--header-h', `${header.getBoundingClientRect().height}px`);
-    update();
-    if ('ResizeObserver' in window) new ResizeObserver(update).observe(header);
-    window.addEventListener('resize', update);
-    window.addEventListener('orientationchange', update);
-}
+export { initHeaderHeight } from './header.js?v=1';
 
 export function updateClock() {
     const element = document.getElementById('live-clock');
