@@ -997,16 +997,3 @@ tr.dep-row.filtered-dest + tr.chain-row {
     font-size: 0.9em;
     color: var(--text-secondary, #999);
 }
-
-.page-footer {
-	text-decoration: none;
-	padding: 25px 14px;
-	margin-top: auto;
-	border-top: 1px solid var(--border);
-	background: var(--header-bg);
-}
-
-.page-footer a, a:hover, a:active {
-	color: var(--sbb-red);
-	text-decoration: none;
- }
