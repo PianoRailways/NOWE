@@ -750,9 +750,11 @@ function setupTimeRows() {
             const target = row.dataset.est || row.dataset.tt;
             if (!target) return;
             const time = row.querySelector('.ps-time');
+            const delayBadge = row.querySelector('.delay-badge');
             if (row._countdownTimer) window.clearInterval(row._countdownTimer);
             if (row._countdownTimeout) window.clearTimeout(row._countdownTimeout);
             row.dataset.countdownActive = 'true';
+            if (delayBadge) delayBadge.hidden = true;
             const update = () => {
                 time.textContent = formatCountdown(target) || fmtTime(row.dataset.tt) || '--:--';
             };
@@ -764,6 +766,7 @@ function setupTimeRows() {
                 row._countdownTimeout = null;
                 delete row.dataset.countdownActive;
                 time.textContent = fmtTime(row.dataset.tt) || '--:--';
+                if (delayBadge) delayBadge.hidden = false;
             }, 10000);
         });
     });

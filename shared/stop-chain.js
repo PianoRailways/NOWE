@@ -109,9 +109,11 @@ export function setupTimeRows(root = document) {
             const target = row.dataset.est || row.dataset.tt;
             if (!target) return;
             const time = row.querySelector('.ps-time');
+            const delayBadge = row.querySelector('.delay-badge');
             if (row._countdownTimer) window.clearInterval(row._countdownTimer);
             if (row._countdownTimeout) window.clearTimeout(row._countdownTimeout);
             row.dataset.countdownActive = 'true';
+            if (delayBadge) delayBadge.hidden = true;
             const update = () => {
                 time.textContent = formatCountdown(target) || fmtTime(row.dataset.tt) || '--:--';
             };
@@ -123,6 +125,7 @@ export function setupTimeRows(root = document) {
                 row._countdownTimeout = null;
                 delete row.dataset.countdownActive;
                 time.textContent = fmtTime(row.dataset.tt) || '--:--';
+                if (delayBadge) delayBadge.hidden = false;
             }, 10000);
         });
     });
@@ -145,7 +148,10 @@ export function updateTripRows(state, trip) {
             if (time.dataset.countdownActive !== 'true') {
                 time.querySelector('.ps-time').textContent = fmtTime(value.timetabled) || '--:--';
             }
-            time.querySelector('.delay-slot').innerHTML = delayLabel(value.delaySec);
+            const delaySlot = time.querySelector('.delay-slot');
+            delaySlot.innerHTML = delayLabel(value.delaySec);
+            const delayBadge = delaySlot.querySelector('.delay-badge');
+            if (delayBadge) delayBadge.hidden = time.dataset.countdownActive === 'true';
         });
         const quay = row.querySelector('.chain-stop-text small:not(.stop-cancelled):not(.no-formation-hint)');
         const quayHtml = stop.platformChanged

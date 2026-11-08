@@ -609,9 +609,11 @@ function renderBoard(departures) {
                 if (!target) return;
                 const time = cell.querySelector('.time');
                 if (!time) return;
+                const delayBadge = cell.querySelector('.delay-badge');
                 if (cell._countdownTimer) window.clearInterval(cell._countdownTimer);
                 if (cell._countdownTimeout) window.clearTimeout(cell._countdownTimeout);
                 cell.dataset.countdownActive = 'true';
+                if (delayBadge) delayBadge.style.display = 'none';
                 const update = () => {
                     time.textContent = formatCountdown(target) || time.textContent;
                 };
@@ -622,6 +624,7 @@ function renderBoard(departures) {
                     cell._countdownTimer = null;
                     delete cell.dataset.countdownActive;
                     time.textContent = cell.dataset.displayTime || time.textContent;
+                    if (delayBadge) delayBadge.style.display = '';
                 }, 10000);
             });
             cell.dataset.displayTime = cell.querySelector('.time')?.textContent || '';
