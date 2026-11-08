@@ -1,4 +1,6 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
+import * as sharedStopChain from '../shared/stop-chain.js';
+import { renderTripHeader } from '../shared/trip-header.js';
 
 let tripRefreshTimer = null;
 let markerRefreshTimer = null;
@@ -40,12 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
     document.getElementById('date').valueAsDate = new Date();
-    const header = document.getElementById('app-header');
-    if (header && 'ResizeObserver' in window) {
-        const updateHeaderHeight = () => document.documentElement.style.setProperty('--header-h', `${header.getBoundingClientRect().height}px`);
-        new ResizeObserver(updateHeaderHeight).observe(header);
-        updateHeaderHeight();
-    }
+    sharedStopChain.initHeaderHeight();
     updateClock();
     setInterval(updateClock, 1000);
     document.getElementById('btn-home')?.addEventListener('click', () => { window.location = '../'; });
@@ -110,11 +107,14 @@ async function loadTripOnly(sjyid, date) {
             fIdx: undefined
         }));
         document.getElementById('result').innerHTML = `
-            <div class="trip-only-status">${trip.category || ''} ${trip.line || ''} · ${trip.trainNumber || ''}</div>
+            ${renderTripHeader(trip, { links: 'formation' })}
             <div class="stop-chain" id="stopChain"></div>`;
         window.formationData = { formations: [], stops, rows, trip, relationships: [] };
-        renderStopChain();
-        startTripRefresh();
+        sharedStopChain.renderStopChain(window.formationData, {
+            expandable: false,
+            stopLabel: (row) => stopLabel(row.uic, row.name)
+        });
+        sharedStopChain.startTripRefresh(window.formationData);
     } catch {
         // Ein Trip-Link darf die Formationsseite nicht stoeren.
     }
@@ -210,6 +210,14 @@ async function fetchFormation() {
     const stops = (foundData.formationsAtScheduledStops || []).map((entry, index) => {
         const scheduledStop = entry.scheduledStop || entry;
         const point = scheduledStop.stopPoint || {};
+        const hasVehicleFormation = (foundData.formations || []).some((formation) =>
+            (formation.formationVehicles || []).some((vehicle) =>
+                (vehicle.formationVehicleAtScheduledStops || []).some((scheduled) => {
+                    const scheduledPoint = scheduled.scheduledStop?.stopPoint || scheduled.stopPoint || {};
+                    return point.uic && Number(scheduledPoint.uic) === Number(point.uic);
+                })
+            )
+        );
         const tripStop = trip?.stops?.find((candidate) => {
             const ref = String(candidate.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
             return ref && point.uic && Number(ref) === Number(point.uic) % 100000;
@@ -221,12 +229,16 @@ async function fetchFormation() {
             arrivalTime: scheduledStop.stopTime?.arrivalTime ?? entry.stopTime?.arrivalTime,
             departureTime: scheduledStop.stopTime?.departureTime ?? entry.stopTime?.departureTime,
             stopType: scheduledStop.stopType,
+            stopModifications: scheduledStop.stopModifications,
+            hasFormation: Boolean(entry.formationShort?.formationShortString) || hasVehicleFormation,
             track: entry.track || entry.stopTime?.track || scheduledStop.track || scheduledStop.quay
                 || point.track || point.quay || tripStop?.quay,
             formationShort: entry.formationShort || {},
             vehicleGoals: entry.formationShort?.vehicleGoals || []
         };
     });
+    console.table(stops.map(({ uic, name, stopType, stopModifications, hasFormation }) =>
+        ({ uic, name, stopType, stopModifications, hasFormation })));
     try {
         const response = await fetch(new URL('./uic-namen.json', import.meta.url));
         if (!response.ok) throw new Error(`UIC-Namensmapping konnte nicht geladen werden: HTTP ${response.status}`);
@@ -235,7 +247,11 @@ async function fetchFormation() {
         stopNames = {};
     }
 
+    const header = trip
+        ? renderTripHeader(trip, { links: 'formation' })
+        : `<div class="trip-header"><div class="line-container"><span class="trip-header__num">${escapeHtml(journeyMeta.trainNumber || foundData.trainMetaInformation?.trainNumber || train)}</span></div></div>`;
     const html = `
+        ${header}
         <div class="stop-chain" id="stopChain"></div>
         <div class="related-journeys" aria-label="Verbundene Fahrten">
             <div class="related-journey">
@@ -265,8 +281,12 @@ async function fetchFormation() {
 
     updateRelatedJourneys(foundData.relationships || []);
 
-    renderStopChain();
-    startTripRefresh();
+    sharedStopChain.renderStopChain(window.formationData, {
+        expandable: true,
+        stopLabel: (row) => stopLabel(row.uic, row.name),
+        onToggle: toggleStop
+    });
+    sharedStopChain.startTripRefresh(window.formationData);
 }
 
 function syncFormationUrl(train, evu, date) {
@@ -296,27 +316,6 @@ function stopMarkerRefresh() {
     markerRefreshTimer = null;
 }
 
-function updateTripRows(trip) {
-    if (!trip?.stops) return;
-    window.formationData.trip = trip;
-    trip.stops.forEach((row, index) => {
-        const element = document.querySelector(`.formation-stop[data-trip-index="${index}"]`);
-        if (!element) return;
-        const timeRows = element.querySelectorAll('.time-row');
-        const values = [row.arrival, row.departure].filter(Boolean);
-        timeRows.forEach((timeRow, timeIndex) => {
-            const value = values[timeIndex];
-            if (!value) return;
-            timeRow.dataset.est = value.estimated || '';
-            timeRow.dataset.delay = value.delaySec || 0;
-            const time = timeRow.querySelector('.ps-time');
-            if (time) time.textContent = fmtTime(value.timetabled) || '--:--';
-        });
-    });
-    setupTimeRows();
-    updateVehicleMarker();
-}
-
 async function refreshTrip() {
     if (tripRefreshRunning || document.hidden || !window.formationData?.trip) return;
     const meta = window.formationData.trip;
@@ -327,7 +326,7 @@ async function refreshTrip() {
         const operationDate = window.formationData.journeyMeta?.operationDate
             || document.getElementById('date').value;
         const updated = await fetchTripInfo(journeyId, operationDate);
-        updateTripRows(updated);
+        sharedStopChain.updateTripRows(window.formationData, updated);
         if (updated?.isFinal) stopTripRefresh();
     } catch {
         // Live-Daten sind optional.
@@ -352,8 +351,8 @@ function startTripRefresh() {
     });
     window.addEventListener('resize', () => {
         if (!document.hidden) {
-            updateTripRows(window.formationData?.trip);
-            updateVehicleMarker();
+            sharedStopChain.updateTripRows(window.formationData, window.formationData?.trip);
+            sharedStopChain.updateVehicleMarker(window.formationData);
         }
     });
     window.addEventListener('pagehide', () => {
@@ -374,7 +373,8 @@ function createMasterRows(trip, stops) {
             accessibility: null,
             requestStop: false,
             isThisCall: false,
-            serviceStop: String(stop.stopType || '').startsWith('-')
+            serviceStop: String(stop.stopType || '').startsWith('-'),
+            noFormation: stop.hasFormation === false
         }));
     }
     let formationCursor = 0;
@@ -387,7 +387,13 @@ function createMasterRows(trip, stops) {
                 || (row.name && stopName && row.name.trim().toLowerCase() === stopName.trim().toLowerCase());
         });
         if (match >= 0) formationCursor = match + 1;
-        return { ...row, fIdx: match >= 0 ? match : undefined, tripIndex };
+        const matchedStop = match >= 0 ? stops[match] : null;
+        return {
+            ...row,
+            fIdx: match >= 0 ? match : undefined,
+            tripIndex,
+            noFormation: Boolean(matchedStop?.hasFormation === false && row.cancelled !== true)
+        };
     });
     const rows = [...tripRows];
     stops.forEach((stop, fIdx) => {
@@ -401,7 +407,8 @@ function createMasterRows(trip, stops) {
             departure: { timetabled: stop.departureTime, estimated: null, delaySec: null },
             accessibility: null,
             requestStop: false,
-            serviceStop: true
+            serviceStop: true,
+            noFormation: stop.hasFormation === false
         };
         const nextIndex = rows.findIndex((row) => row.fIdx !== undefined && row.fIdx > fIdx);
         rows.splice(nextIndex >= 0 ? nextIndex : rows.length, 0, serviceRow);
