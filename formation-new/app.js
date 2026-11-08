@@ -431,6 +431,8 @@ function updateRelatedJourneys(relationships) {
     };
 
     const currentJourneyId = window.formationData?.journeyMeta?.SJYID || window.formationData?.journeyMeta?.sjyid;
+    const currentOperationDate = window.formationData?.journeyMeta?.operationDate
+        || document.getElementById('date')?.value;
     const previousJourney = relationships.find((relationship) =>
         relationship.vehicleRelationshipDetails?.direction === 'V'
     );
@@ -459,13 +461,11 @@ function updateRelatedJourneys(relationships) {
     const prevElement = document.getElementById('previousTrainNumber');
     
     if (prevNumber) {
-        prevElement.innerHTML = `${prevNumber}${operationDateLabel(prevMeta.operationDate)}`;
+        const prevOperationDate = prevMeta.operationDate || currentOperationDate;
+        prevElement.innerHTML = `${prevNumber}${operationDateLabel(prevOperationDate)}`;
         let prevUrl = `./?train=${encodeURIComponent(prevNumber)}`;
         if (toCodeMap[prevToCode]) prevUrl += `&evu=${encodeURIComponent(toCodeMap[prevToCode])}`;
-        if (prevMeta.operationDate) prevUrl += `&date=${encodeURIComponent(prevMeta.operationDate)}`;
-        if (prevToCode && toCodeMap[prevToCode]) {
-            prevUrl += `&evu=${encodeURIComponent(toCodeMap[prevToCode])}`;
-        }
+        if (prevOperationDate) prevUrl += `&date=${encodeURIComponent(prevOperationDate)}`;
         prevElement.href = prevUrl;
     } else {
         prevElement.textContent = '-';
@@ -479,13 +479,11 @@ function updateRelatedJourneys(relationships) {
     const nextElement = document.getElementById('nextTrainNumber');
 
     if (nextNumber) {
-        nextElement.innerHTML = `${nextNumber}${operationDateLabel(nextMeta.operationDate)}`;
+        const nextOperationDate = nextMeta.operationDate || currentOperationDate;
+        nextElement.innerHTML = `${nextNumber}${operationDateLabel(nextOperationDate)}`;
         let nextUrl = `./?train=${encodeURIComponent(nextNumber)}`;
         if (toCodeMap[nextToCode]) nextUrl += `&evu=${encodeURIComponent(toCodeMap[nextToCode])}`;
-        if (nextMeta.operationDate) nextUrl += `&date=${encodeURIComponent(nextMeta.operationDate)}`;
-        if (nextToCode && toCodeMap[nextToCode]) {
-            nextUrl += `&evu=${encodeURIComponent(toCodeMap[nextToCode])}`;
-        }
+        if (nextOperationDate) nextUrl += `&date=${encodeURIComponent(nextOperationDate)}`;
         nextElement.href = nextUrl;
     } else {
         nextElement.textContent = '-';
