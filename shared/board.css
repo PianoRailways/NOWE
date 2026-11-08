@@ -255,16 +255,3 @@ input, select, button { font-size: 16px; }
 .hav-badge { margin-left: 5px; border: 1px solid var(--sbb-red); color: var(--sbb-red); padding: 1px 4px; border-radius: 3px; font-size: .65em; }
 .stop-arrow { align-self: center; justify-self: end; color: var(--text-via); font-size: 1.5rem; transition: transform .15s; }
 .formation-stop.is-open .stop-arrow { transform: rotate(90deg); }
-
-.page-footer {
-	text-decoration: none;
-	padding: 25px 14px;
-	margin-top: auto;
-	border-top: 1px solid var(--border);
-	background: var(--header-bg);
-}
-
-.page-footer a, a:hover, a:active {
-	color: var(--sbb-red);
-	text-decoration: none;
- }

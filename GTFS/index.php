@@ -62,6 +62,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../shared/footer.css">
     <link rel="icon" type="image/png" href="../nowe.png">
     <link rel="apple-touch-icon" href="../nowe.png">
     <title>öV NOWE • Fahrtensuche</title>
@@ -217,5 +218,6 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
         updateClock();
         setInterval(updateClock, 1000);
     </script>
+    <script src="../shared/footer.js"></script>
 </body>
 </html>
