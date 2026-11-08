@@ -1,13 +1,15 @@
 body {
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
 }
 
 .sitefooter {
     width: 100%;
     flex-shrink: 0;
     margin-top: auto;
-    padding: 20px 14px;
+    padding: 20px max(14px, env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
     border-top: 1px solid var(--border, rgba(255, 255, 255, 0.05));
     background: var(--header-bg, #061030);
     text-align: center;
