@@ -22,6 +22,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
+.hidden { display: none !important; }
 html {
 	scrollbar-gutter: stable;
     overscroll-behavior-y: none;
@@ -462,6 +463,26 @@ body {
 .departure-table {
     width: 100%;
     border-collapse: collapse;
+}
+
+.gtfs-search-control {
+    display: flex;
+    justify-content: center;
+    padding: 18px 14px;
+}
+
+.gtfs-search-button {
+    display: inline-block;
+    padding: 20px 16px;
+    border-radius: 8px;
+    background: var(--pifas-timenav);
+    color: var(--sbb-blue);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.gtfs-search-button:hover {
+    background: #fff;
 }
 
 .departure-table thead tr {

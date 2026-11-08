@@ -1,6 +1,7 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
 
 let tripRefreshTimer = null;
+let markerRefreshTimer = null;
 let tripRefreshRunning = false;
 let tripListenersBound = false;
 let stopNames = {};
@@ -209,20 +210,27 @@ async function fetchFormation() {
     const stops = (foundData.formationsAtScheduledStops || []).map((entry, index) => {
         const scheduledStop = entry.scheduledStop || entry;
         const point = scheduledStop.stopPoint || {};
+        const tripStop = trip?.stops?.find((candidate) => {
+            const ref = String(candidate.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
+            return ref && point.uic && Number(ref) === Number(point.uic) % 100000;
+        });
         return {
             name: point.name || null,
             uic: point.uic,
             index,
-            arrivalTime: (scheduledStop.stopTime || entry.stopTime || {}).arrivalTime,
-            departureTime: (scheduledStop.stopTime || entry.stopTime || {}).departureTime,
-            track: entry.track || entry.stopTime?.track || scheduledStop.track || scheduledStop.quay || point.track || point.quay,
+            arrivalTime: scheduledStop.stopTime?.arrivalTime ?? entry.stopTime?.arrivalTime,
+            departureTime: scheduledStop.stopTime?.departureTime ?? entry.stopTime?.departureTime,
+            stopType: scheduledStop.stopType,
+            track: entry.track || entry.stopTime?.track || scheduledStop.track || scheduledStop.quay
+                || point.track || point.quay || tripStop?.quay,
             formationShort: entry.formationShort || {},
             vehicleGoals: entry.formationShort?.vehicleGoals || []
         };
     });
     try {
-        const response = await fetch('./uic-namen.json');
-        if (response.ok) stopNames = await response.json();
+        const response = await fetch(new URL('./uic-namen.json', import.meta.url));
+        if (!response.ok) throw new Error(`UIC-Namensmapping konnte nicht geladen werden: HTTP ${response.status}`);
+        stopNames = await response.json();
     } catch {
         stopNames = {};
     }
@@ -283,11 +291,16 @@ function stopTripRefresh() {
     tripRefreshTimer = null;
 }
 
+function stopMarkerRefresh() {
+    if (markerRefreshTimer) window.clearInterval(markerRefreshTimer);
+    markerRefreshTimer = null;
+}
+
 function updateTripRows(trip) {
     if (!trip?.stops) return;
     window.formationData.trip = trip;
     trip.stops.forEach((row, index) => {
-        const element = document.querySelectorAll('.formation-stop')[index];
+        const element = document.querySelector(`.formation-stop[data-trip-index="${index}"]`);
         if (!element) return;
         const timeRows = element.querySelectorAll('.time-row');
         const values = [row.arrival, row.departure].filter(Boolean);
@@ -311,7 +324,9 @@ async function refreshTrip() {
     if (!journeyId) return;
     tripRefreshRunning = true;
     try {
-        const updated = await fetchTripInfo(journeyId, document.getElementById('date').value);
+        const operationDate = window.formationData.journeyMeta?.operationDate
+            || document.getElementById('date').value;
+        const updated = await fetchTripInfo(journeyId, operationDate);
         updateTripRows(updated);
         if (updated?.isFinal) stopTripRefresh();
     } catch {
@@ -323,17 +338,28 @@ async function refreshTrip() {
 
 function startTripRefresh() {
     stopTripRefresh();
+    stopMarkerRefresh();
     if (!window.formationData?.trip) return;
     tripRefreshTimer = window.setInterval(refreshTrip, 15000);
+    markerRefreshTimer = window.setInterval(updateVehicleMarker, 10000);
     if (tripListenersBound) return;
     tripListenersBound = true;
     document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) refreshTrip();
+        if (!document.hidden) {
+            refreshTrip();
+            updateVehicleMarker();
+        }
     });
     window.addEventListener('resize', () => {
-        if (!document.hidden) updateTripRows(window.formationData?.trip);
+        if (!document.hidden) {
+            updateTripRows(window.formationData?.trip);
+            updateVehicleMarker();
+        }
     });
-    window.addEventListener('pagehide', stopTripRefresh);
+    window.addEventListener('pagehide', () => {
+        stopTripRefresh();
+        stopMarkerRefresh();
+    });
 }
 
 function createMasterRows(trip, stops) {
@@ -347,11 +373,12 @@ function createMasterRows(trip, stops) {
             departure: { timetabled: stop.departureTime, estimated: null, delaySec: null },
             accessibility: null,
             requestStop: false,
-            isThisCall: false
+            isThisCall: false,
+            serviceStop: String(stop.stopType || '').startsWith('-')
         }));
     }
     let formationCursor = 0;
-    return trip.stops.map((row) => {
+    const tripRows = trip.stops.map((row, tripIndex) => {
         const match = stops.findIndex((stop, index) => {
             if (index < formationCursor) return false;
             const ref = String(row.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
@@ -360,8 +387,26 @@ function createMasterRows(trip, stops) {
                 || (row.name && stopName && row.name.trim().toLowerCase() === stopName.trim().toLowerCase());
         });
         if (match >= 0) formationCursor = match + 1;
-        return { ...row, fIdx: match >= 0 ? match : undefined };
+        return { ...row, fIdx: match >= 0 ? match : undefined, tripIndex };
     });
+    const rows = [...tripRows];
+    stops.forEach((stop, fIdx) => {
+        if (tripRows.some((row) => row.fIdx === fIdx)) return;
+        const serviceRow = {
+            name: stopLabel(stop.uic, stop.name),
+            stopPointRef: '',
+            quay: stop.track,
+            fIdx,
+            arrival: { timetabled: stop.arrivalTime, estimated: null, delaySec: null },
+            departure: { timetabled: stop.departureTime, estimated: null, delaySec: null },
+            accessibility: null,
+            requestStop: false,
+            serviceStop: true
+        };
+        const nextIndex = rows.findIndex((row) => row.fIdx !== undefined && row.fIdx > fIdx);
+        rows.splice(nextIndex >= 0 ? nextIndex : rows.length, 0, serviceRow);
+    });
+    return rows;
 }
 
 function updateRelatedJourneys(relationships) {
@@ -607,17 +652,23 @@ function accessIcon(type) {
 }
 
 function stopLabel(uic, name) {
-    if (name) return name;
+    const uicText = uic === undefined || uic === null ? '' : String(uic);
+    const uicNumber = uicText.match(/\d{7}/)?.[0] || '';
+    const mappedName = Object.entries(stopNames).find(([key]) =>
+        key === uicText || key === uicNumber || key.replace(/\D/g, '') === uicNumber
+    )?.[1] || '';
+    if (mappedName) return mappedName;
+    if (name && !/^UIC\s+\d+$/i.test(String(name).trim())) return name;
     const tripStop = window.formationData?.trip?.stops?.find((stop) => {
         const ref = String(stop.stopPointRef || '').match(/sloid:(\d+)/i)?.[1];
-        return ref && Number(ref) === Number(uic) % 100000;
+        return ref && uicNumber && Number(ref) === Number(uicNumber) % 100000;
     });
-    return tripStop?.name || stopNames[String(uic)] || `UIC ${uic || '-'}`;
+    return tripStop?.name || mappedName || `UIC ${uic || '-'}`;
 }
 
 function timeRow(value, estimated, delay, kind) {
     return `<div class="time-row" data-tt="${value || ''}" data-est="${estimated || ''}" data-delay="${delay || 0}">
-        <span class="ps-time ps-time--${kind}">${fmtTime(value) || '--:--'}</span>${delayLabel(delay)}
+        <span class="ps-time ps-time--${kind}">${fmtTime(value) || '--:--'}</span><span class="delay-slot">${delayLabel(delay)}</span>
     </div>`;
 }
 
@@ -647,12 +698,17 @@ function renderStopChain() {
                 ? timeRow(arrival, row.arrival?.estimated, cancelled ? null : row.arrival?.delaySec, 'arr')
                 : `${timeRow(arrival, row.arrival?.estimated, cancelled ? null : row.arrival?.delaySec, 'arr')}${timeRow(departure, row.departure?.estimated, cancelled ? null : row.departure?.delaySec, 'dep')}`;
         const quay = fIdx !== undefined ? stops[fIdx].track : row.quay;
+        const quayHtml = row.platformChanged
+            ? `<del class="planned-quay">Gl. ${row.plannedQuay}</del><strong class="estimated-quay">Gl. ${row.estimatedQuay}</strong>`
+            : (quay ? `Gl. ${quay}` : '');
         const link = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`;
         const unplanned = row.unplannedStop === true;
-        const stopClasses = [unplanned ? 'stop-unplanned' : '', cancelled ? 'stop-cancelled' : ''].filter(Boolean).join(' ');
-        const rowBody = `<span class="chain-stop-text"><a class="${stopClasses}" href="${link}">${stopLabel(stop.uic, row.name)}</a>${unplanned ? '<small class="stop-unplanned">Zusatzhalt</small>' : ''}${cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>Gl. ${quay}</small>` : ''}</span>`;
+        const service = row.serviceStop === true;
+        const stopClasses = [unplanned ? 'stop-unplanned' : '', cancelled ? 'stop-cancelled' : '', service ? 'service-name' : ''].filter(Boolean).join(' ');
+        const rowBody = `<span class="chain-stop-text"><a class="${stopClasses}" href="${link}">${stopLabel(stop.uic, row.name)}</a>${cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quayHtml ? `<small class="${row.platformChanged ? 'platform-changed' : ''}">${quayHtml}</small>` : ''}</span>`;
+        const stopClass = [isFirst ? 'formation-stop--first' : '', isLast ? 'formation-stop--last' : '', service ? 'is-service' : ''].filter(Boolean).join(' ');
         return `${daySeparator}
-            <section class="formation-stop" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}">
+            <section class="formation-stop ${stopClass}" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}" data-trip-index="${row.tripIndex ?? ''}">
                 <button class="formation-stop-row ${cancelled ? 'stop-cancelled' : ''}" type="button" data-formation-index="${fIdx ?? ''}" ${fIdx === undefined ? 'disabled' : ''}>
                     <span class="chain-times">${times}</span>
                     <span class="chain-marker"><span class="chain-dot"></span></span>
@@ -703,6 +759,7 @@ function toggleStop(stopIdx) {
         const open = formationIndex !== '' && Number(formationIndex) === stopIdx;
         stop.classList.toggle('is-open', open);
         const panel = stop.querySelector('.formation-panel');
+        if (!panel) return;
         if (open) {
             panel.innerHTML = renderFormationStrip(stopIdx);
         } else {
@@ -732,14 +789,14 @@ function updateVehicleMarker() {
     }
 
     const rows = [...chain.querySelectorAll('.formation-stop')];
-    const currentRow = rows.find((row) => Number(row.dataset.rowIndex) === position.stopIndex);
+    const currentRow = rows.find((row) => Number(row.dataset.tripIndex) === position.stopIndex);
     if (!currentRow) {
         marker.hidden = true;
         return;
     }
     const nextRow = position.nextStopIndex === undefined
         ? currentRow
-        : rows.find((row) => Number(row.dataset.rowIndex) === position.nextStopIndex) || currentRow;
+        : rows.find((row) => Number(row.dataset.tripIndex) === position.nextStopIndex) || currentRow;
     const chainRect = chain.getBoundingClientRect();
     const currentDot = currentRow.querySelector('.chain-dot').getBoundingClientRect();
     const nextDot = nextRow.querySelector('.chain-dot').getBoundingClientRect();
@@ -810,9 +867,12 @@ function renderFormationStrip(stopIdx) {
 }
 
 function goalName(goal) {
+    const destination = goal.destinationStopPoint;
+    if (destination?.name) return destination.name;
+    if (destination?.uic) return stopLabel(destination.uic);
     return stopLabel(
-        goal.destinationStopPoint?.uic || goal.toStop?.uic || goal.stopPoint?.uic,
-        goal.destinationStopPoint?.name || goal.toStop?.name || goal.stopPoint?.name || goal.name || goal.destination
+        goal.toStop?.uic || goal.stopPoint?.uic,
+        goal.toStop?.name || goal.stopPoint?.name || goal.name || goal.destination
     );
 }
 

@@ -1,0 +1,31 @@
+html {
+    background: var(--header-bg, #061030);
+}
+
+html, body {
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+#app-header {
+    padding-top: calc(8px + env(safe-area-inset-top));
+    padding-left: calc(14px + env(safe-area-inset-left));
+    padding-right: calc(14px + env(safe-area-inset-right));
+}
+
+#input-section,
+#main-content,
+#trip-input-wrapper,
+#board-container {
+    padding-left: max(14px, env(safe-area-inset-left));
+    padding-right: max(14px, env(safe-area-inset-right));
+}
+
+#main-content,
+#board-container {
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+}
+
+input, select, button {
+    font-size: 16px;
+}

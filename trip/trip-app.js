@@ -235,12 +235,11 @@ function renderPerlschnur(trip) {
             : '';
 
         // Wechselt die URL direkt im selben Fenster
-        const unplannedLabel = stop.unplannedStop ? '<small class="stop-unplanned">Zusatzhalt</small>' : '';
         const stopClasses = [stop.unplannedStop ? 'stop-unplanned' : '', stop.cancelled ? 'stop-cancelled' : ''].filter(Boolean).join(' ');
         const cancelledLabel = stop.cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : '';
         const chainInfo = `<div class="chain-info">
             <span class="chain-name">
-                <a class="${stopClasses}" href="${stsUrl}">${stop.name}</a> ${unplannedLabel}${cancelledLabel}${accessIcon(stop.accessibility)}${requestStopBadge}
+                <a class="${stopClasses}" href="${stsUrl}">${stop.name}</a> ${cancelledLabel}${accessIcon(stop.accessibility)}${requestStopBadge}
             </span>
             ${quayLine}
         </div>`;

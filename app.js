@@ -378,6 +378,12 @@ function getDelayClass(delayMinutes) {
     return '';                                              // ≥1 Min (rot, default)
 }
 
+function updateBoardControls(hasBoard) {
+    document.getElementById('departure-time-controls')?.classList.toggle('hidden', !hasBoard);
+    document.getElementById('departure-time-controls-next')?.classList.toggle('hidden', !hasBoard);
+    document.getElementById('gtfs-search-control')?.classList.toggle('hidden', hasBoard);
+}
+
 function renderBoard(departures) {
 	//console.log("Sichtbare Stationen:", departures.map(d => d.stopName));
     // 1. Filtern der Abfahrten (Unterstützt Multi-Select Sets)
@@ -388,6 +394,7 @@ function renderBoard(departures) {
     
     const board = DOM.board();
     if (!board) return;
+    updateBoardControls(visible.length > 0);
 
     if (visible.length === 0) {
         board.innerHTML = '<p class="empty">Keine Abfahrten für diesen Filter gefunden.</p>';
@@ -1290,6 +1297,7 @@ function offsetTime(minutes) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    updateBoardControls(ALL_DEPS.length > 0);
     const btnPrev = document.getElementById('btn-time-prev');
     const btnNext = document.getElementById('btn-time-next');
     const btnNow = document.getElementById('btn-time-now');

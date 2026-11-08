@@ -2,13 +2,15 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" href="nowe.png">
     <link rel="apple-touch-icon" href="nowe.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#061030">
+    <link rel="stylesheet" href="shared/webclip.css">
     <title>öV NOWE26</title>
 </head>
 <body>
@@ -79,12 +81,15 @@
     <div id="status-message"></div>
 
     <!-- ═══════════════ ABFAHRTSTAFEL ═══════════════ -->
-	<div class="time-controls"><button id="btn-time-prev">↑ Früher (20')</button></div> 
+    <div class="time-controls" id="departure-time-controls"><button id="btn-time-prev">↑ Früher (20')</button></div>
     <main id="board-container">
         <div id="departure-board"></div>
     </main>
-<div class="time-controls">
+<div class="time-controls" id="departure-time-controls-next">
     <button id="btn-time-next">↓ Später (20')</button>
+</div>
+<div class="gtfs-search-control" id="gtfs-search-control">
+    <a class="gtfs-search-button" href="./GTFS/">Fahrt über Fahrtnummer suchen</a>
 </div>
 	<script src="./didokMappingNOWE.js"></script>
 	<script src="./includedStationsNOWE.js"></script>
