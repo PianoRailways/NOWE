@@ -1,5 +1,5 @@
 import { fetchDepartures, searchStops, searchStopsNearLocation } from './api-client.js';
-import { formatCountdown, parseCountdownTime, formatZurichDateTime } from '../shared/countdown.js';
+import { formatCountdown, parseCountdownTime, formatZurichDateTime, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
 
 // ─── Produktkategorie-Mapping ────────────────────────────────────────────────
 const CAT = {
@@ -479,7 +479,14 @@ function renderBoard(departures) {
             ? `<span class="delay-badge">${dep.delayDisplay}</span>`
             : '';
 
-        let timeCell = `<span class="time">${dep.time}</span><br>${delayBadge}`;
+        const countdownTarget = dep.estimatedIso || dep.timetabledIso || '';
+        const countdownDefault = isCountdownDefault() && !isCancelledAtCurrent && countdownTarget;
+        const timeText = countdownDefault ? formatCountdown(countdownTarget) : dep.time;
+        const timeAttributes = ` data-clock="${dep.time}"${countdownDefault ? ` data-cd-target="${countdownTarget}"` : ''}`;
+        const displayedDelayBadge = countdownDefault
+            ? delayBadge.replace('class="delay-badge"', 'class="delay-badge" style="display:none"')
+            : delayBadge;
+        let timeCell = `<span class="time"${timeAttributes}>${timeText}</span><br>${displayedDelayBadge}`;
         if (isCancelledAtCurrent) {
             timeCell = `<span style="color:red; font-weight:bold; text-decoration:line-through;">${dep.time}</span><br><span style="color:red; font-size: 0.85em;">Ausfall</span>`;
         }
@@ -506,6 +513,7 @@ function renderBoard(departures) {
         if (evuCode) {
             formationUrl += `&evu=${encodeURIComponent(evuCode)}`;
         }
+        formationUrl = withCountdownParam(formationUrl);
 
         const journeyNumHtml = dep.journeyNumber
             ? (hasFormationSupport(dep)
@@ -560,7 +568,7 @@ function renderBoard(departures) {
                 <td class="col-time" data-tt="${dep.timetabledIso || ''}" data-est="${dep.estimatedIso || ''}">${timeCell}</td>
                 <td class="col-line">
                     <div class="line-container">
-                        <a href="/trip/?sjyid=${encodeURIComponent(dep.journeyRef)}&date=${encodeURIComponent(operatingDay)}"><span class="line-badge" data-type="${lineType}" operator="${dep.operatorName}" data-line="${dep.line}">${fullLine}</span></a>
+                        <a href="${withCountdownParam(`/trip/?sjyid=${encodeURIComponent(dep.journeyRef)}&date=${encodeURIComponent(operatingDay)}`)}"><span class="line-badge" data-type="${lineType}" operator="${dep.operatorName}" data-line="${dep.line}">${fullLine}</span></a>
                         ${journeyNumHtml}
                     </div>
                 </td>
@@ -601,35 +609,15 @@ function renderBoard(departures) {
             }
         });
 
-        document.querySelectorAll('.col-time').forEach(cell => {
-            if (cell.closest('.row-cancelled')) return;
-            cell.addEventListener('click', event => {
-                event.stopPropagation();
-                const target = cell.dataset.est || cell.dataset.tt;
-                if (!target) return;
-                const time = cell.querySelector('.time');
-                if (!time) return;
-                const delayBadge = cell.querySelector('.delay-badge');
-                if (cell._countdownTimer) window.clearInterval(cell._countdownTimer);
-                if (cell._countdownTimeout) window.clearTimeout(cell._countdownTimeout);
-                cell.dataset.countdownActive = 'true';
-                if (delayBadge) delayBadge.style.display = 'none';
-                const update = () => {
-                    time.textContent = formatCountdown(target) || time.textContent;
-                };
-                update();
-                cell._countdownTimer = window.setInterval(update, 1000);
-                cell._countdownTimeout = window.setTimeout(() => {
-                    window.clearInterval(cell._countdownTimer);
-                    cell._countdownTimer = null;
-                    delete cell.dataset.countdownActive;
-                    time.textContent = cell.dataset.displayTime || time.textContent;
-                    if (delayBadge) delayBadge.style.display = '';
-                }, 10000);
-            });
-            cell.dataset.displayTime = cell.querySelector('.time')?.textContent || '';
-        });
     });
+
+    document.querySelectorAll('.col-time').forEach(cell => {
+        if (cell.closest('.row-cancelled')) return;
+        const time = cell.querySelector('.time');
+        const badge = cell.querySelector('.delay-badge');
+        bindTimeToggle(cell, time, badge);
+    });
+    startCountdownTicker();
 
     document.querySelectorAll('.btn-sit-info').forEach(btn => {
         btn.addEventListener('click', (e) => {

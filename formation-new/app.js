@@ -1,7 +1,7 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
 import * as sharedStopChain from '../shared/stop-chain.js';
 import { renderTripHeader } from '../shared/trip-header.js';
-import { formatCountdown } from '../shared/countdown.js';
+import { formatCountdown, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
 
 let tripRefreshTimer = null;
 let markerRefreshTimer = null;
@@ -467,7 +467,7 @@ function updateRelatedJourneys(relationships) {
         let prevUrl = `./?train=${encodeURIComponent(prevNumber)}`;
         if (toCodeMap[prevToCode]) prevUrl += `&evu=${encodeURIComponent(toCodeMap[prevToCode])}`;
         if (prevOperationDate) prevUrl += `&date=${encodeURIComponent(prevOperationDate)}`;
-        prevElement.href = prevUrl;
+        prevElement.href = withCountdownParam(prevUrl);
     } else {
         prevElement.textContent = '-';
         prevElement.removeAttribute('href');
@@ -485,7 +485,7 @@ function updateRelatedJourneys(relationships) {
         let nextUrl = `./?train=${encodeURIComponent(nextNumber)}`;
         if (toCodeMap[nextToCode]) nextUrl += `&evu=${encodeURIComponent(toCodeMap[nextToCode])}`;
         if (nextOperationDate) nextUrl += `&date=${encodeURIComponent(nextOperationDate)}`;
-        nextElement.href = nextUrl;
+        nextElement.href = withCountdownParam(nextUrl);
     } else {
         nextElement.textContent = '-';
         nextElement.removeAttribute('href');
@@ -673,8 +673,15 @@ function stopLabel(uic, name) {
 }
 
 function timeRow(value, estimated, delay, kind) {
+    const target = estimated || value || '';
+    const countdownDefault = isCountdownDefault() && target;
+    const time = countdownDefault ? formatCountdown(target) : (fmtTime(value) || '--:--');
+    const badge = delayLabel(delay);
+    const badgeHtml = countdownDefault
+        ? badge.replace('class="delay-badge"', 'class="delay-badge" style="display:none"')
+        : badge;
     return `<div class="time-row" data-tt="${value || ''}" data-est="${estimated || ''}" data-delay="${delay || 0}">
-        <span class="ps-time ps-time--${kind}">${fmtTime(value) || '--:--'}</span><span class="delay-slot">${delayLabel(delay)}</span>
+        <span class="ps-time ps-time--${kind}" data-clock="${fmtTime(value) || '--:--'}"${countdownDefault ? ` data-cd-target="${target}"` : ''}>${time}</span><span class="delay-slot">${badgeHtml}</span>
     </div>`;
 }
 
@@ -707,7 +714,7 @@ function renderStopChain() {
         const quayHtml = row.platformChanged
             ? `<del class="planned-quay">Gl. ${row.plannedQuay}</del><strong class="estimated-quay">Gl. ${row.estimatedQuay}</strong>`
             : (quay ? `Gl. ${quay}` : '');
-        const link = `https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`;
+        const link = withCountdownParam(`https://nowe.stellwerksim.ch/?stop=${encodeURIComponent(row.stopPointRef || row.name)}&date=${encodeURIComponent(document.getElementById('date').value)}${arrival ? `&time=${encodeURIComponent(formatTime(arrival))}` : ''}`);
         const unplanned = row.unplannedStop === true;
         const service = row.serviceStop === true;
         const stopClasses = [unplanned ? 'stop-unplanned' : '', cancelled ? 'stop-cancelled' : '', service ? 'service-name' : ''].filter(Boolean).join(' ');
@@ -745,31 +752,9 @@ function renderStopChain() {
 
 function setupTimeRows() {
     document.querySelectorAll('.time-row').forEach((row) => {
-        row.addEventListener('click', (event) => {
-            event.stopPropagation();
-            const target = row.dataset.est || row.dataset.tt;
-            if (!target) return;
-            const time = row.querySelector('.ps-time');
-            const delayBadge = row.querySelector('.delay-badge');
-            if (row._countdownTimer) window.clearInterval(row._countdownTimer);
-            if (row._countdownTimeout) window.clearTimeout(row._countdownTimeout);
-            row.dataset.countdownActive = 'true';
-            if (delayBadge) delayBadge.hidden = true;
-            const update = () => {
-                time.textContent = formatCountdown(target) || fmtTime(row.dataset.tt) || '--:--';
-            };
-            update();
-            row._countdownTimer = window.setInterval(update, 1000);
-            row._countdownTimeout = window.setTimeout(() => {
-                window.clearInterval(row._countdownTimer);
-                row._countdownTimer = null;
-                row._countdownTimeout = null;
-                delete row.dataset.countdownActive;
-                time.textContent = fmtTime(row.dataset.tt) || '--:--';
-                if (delayBadge) delayBadge.hidden = false;
-            }, 10000);
-        });
+        bindTimeToggle(row, row.querySelector('.ps-time'), row.querySelector('.delay-badge'));
     });
+    startCountdownTicker();
 }
 
 function toggleStop(stopIdx) {

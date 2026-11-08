@@ -35,6 +35,18 @@ function parseTime(value) {
     return new Date(utcGuess - (displayedAsUtc - utcGuess));
 }
 
+export function isCountdownDefault() {
+    const value = new URLSearchParams(window.location.search).get('countdown');
+    return value === 'true' || value === '1';
+}
+
+export function withCountdownParam(url) {
+    if (!isCountdownDefault()) return url;
+    const result = new URL(url, window.location.href);
+    result.searchParams.set('countdown', 'true');
+    return url.startsWith('http') ? result.href : `${result.pathname}${result.search}${result.hash}`;
+}
+
 export function formatCountdown(targetIso, now = new Date()) {
     const target = parseTime(targetIso);
     if (!target) return '';
@@ -47,6 +59,69 @@ export function formatCountdown(targetIso, now = new Date()) {
         ? `${minutes}'`
         : `${minutes}:${String(seconds).padStart(2, '0')}`;
     return totalSeconds < 0 ? `vor ${value}` : `in ${value}`;
+}
+
+let countdownTicker = null;
+let countdownVisibilityBound = false;
+
+function updateCountdownElements() {
+    if (document.hidden) return;
+    document.querySelectorAll('[data-cd-target]').forEach((element) => {
+        if (element.dataset.cdTemp === '1') return;
+        element.textContent = formatCountdown(element.dataset.cdTarget);
+    });
+}
+
+export function startCountdownTicker() {
+    if (!countdownVisibilityBound) {
+        document.addEventListener('visibilitychange', updateCountdownVisibility);
+        countdownVisibilityBound = true;
+    }
+    if (countdownTicker || document.hidden || !document.querySelector('[data-cd-target]')) return;
+    updateCountdownElements();
+    countdownTicker = window.setInterval(updateCountdownElements, 1000);
+}
+
+function updateCountdownVisibility() {
+    if (document.hidden) {
+        if (countdownTicker) window.clearInterval(countdownTicker);
+        countdownTicker = null;
+        return;
+    }
+    startCountdownTicker();
+    updateCountdownElements();
+}
+
+export function bindTimeToggle(cell, time, badge) {
+    if (!cell || !time || cell.dataset.cdBound === '1') return;
+    cell.dataset.cdBound = '1';
+    cell.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const target = time.dataset.cdTarget || cell.dataset.est || cell.dataset.tt;
+        if (!target) return;
+        if (cell._countdownTimeout) window.clearTimeout(cell._countdownTimeout);
+
+        if (isCountdownDefault()) {
+            time.dataset.cdTemp = '1';
+            time.textContent = time.dataset.clock || time.textContent;
+            if (badge) badge.style.display = '';
+            cell._countdownTimeout = window.setTimeout(() => {
+                delete time.dataset.cdTemp;
+                if (badge) badge.style.display = 'none';
+                startCountdownTicker();
+            }, 10000);
+            return;
+        }
+
+        time.dataset.cdTemp = '1';
+        time.textContent = formatCountdown(target) || time.textContent;
+        if (badge) badge.style.display = 'none';
+        cell._countdownTimeout = window.setTimeout(() => {
+            delete time.dataset.cdTemp;
+            time.textContent = time.dataset.clock || time.textContent;
+            if (badge) badge.style.display = '';
+        }, 10000);
+    });
 }
 
 export function parseCountdownTime(value) {
