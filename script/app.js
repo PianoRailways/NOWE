@@ -1,4 +1,6 @@
 import { fetchDepartures, searchStops, searchStopsNearLocation } from './api-client.js';
+import { formatCountdown, parseCountdownTime, formatZurichDateTime, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
+import { initHeaderHeight, blockZoom } from '../shared/header.js?v=1';
 
 // ─── Produktkategorie-Mapping ────────────────────────────────────────────────
 const CAT = {
@@ -384,6 +386,16 @@ function updateBoardControls(hasBoard) {
     document.getElementById('gtfs-search-control')?.classList.toggle('hidden', hasBoard);
 }
 
+function restripeRows() {
+    let visibleIndex = 0;
+    document.querySelectorAll('.dep-row').forEach(row => {
+        row.classList.remove('row-odd', 'row-even');
+        if (row.classList.contains('filtered-dest')) return;
+        visibleIndex++;
+        row.classList.add(visibleIndex % 2 === 1 ? 'row-odd' : 'row-even');
+    });
+}
+
 function renderBoard(departures) {
 	//console.log("Sichtbare Stationen:", departures.map(d => d.stopName));
     // 1. Filtern der Abfahrten (Unterstützt Multi-Select Sets)
@@ -418,15 +430,10 @@ function renderBoard(departures) {
             <tbody>
     `;
 
-	let depRowCount = 0; // ← Neuer Counter
-	
     visible.forEach((dep, index) => {
-        depRowCount++; // ← Inkrementieren für jede echte Abfahrtszeile
-        
         // ← Vias als komma-separierter String für Zielfilter vorbereiten
         const viasStr = dep.vias ? dep.vias.join(' · ') : '';
 
-    	const bgClass = depRowCount % 2 === 1 ? 'row-odd' : 'row-even'; // ← Neue CSS-Klassen
         let fullLine = dep.line;
         if (dep.cat && !dep.line.startsWith(dep.cat)) {
             fullLine = `${dep.cat}${dep.line}`;
@@ -473,7 +480,14 @@ function renderBoard(departures) {
             ? `<span class="delay-badge">${dep.delayDisplay}</span>`
             : '';
 
-        let timeCell = `<span class="time">${dep.time}</span><br>${delayBadge}`;
+        const countdownTarget = dep.estimatedIso || dep.timetabledIso || '';
+        const countdownDefault = isCountdownDefault() && !isCancelledAtCurrent && countdownTarget;
+        const timeText = countdownDefault ? formatCountdown(countdownTarget) : dep.time;
+        const timeAttributes = ` data-clock="${dep.time}"${countdownDefault ? ` data-cd-target="${countdownTarget}"` : ''}`;
+        const displayedDelayBadge = countdownDefault
+            ? delayBadge.replace('class="delay-badge"', 'class="delay-badge" style="display:none"')
+            : delayBadge;
+        let timeCell = `<span class="time"${timeAttributes}>${timeText}</span><br>${displayedDelayBadge}`;
         if (isCancelledAtCurrent) {
             timeCell = `<span style="color:red; font-weight:bold; text-decoration:line-through;">${dep.time}</span><br><span style="color:red; font-size: 0.85em;">Ausfall</span>`;
         }
@@ -500,6 +514,7 @@ function renderBoard(departures) {
         if (evuCode) {
             formationUrl += `&evu=${encodeURIComponent(evuCode)}`;
         }
+        formationUrl = withCountdownParam(formationUrl);
 
         const journeyNumHtml = dep.journeyNumber
             ? (hasFormationSupport(dep)
@@ -542,7 +557,7 @@ function renderBoard(departures) {
         const operatingDay = dep.timetabledIso ? dep.timetabledIso.slice(0, 10) : QUERY_DATE;
 
         html += `
-            <tr class="dep-row ${bgClass} ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}" 
+            <tr class="dep-row ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}"
                 data-index="${index}"
                 data-dest="${dep.destination || ''}"
                 data-vias="${viasStr}"
@@ -551,10 +566,10 @@ function renderBoard(departures) {
                 data-cat="${dep.cat || ''}"
                 data-operator-name="${dep.operatorName || ''}"
                 data-operator-ref="${dep.operatorRef || ''}">
-                <td class="col-time">${timeCell}</td>
+                <td class="col-time" data-tt="${dep.timetabledIso || ''}" data-est="${dep.estimatedIso || ''}">${timeCell}</td>
                 <td class="col-line">
                     <div class="line-container">
-                        <a href="/trip/?sjyid=${encodeURIComponent(dep.journeyRef)}&date=${encodeURIComponent(operatingDay)}"><span class="line-badge" data-type="${lineType}" operator="${dep.operatorName}" data-line="${dep.line}">${fullLine}</span></a>
+                        <a href="${withCountdownParam(`/trip/?sjyid=${encodeURIComponent(dep.journeyRef)}&date=${encodeURIComponent(operatingDay)}`)}"><span class="line-badge" data-type="${lineType}" operator="${dep.operatorName}" data-line="${dep.line}">${fullLine}</span></a>
                         ${journeyNumHtml}
                     </div>
                 </td>
@@ -578,6 +593,8 @@ function renderBoard(departures) {
 
     html += '</tbody></table>';
     board.innerHTML = html;
+    restripeRows();
+    applyDestFilter();
 
     // Event-Listener
     document.querySelectorAll('.dep-row').forEach(row => {
@@ -592,7 +609,16 @@ function renderBoard(departures) {
                 row.classList.add('active');
             }
         });
+
     });
+
+    document.querySelectorAll('.col-time').forEach(cell => {
+        if (cell.closest('.row-cancelled')) return;
+        const time = cell.querySelector('.time');
+        const badge = cell.querySelector('.delay-badge');
+        bindTimeToggle(cell, time, badge);
+    });
+    startCountdownTicker();
 
     document.querySelectorAll('.btn-sit-info').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -1268,42 +1294,62 @@ function updateClock() {
 
 function offsetTime(minutes) {
     const now = new Date();
-    
-    // Nutze deine bestehenden State-Variablen QUERY_DATE und QUERY_TIME
-    const baseDate = QUERY_DATE || todayISO();
-    const baseTime = QUERY_TIME || now.toTimeString().substring(0, 5);
-    
-    // Erzeuge ein Date-Objekt für die Berechnung (Parsing als lokale Zeit)
-    let dateObj = new Date(`${baseDate}T${baseTime}:00`);
-    
-    // Minuten addieren oder subtrahieren
-    dateObj.setMinutes(dateObj.getMinutes() + minutes);
-    
-    // ✅ Konvertiere zurück zu lokaler ISO-Zeit (ohne UTC-Versatz)
-    const offset = dateObj.getTimezoneOffset() * 60000;
-    QUERY_TIME = dateObj.toTimeString().substring(0, 5);
-    QUERY_DATE = (new Date(dateObj - offset)).toISOString().slice(0, 10);
-    
-    // Nur Date/Time Inputs aktualisieren, nicht das Stop-Feld
+    const currentZurich = formatZurichDateTime(now);
+    const baseDate = QUERY_DATE || currentZurich.date;
+    const baseTime = QUERY_TIME || currentZurich.time;
+    const dateObj = parseCountdownTime(`${baseDate}T${baseTime}:00`) || now;
+    const target = new Date(dateObj.getTime() + minutes * 60000);
+    setQueryDateTime(target);
+}
+
+function setQueryDateTime(dateObj) {
+    const formatted = formatZurichDateTime(dateObj);
+    QUERY_DATE = formatted.date;
+    QUERY_TIME = formatted.time;
     const di = DOM.dateInput();
     if (di) di.value = QUERY_DATE;
     const ti = DOM.timeInput();
     if (ti) ti.value = QUERY_TIME;
     updateUrlParams();
-    loadBoard();
-    
-    // Auto-Refresh stoppen, wenn wir in der Zukunft/Vergangenheit suchen
     stopAutoRefresh();
+    loadBoard();
+}
+
+function visibleDepartureTimes() {
+    return [...document.querySelectorAll('.dep-row:not(.filtered-dest)')]
+        .map(row => parseCountdownTime(row.querySelector('.col-time')?.dataset.tt))
+        .filter(Boolean)
+        .sort((a, b) => a - b);
+}
+
+function navigateByVisibleDepartures(direction) {
+    const times = visibleDepartureTimes();
+    if (times.length === 0) {
+        offsetTime(direction * 20);
+        return;
+    }
+
+    const first = times[0];
+    const last = times[times.length - 1];
+    if (direction > 0) {
+        setQueryDateTime(new Date(last.getTime() + 60000));
+        return;
+    }
+
+    const spanMinutes = Math.min(180, Math.max(20, Math.round((last - first) / 60000)));
+    setQueryDateTime(new Date(first.getTime() - spanMinutes * 60000));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initHeaderHeight();
+    blockZoom();
     updateBoardControls(ALL_DEPS.length > 0);
     const btnPrev = document.getElementById('btn-time-prev');
     const btnNext = document.getElementById('btn-time-next');
     const btnNow = document.getElementById('btn-time-now');
 
-    if (btnPrev) btnPrev.onclick = () => offsetTime(-20);
-    if (btnNext) btnNext.onclick = () => offsetTime(20);
+    if (btnPrev) btnPrev.onclick = () => navigateByVisibleDepartures(-1);
+    if (btnNext) btnNext.onclick = () => navigateByVisibleDepartures(1);
     
     if (btnNow) {
         btnNow.onclick = () => {
@@ -1391,6 +1437,7 @@ function applyDestFilter() {
         
         tr.classList.toggle('filtered-dest', !matches);
     });
+    restripeRows();
 }
 
 // ─── DOMContentLoaded ────────────────────────────────────────────────────────

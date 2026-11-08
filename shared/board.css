@@ -29,12 +29,12 @@ html {
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior-y: none;
-    touch-action: manipulation;
+    touch-action: pan-x pan-y;
 }
 
 body {
     overflow: visible;
-    touch-action: manipulation;
+    touch-action: pan-x pan-y;
 }
 
 body {
@@ -45,7 +45,7 @@ body {
     min-height: 100dvh;
     display: block;
     height: auto;
-    padding-top: var(--header-h, 52px);
+    padding-top: var(--header-h, calc(52px + env(safe-area-inset-top)));
 }
 
 #app-header {

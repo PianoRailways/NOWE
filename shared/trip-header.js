@@ -1,3 +1,5 @@
+import { withCountdownParam } from './countdown.js';
+
 const FORMATION_OPERATOR_CODES = new Map([
     ['bls', 'BLSP'],
     ['blsp', 'BLSP'],
@@ -22,10 +24,10 @@ export function renderTripHeader(trip, { links = 'trip' } = {}) {
     const operatingDay = trip.operatingDay || trip.journeyMeta?.operationDate || '';
     const href = links === 'formation'
         ? (trip.swissJourneyId
-            ? `../trip/?sjyid=${encodeURIComponent(trip.swissJourneyId)}${operatingDay ? `&date=${encodeURIComponent(operatingDay)}` : ''}`
+            ? withCountdownParam(`../trip/?sjyid=${encodeURIComponent(trip.swissJourneyId)}${operatingDay ? `&date=${encodeURIComponent(operatingDay)}` : ''}`)
             : '')
         : (evuCode && trip.trainNumber
-            ? `/formation-new/?train=${encodeURIComponent(trip.trainNumber)}&evu=${encodeURIComponent(evuCode)}${operatingDay ? `&date=${encodeURIComponent(operatingDay)}` : ''}`
+            ? withCountdownParam(`/formation-new/?train=${encodeURIComponent(trip.trainNumber)}&evu=${encodeURIComponent(evuCode)}${operatingDay ? `&date=${encodeURIComponent(operatingDay)}` : ''}`)
             : '');
     const number = href
         ? `<a href="${href}" class="trip-header__num">${trip.trainNumber || ''}</a>`

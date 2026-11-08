@@ -1,0 +1,49 @@
+html,
+body {
+    touch-action: pan-x pan-y;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior-y: none;
+}
+
+body {
+    padding-top: var(--header-h, calc(52px + env(safe-area-inset-top)));
+}
+
+#app-header {
+    background: var(--header-bg, #061030);
+    opacity: 1;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding-left: calc(14px + env(safe-area-inset-left));
+    padding-right: calc(14px + env(safe-area-inset-right));
+}
+
+#fav-bar {
+    top: var(--header-h, calc(52px + env(safe-area-inset-top)));
+}
+
+input,
+select,
+button {
+    font-size: 16px;
+}
+
+#date-input,
+#time-input {
+    font-size: 16px;
+}
+
+#stop-search-wrapper {
+    position: relative;
+}
+
+#stop-dropdown {
+    top: 100%;
+    left: 0;
+    right: 0;
+    min-width: 0;
+}
+
+#modal-content {
+    padding-bottom: calc(14px + env(safe-area-inset-bottom));
+}
