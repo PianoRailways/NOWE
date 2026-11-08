@@ -27,7 +27,10 @@ html {
 	scrollbar-gutter: stable;
     overscroll-behavior-y: none;
 }
-html, body { touch-action: manipulation; }
+html, body {
+    touch-action: pan-x pan-y;
+    -webkit-text-size-adjust: 100%;
+}
 body {
     font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
     background: var(--board-bg);
@@ -35,7 +38,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding-top: var(--header-h, 52px);
+    padding-top: var(--header-h, calc(52px + env(safe-area-inset-top)));
 }
 
 /* HEADER */
@@ -138,11 +141,11 @@ body {
 /* Autocomplete-Dropdown */
 #stop-dropdown {
     position: absolute;
-    top: 125px;
+    top: 100%;
     padding: 10px 0;
-    left: 10px;
-    right: 10px;
-    min-width: 90%;
+    left: 0;
+    right: 0;
+    min-width: 0;
     background: var(--board-bg);
     border: 1px solid rgba(255,255,255,0.18);
     border-radius: 2px;
@@ -256,7 +259,7 @@ body {
     padding: 8px;
 	width: 30%;
 	border: 1px solid #888;
-	font-size: 10px;
+	font-size: 16px;
 	border-radius: 4px;
 	background: white; cursor: pointer;
 }
@@ -307,7 +310,7 @@ body {
     background: #07163a;
     overflow-x: auto;
     position: sticky;
-    top: 46px;
+    top: var(--header-h, calc(52px + env(safe-area-inset-top)));
     z-index: 15;
     border-bottom: 1px solid var(--border);
     scrollbar-width: none;

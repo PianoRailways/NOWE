@@ -29,12 +29,12 @@ html {
 }
 
 html {
-    touch-action: manipulation;
+    touch-action: pan-x pan-y;
     overscroll-behavior-y: none;
     overflow-x: hidden;
 }
 
-body { overflow: visible; touch-action: manipulation; }
+body { overflow: visible; touch-action: pan-x pan-y; }
 body {
     font-family: "SBB Web", "Helvetica Neue", Arial, sans-serif;
     background: var(--board-bg);
@@ -43,7 +43,7 @@ body {
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    padding-top: var(--header-h, 52px);
+    padding-top: var(--header-h, calc(52px + env(safe-area-inset-top)));
 }
 
 /* HEADER */

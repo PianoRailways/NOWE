@@ -2,6 +2,7 @@ import { fetchTripInfo } from '../trip/trip-api-client.js';
 import * as sharedStopChain from '../shared/stop-chain.js';
 import { renderTripHeader } from '../shared/trip-header.js';
 import { formatCountdown, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
+import { initHeaderHeight, blockZoom } from '../shared/header.js?v=1';
 
 let tripRefreshTimer = null;
 let markerRefreshTimer = null;
@@ -31,19 +32,9 @@ window.toggleStop = toggleStop;
 window.showDetails = showDetails;
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Browser-Zoom über das Menü lässt sich nicht vollständig verhindern.
-    document.addEventListener('gesturestart', (event) => event.preventDefault());
-    document.addEventListener('gesturechange', (event) => event.preventDefault());
-    document.addEventListener('wheel', (event) => {
-        if (event.ctrlKey) event.preventDefault();
-    }, { passive: false });
-    document.addEventListener('keydown', (event) => {
-        if ((event.ctrlKey || event.metaKey) && ['+', '-', '=', '0'].includes(event.key)) {
-            event.preventDefault();
-        }
-    });
+    blockZoom();
     document.getElementById('date').valueAsDate = new Date();
-    sharedStopChain.initHeaderHeight();
+    initHeaderHeight();
     updateClock();
     setInterval(updateClock, 1000);
     document.getElementById('btn-home')?.addEventListener('click', () => { window.location = '../'; });

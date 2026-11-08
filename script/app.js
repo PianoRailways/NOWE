@@ -1,5 +1,6 @@
 import { fetchDepartures, searchStops, searchStopsNearLocation } from './api-client.js';
 import { formatCountdown, parseCountdownTime, formatZurichDateTime, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
+import { initHeaderHeight, blockZoom } from '../shared/header.js?v=1';
 
 // ─── Produktkategorie-Mapping ────────────────────────────────────────────────
 const CAT = {
@@ -1340,6 +1341,8 @@ function navigateByVisibleDepartures(direction) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initHeaderHeight();
+    blockZoom();
     updateBoardControls(ALL_DEPS.length > 0);
     const btnPrev = document.getElementById('btn-time-prev');
     const btnNext = document.getElementById('btn-time-next');
