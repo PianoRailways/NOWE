@@ -302,6 +302,13 @@ async function getStationIdsByName(stationName) {
     return null;
 }
 
+function getDepartureSortTime(departure) {
+    const iso = isCountdownDefault()
+        ? (departure.estimatedIso || departure.timetabledIso)
+        : (departure.timetabledIso || departure.estimatedIso);
+    return parseCountdownTime(iso)?.getTime() ?? Number.POSITIVE_INFINITY;
+}
+
 // ─── Board laden ──────────────────────────────────────────────────────────────
 
 async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME) {
@@ -354,11 +361,7 @@ async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME)
         const results = await Promise.all(requests);
         ALL_DEPS = results.flat();
         
-        ALL_DEPS.sort((a, b) => {
-            const timeA = a.timetabledIso || a.estimatedIso;
-            const timeB = b.timetabledIso || b.estimatedIso;
-            return new Date(timeA) - new Date(timeB);
-        });
+        ALL_DEPS.sort((a, b) => getDepartureSortTime(a) - getDepartureSortTime(b));
         renderBoard(ALL_DEPS);
  
         const boardTitle = document.getElementById('status-message');
@@ -1317,7 +1320,11 @@ function setQueryDateTime(dateObj) {
 
 function visibleDepartureTimes() {
     return [...document.querySelectorAll('.dep-row:not(.filtered-dest)')]
-        .map(row => parseCountdownTime(row.querySelector('.col-time')?.dataset.tt))
+        .map(row => {
+            const timeCell = row.querySelector('.col-time');
+            const iso = isCountdownDefault() ? timeCell?.dataset.est : timeCell?.dataset.tt;
+            return parseCountdownTime(iso);
+        })
         .filter(Boolean)
         .sort((a, b) => a - b);
 }
