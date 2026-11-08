@@ -1,6 +1,7 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
 import * as sharedStopChain from '../shared/stop-chain.js';
 import { renderTripHeader } from '../shared/trip-header.js';
+import { formatCountdown } from '../shared/countdown.js';
 
 let tripRefreshTimer = null;
 let markerRefreshTimer = null;
@@ -746,12 +747,24 @@ function setupTimeRows() {
     document.querySelectorAll('.time-row').forEach((row) => {
         row.addEventListener('click', (event) => {
             event.stopPropagation();
-            const estimate = row.dataset.est;
-            if (!estimate) return;
+            const target = row.dataset.est || row.dataset.tt;
+            if (!target) return;
             const time = row.querySelector('.ps-time');
-            const original = time.textContent;
-            time.textContent = fmtTime(estimate) || original;
-            window.setTimeout(() => { time.textContent = original; }, 5000);
+            if (row._countdownTimer) window.clearInterval(row._countdownTimer);
+            if (row._countdownTimeout) window.clearTimeout(row._countdownTimeout);
+            row.dataset.countdownActive = 'true';
+            const update = () => {
+                time.textContent = formatCountdown(target) || fmtTime(row.dataset.tt) || '--:--';
+            };
+            update();
+            row._countdownTimer = window.setInterval(update, 1000);
+            row._countdownTimeout = window.setTimeout(() => {
+                window.clearInterval(row._countdownTimer);
+                row._countdownTimer = null;
+                row._countdownTimeout = null;
+                delete row.dataset.countdownActive;
+                time.textContent = fmtTime(row.dataset.tt) || '--:--';
+            }, 10000);
         });
     });
 }

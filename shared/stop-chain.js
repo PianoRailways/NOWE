@@ -1,4 +1,5 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
+import { formatCountdown } from './countdown.js';
 
 export function initHeaderHeight() {
     const header = document.getElementById('app-header');
@@ -105,13 +106,24 @@ export function setupTimeRows(root = document) {
     root.querySelectorAll('.time-row').forEach((row) => {
         row.addEventListener('click', (event) => {
             event.stopPropagation();
-            const estimate = row.dataset.est;
-            if (!estimate) return;
+            const target = row.dataset.est || row.dataset.tt;
+            if (!target) return;
             const time = row.querySelector('.ps-time');
-            time.textContent = fmtTime(estimate) || time.textContent;
-            window.setTimeout(() => {
+            if (row._countdownTimer) window.clearInterval(row._countdownTimer);
+            if (row._countdownTimeout) window.clearTimeout(row._countdownTimeout);
+            row.dataset.countdownActive = 'true';
+            const update = () => {
+                time.textContent = formatCountdown(target) || fmtTime(row.dataset.tt) || '--:--';
+            };
+            update();
+            row._countdownTimer = window.setInterval(update, 1000);
+            row._countdownTimeout = window.setTimeout(() => {
+                window.clearInterval(row._countdownTimer);
+                row._countdownTimer = null;
+                row._countdownTimeout = null;
+                delete row.dataset.countdownActive;
                 time.textContent = fmtTime(row.dataset.tt) || '--:--';
-            }, 5000);
+            }, 10000);
         });
     });
 }
@@ -130,7 +142,9 @@ export function updateTripRows(state, trip) {
             time.dataset.tt = value.timetabled;
             time.dataset.est = value.estimated || '';
             time.dataset.delay = value.delaySec || 0;
-            time.querySelector('.ps-time').textContent = fmtTime(value.timetabled) || '--:--';
+            if (time.dataset.countdownActive !== 'true') {
+                time.querySelector('.ps-time').textContent = fmtTime(value.timetabled) || '--:--';
+            }
             time.querySelector('.delay-slot').innerHTML = delayLabel(value.delaySec);
         });
         const quay = row.querySelector('.chain-stop-text small:not(.stop-cancelled):not(.no-formation-hint)');
