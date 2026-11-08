@@ -1,14 +1,33 @@
 <?php
-$feedUrl = 'https://data.opentransportdata.swiss/dataset/timetable-2026-gtfs2020/permalink';
-$zipFile = __DIR__ . '/gtfs_feed.zip';
-$dbTemp = __DIR__ . '/transit_new.sqlite';
-$dbFinal = __DIR__ . '/transit.sqlite';
-$lockFile = __DIR__ . '/import.lock';
-$logFile = __DIR__ . '/import.log';
+// GTFS-Import für NOWE (schlanke Variante)
+// Aufruf: php import.php             lädt den Feed, falls er sich geändert hat
+//         php import.php datei.zip   importiert ein lokales ZIP (z.B. zum Testen)
+
+ini_set('memory_limit', '512M');
+set_time_limit(0);
+date_default_timezone_set('Europe/Zurich');
+
+// Zeitfenster der Betriebstage, die in der DB landen
+const DAYS_BACK  = 1;
+const DAYS_AHEAD = 60;
+
+$feedUrl   = 'https://data.opentransportdata.swiss/dataset/timetable-2026-gtfs2020/permalink';
+$zipFile   = __DIR__ . '/gtfs_feed.zip';
+$dbTemp    = __DIR__ . '/transit_new.sqlite';
+$dbFinal   = __DIR__ . '/transit.sqlite';
+$lockFile  = __DIR__ . '/import.lock';
+$logFile   = __DIR__ . '/import.log';
+$metaFile  = __DIR__ . '/feed_meta.json';
+$localZip  = $argv[1] ?? null;
 
 function writeLog($msg) {
     global $logFile;
     file_put_contents($logFile, date('[Y-m-d H:i:s] ') . $msg . PHP_EOL, FILE_APPEND);
+}
+
+function fail($msg) {
+    writeLog('FEHLER: ' . $msg);
+    exit(1);
 }
 
 $fpLock = fopen($lockFile, 'c+');
@@ -17,222 +36,208 @@ if (!flock($fpLock, LOCK_EX | LOCK_NB)) {
     exit(1);
 }
 
-writeLog('Starte GTFS-Prüfung...');
+writeLog('Start.');
+$newMeta = null;
 
-$ch = curl_init($feedUrl);
-curl_setopt($ch, CURLOPT_NOBODY, true);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-curl_setopt($ch, CURLOPT_HEADER, true);
-$headers = curl_exec($ch);
+if ($localZip === null) {
+    // Prüfen, ob sich der Feed geändert hat
+    $ch = curl_init($feedUrl);
+    curl_setopt_array($ch, [
+        CURLOPT_NOBODY => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HEADER => true,
+    ]);
+    $headers = (string)curl_exec($ch);
+    curl_close($ch);
 
-preg_match('/ETag: "(.+?)"/i', $headers, $etagMatches);
-preg_match('/Last-Modified: (.+)/i', $headers, $modMatches);
+    // Bei Redirects gibt es mehrere Header-Blöcke, der letzte zählt
+    preg_match_all('/^ETag:\s*(.+)$/mi', $headers, $e);
+    preg_match_all('/^Last-Modified:\s*(.+)$/mi', $headers, $m);
+    $newMeta = [
+        'etag' => isset($e[1]) && $e[1] ? trim(end($e[1])) : null,
+        'last_modified' => isset($m[1]) && $m[1] ? trim(end($m[1])) : null,
+    ];
 
-$remoteETag = $etagMatches[1] ?? null;
-$remoteMod = $modMatches[1] ?? null;
+    $oldMeta = file_exists($metaFile) ? json_decode(file_get_contents($metaFile), true) : null;
+    $hasRemoteInfo = $newMeta['etag'] !== null || $newMeta['last_modified'] !== null;
+    if ($hasRemoteInfo && $oldMeta && $oldMeta === $newMeta && file_exists($dbFinal)) {
+        writeLog('Feed unverändert. Kein Import nötig.');
+        exit(0);
+    }
 
-$metaFile = __DIR__ . '/feed_meta.json';
-$localMeta = file_exists($metaFile) ? json_decode(file_get_contents($metaFile), true) : [];
-
-if ($localMeta && $localMeta['etag'] === $remoteETag && $localMeta['last_modified'] === $remoteMod) {
-    writeLog('Feed unverändert. Kein Import nötig.');
-    flock($fpLock, LOCK_UN);
-    fclose($fpLock);
-    exit(0);
+    writeLog('Lade Feed herunter...');
+    $fpZip = fopen($zipFile, 'w+');
+    $ch = curl_init($feedUrl);
+    curl_setopt_array($ch, [
+        CURLOPT_FILE => $fpZip,
+        CURLOPT_FOLLOWLOCATION => true,
+    ]);
+    $ok = curl_exec($ch);
+    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    fclose($fpZip);
+    if (!$ok || $code !== 200) fail("Download fehlgeschlagen (HTTP $code)");
+    $source = $zipFile;
+} else {
+    $source = $localZip;
 }
 
-writeLog('Feed hat sich geändert. Starte Download...');
-
-$fpZip = fopen($zipFile, 'w+');
-$ch = curl_init($feedUrl);
-curl_setopt($ch, CURLOPT_FILE, $fpZip);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-$success = curl_exec($ch);
-fclose($fpZip);
-
-if (!$success) {
-    writeLog('Fehler beim Download des Feeds.');
-    flock($fpLock, LOCK_UN);
-    fclose($fpLock);
-    exit(1);
+// Zeitfenster
+$today = new DateTimeImmutable('today');
+$window = [];
+for ($i = -DAYS_BACK; $i <= DAYS_AHEAD; $i++) {
+    $d = $today->modify(sprintf('%+d day', $i));
+    $window[] = [(int)$d->format('Ymd'), (int)$d->format('N') - 1];
 }
+$winStart = $window[0][0];
+$winEnd = $window[count($window) - 1][0];
+writeLog("Zeitfenster: $winStart bis $winEnd");
 
-file_put_contents($metaFile, json_encode(['etag' => $remoteETag, 'last_modified' => $remoteMod]));
-
+// Datenbank
 if (file_exists($dbTemp)) unlink($dbTemp);
 $pdo = new PDO('sqlite:' . $dbTemp);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$pdo->exec('PRAGMA synchronous = OFF');
+$pdo->exec('PRAGMA journal_mode = OFF');
+$pdo->exec('PRAGMA cache_size = -200000');
 
-$pdo->exec("PRAGMA synchronous = OFF;");
-$pdo->exec("PRAGMA journal_mode = MEMORY;");
-
-// Schema genau auf deine Daten ausgelegt
-$pdo->exec("CREATE TABLE trips (
+$pdo->exec('CREATE TABLE trips (
     trip_short_name TEXT NOT NULL,
-    trip_id TEXT NOT NULL,
+    service_id INTEGER NOT NULL,
     destination TEXT,
     sjyid TEXT,
-    hints TEXT,
-    date TEXT NOT NULL
-);");
+    hints TEXT
+)');
+$pdo->exec('CREATE TABLE service_dates (
+    service_id INTEGER NOT NULL,
+    date INTEGER NOT NULL,
+    PRIMARY KEY (service_id, date)
+) WITHOUT ROWID');
 
 $zip = new ZipArchive();
-if ($zip->open($zipFile) !== TRUE) {
-    writeLog('Konnte ZIP-Datei nicht öffnen.');
-    flock($fpLock, LOCK_UN);
-    fclose($fpLock);
-    exit(1);
-}
+if ($zip->open($source) !== true) fail('ZIP lässt sich nicht öffnen.');
 
-function getCsvStream($zip, $filename) {
-    $fp = $zip->getStream($filename);
-    if (!$fp) return [null, null];
-    $headerLine = fgets($fp);
-    $headers = str_getcsv(trim($headerLine));
-    return [$fp, $headers];
-}
-
-writeLog('Verarbeite Kalender...');
-$calendar = [];
-list($fp, $headers) = getCsvStream($zip, 'calendar.txt');
-if ($fp) {
-    $iId = array_search('service_id', $headers);
-    $iMon = array_search('monday', $headers);
-    $iTue = array_search('tuesday', $headers);
-    $iWed = array_search('wednesday', $headers);
-    $iThu = array_search('thursday', $headers);
-    $iFri = array_search('friday', $headers);
-    $iSat = array_search('saturday', $headers);
-    $iSun = array_search('sunday', $headers);
-    $iStart = array_search('start_date', $headers);
-    $iEnd = array_search('end_date', $headers);
-
-    while (($row = fgets($fp)) !== false) {
-        $data = str_getcsv(trim($row));
-        if (count($data) <= max($iStart, $iEnd)) continue;
-        $calendar[$data[$iId]] = [
-            'days' => [$data[$iMon], $data[$iTue], $data[$iWed], $data[$iThu], $data[$iFri], $data[$iSat], $data[$iSun]],
-            'start' => $data[$iStart],
-            'end' => $data[$iEnd]
-        ];
+function openCsv(ZipArchive $zip, string $name, array $required): array {
+    $fp = $zip->getStream($name);
+    if (!$fp) fail("$name fehlt im ZIP.");
+    $header = fgetcsv($fp, 0, ',', '"', '');
+    if (!$header) fail("$name hat keinen Header.");
+    $header[0] = preg_replace('/^\xEF\xBB\xBF/', '', $header[0]);
+    $idx = array_flip($header);
+    foreach ($required as $col) {
+        if (!isset($idx[$col])) fail("Spalte '$col' fehlt in $name. Header: " . implode(',', $header));
     }
-    fclose($fp);
+    return [$fp, $idx, count($header)];
 }
 
-$exceptions = [];
-list($fp, $headers) = getCsvStream($zip, 'calendar_dates.txt');
-if ($fp) {
-    $iId = array_search('service_id', $headers);
-    $iDate = array_search('date', $headers);
-    $iType = array_search('exception_type', $headers);
+// Service-IDs als Integer, spart Platz
+$serviceIds = [];
+function serviceId(string $name): int {
+    global $serviceIds;
+    return $serviceIds[$name] ??= count($serviceIds) + 1;
+}
 
-    while (($row = fgets($fp)) !== false) {
-        $data = str_getcsv(trim($row));
-        if (count($data) <= max($iId, $iDate, $iType)) continue;
-        $exceptions[$data[$iId]][$data[$iDate]] = (int)$data[$iType];
+// 1. Regelmässige Verkehrstage aus calendar.txt (nur im Fenster)
+writeLog('Verarbeite calendar.txt...');
+[$fp, $c, $n] = openCsv($zip, 'calendar.txt', [
+    'service_id', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+    'start_date', 'end_date',
+]);
+$dayCols = [$c['monday'], $c['tuesday'], $c['wednesday'], $c['thursday'], $c['friday'], $c['saturday'], $c['sunday']];
+$ins = $pdo->prepare('INSERT OR IGNORE INTO service_dates VALUES (?, ?)');
+$pdo->beginTransaction();
+while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
+    if (count($r) < $n) continue;
+    $id = serviceId($r[$c['service_id']]);
+    $start = (int)$r[$c['start_date']];
+    $end = (int)$r[$c['end_date']];
+    foreach ($window as [$date, $wd]) {
+        if ($date < $start || $date > $end) continue;
+        if ($r[$dayCols[$wd]] === '1') $ins->execute([$id, $date]);
     }
-    fclose($fp);
+}
+fclose($fp);
+$pdo->commit();
+
+// 2. Ausnahmen streamen, nur Fenster, nichts im RAM halten
+writeLog('Verarbeite calendar_dates.txt...');
+[$fp, $c, $n] = openCsv($zip, 'calendar_dates.txt', ['service_id', 'date', 'exception_type']);
+$del = $pdo->prepare('DELETE FROM service_dates WHERE service_id = ? AND date = ?');
+$pdo->beginTransaction();
+while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
+    if (count($r) < $n) continue;
+    $date = (int)$r[$c['date']];
+    if ($date < $winStart || $date > $winEnd) continue;
+    $id = serviceId($r[$c['service_id']]);
+    $type = (int)$r[$c['exception_type']];
+    if ($type === 1) $ins->execute([$id, $date]);
+    elseif ($type === 2) $del->execute([$id, $date]);
+}
+fclose($fp);
+$pdo->commit();
+
+$active = [];
+foreach ($pdo->query('SELECT DISTINCT service_id FROM service_dates') as $row) {
+    $active[(int)$row[0]] = true;
+}
+writeLog('Services mit Betrieb im Fenster: ' . count($active) . ' von ' . count($serviceIds));
+
+// Fahrten ohne SJYID: OJP-ID aus trip_id und direction_id ableiten
+// .ojp-91-44-B.1.TA.45.j26 + direction 0  ->  ojp:91044:B:H:j26:45
+function deriveOjpId(string $tripId, string $direction): string {
+    if (!preg_match('/^\.ojp-(\d+)-(\d+)-([A-Za-z]+)\.\d+\.[A-Za-z]+\.(\d+)\.(j\d+)$/', $tripId, $m)) return '';
+    $dir = $direction === '1' ? 'R' : 'H';
+    return sprintf('ojp:%s%03d:%s:%s:%s:%s', $m[1], (int)$m[2], $m[3], $dir, $m[5], $m[4]);
 }
 
-function getServiceDates($serviceId, $calData, $exceptions) {
-    $dates = [];
-    if (!isset($calData[$serviceId])) return $dates;
-    
-    $start = new DateTime($calData[$serviceId]['start']);
-    $end = new DateTime($calData[$serviceId]['end']);
-    $end->modify('+1 day');
-    
-    $period = new DatePeriod($start, new DateInterval('P1D'), $end);
-    $weeklyDays = $calData[$serviceId]['days'];
-
-    foreach ($period as $dt) {
-        $dateStr = $dt->format('Ymd');
-        $wday = (int)$dt->format('N') - 1;
-        $runs = $weeklyDays[$wday] == '1';
-
-        if (isset($exceptions[$serviceId][$dateStr])) {
-            $type = $exceptions[$serviceId][$dateStr];
-            if ($type === 1) $runs = true;
-            if ($type === 2) $runs = false;
-        }
-
-        if ($runs) $dates[] = $dateStr;
+// 3. Trips: eine Zeile pro Fahrt, nur wenn sie im Fenster fährt
+writeLog('Verarbeite trips.txt...');
+[$fp, $c, $n] = openCsv($zip, 'trips.txt', [
+    'service_id', 'trip_id', 'trip_headsign', 'trip_short_name', 'direction_id', 'original_trip_id',
+]);
+$iHints = $c['hints'] ?? null;
+$insTrip = $pdo->prepare('INSERT INTO trips VALUES (?, ?, ?, ?, ?)');
+$pdo->beginTransaction();
+$count = 0;
+$skipped = 0;
+$derived = 0;
+$unresolved = 0;
+while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
+    if (count($r) < $n) continue;
+    $short = trim($r[$c['trip_short_name']]);
+    $id = $serviceIds[$r[$c['service_id']]] ?? null;
+    if ($short === '' || $id === null || !isset($active[$id])) {
+        $skipped++;
+        continue;
     }
-    return $dates;
-}
-
-writeLog('Schreibe Trips in SQLite...');
-list($fp, $headers) = getCsvStream($zip, 'trips.txt');
-if ($fp) {
-    // Dynamische Spaltenerkennung basierend auf dem Standard-Feed
-    $iService = array_search('service_id', $headers);
-    $iTripId = array_search('trip_id', $headers);
-    $iHeadsign = array_search('trip_headsign', $headers);
-    $iTripShort = array_search('trip_short_name', $headers);
-    $iSjyid = array_search('sjyid', $headers); // Falls im Header so benannt
-    $iHints = array_search('wheelchair_accessible', $headers); // oder entsprechende Hint-Spalte
-
-    // Fallback falls Spaltenpositionen fix erwartet werden oder Header abweicht
-    // Basierend auf deiner Beispielzeile: 
-    // 0: route_id/service_id, 2: trip_id, 3: destination, 4: train_number, 7: sjyid, 8: hints
-    $iService = $iService !== false ? $iService : 0;
-    $iTripId = $iTripId !== false ? $iTripId : 2;
-    $iHeadsign = $iHeadsign !== false ? $iHeadsign : 3;
-    $iTripShort = $iTripShort !== false ? $iTripShort : 4;
-    $iSjyid = $iSjyid !== false ? $iSjyid : 7;
-    $iHints = $iHints !== false ? $iHints : 8;
-
-    $pdo->beginTransaction();
-    $stmt = $pdo->prepare("INSERT INTO trips VALUES (:num, :id, :dest, :sjyid, :hints, :date)");
-
-    $serviceDatesCache = [];
-
-    while (($row = fgets($fp)) !== false) {
-        $data = str_getcsv(trim($row));
-        if (count($data) <= max($iTripShort, $iTripId)) continue;
-
-        $tripShort = trim($data[$iTripShort]);
-        if ($tripShort === '') continue;
-
-        $tripId = $data[$iTripId] ?? '';
-        $destination = $data[$iHeadsign] ?? '';
-        $sjyid = $data[$iSjyid] ?? '';
-        $hints = $data[$iHints] ?? '';
-        $serviceId = $data[$iService] ?? '';
-
-        if (!isset($serviceDatesCache[$serviceId])) {
-            $serviceDatesCache[$serviceId] = getServiceDates($serviceId, $calendar, $exceptions);
-        }
-        $activeDates = $serviceDatesCache[$serviceId];
-
-        foreach ($activeDates as $dateStr) {
-            $stmt->execute([
-                ':num' => $tripShort,
-                ':id' => $tripId,
-                ':dest' => $destination,
-                ':sjyid' => $sjyid,
-                ':hints' => $hints,
-                ':date' => $dateStr
-            ]);
-        }
+    $sjyid = $r[$c['original_trip_id']];
+    if ($sjyid === '') {
+        $sjyid = deriveOjpId($r[$c['trip_id']], $r[$c['direction_id']]);
+        if ($sjyid !== '') $derived++; else $unresolved++;
     }
-    fclose($fp);
-    $pdo->commit();
+    $insTrip->execute([
+        $short,
+        $id,
+        $r[$c['trip_headsign']],
+        $sjyid,
+        $iHints !== null ? $r[$iHints] : '',
+    ]);
+    $count++;
 }
-
+fclose($fp);
+$pdo->commit();
 $zip->close();
+writeLog("Trips gespeichert: $count, übersprungen: $skipped");
+writeLog("Ohne SJYID: $derived abgeleitet (ojp:...), $unresolved nicht ableitbar");
 
 writeLog('Erstelle Index...');
-$pdo->exec("CREATE INDEX idx_search ON trips(trip_short_name, date);");
+$pdo->exec('CREATE INDEX idx_trips_name ON trips(trip_short_name)');
 $pdo = null;
 
-if (file_exists($dbTemp)) {
-    rename($dbTemp, $dbFinal);
-    writeLog('Import erfolgreich abgeschlossen.');
-} else {
-    writeLog('Fehler: Temporäre Datenbank nicht gefunden.');
+rename($dbTemp, $dbFinal);
+if ($newMeta !== null) {
+    file_put_contents($metaFile, json_encode($newMeta));
+    @unlink($zipFile);
 }
-
-flock($fpLock, LOCK_UN);
-fclose($fpLock);
+writeLog('Import erfolgreich abgeschlossen. DB: ' . round(filesize($dbFinal) / 1048576) . ' MB');
