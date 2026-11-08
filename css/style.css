@@ -690,7 +690,8 @@ a:visited {
 }
 
 #destFilter {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     padding: 10px;
     box-sizing: border-box;
     border: 1px solid #888;
@@ -698,6 +699,25 @@ a:visited {
     border-radius: 4px;
     background: rgba(255,255,255,0.05);
     color: var(--text-main);
+}
+
+#dest-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+[data-filter-clear] {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-main);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
 }
 
 #destFilter::placeholder {

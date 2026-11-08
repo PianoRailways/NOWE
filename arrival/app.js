@@ -1037,9 +1037,16 @@ window.addEventListener('popstate', () => {
 function initDestFilter() {
     const destFilterEl = document.getElementById('destFilter');
     if (!destFilterEl) return;
+    const clear = document.querySelector('[data-filter-clear]');
     
     destFilterEl.addEventListener('input', () => {
         applyDestFilter();
+    });
+
+    clear?.addEventListener('click', () => {
+        destFilterEl.value = '';
+        applyDestFilter();
+        destFilterEl.focus();
     });
 }
 
