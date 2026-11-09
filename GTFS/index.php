@@ -63,49 +63,10 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../shared/footer.css">
+    <link rel="stylesheet" href="gtfs.css">
     <link rel="icon" type="image/png" href="../nowe.png">
     <link rel="apple-touch-icon" href="../nowe.png">
     <title>öV NOWE • Fahrtensuche</title>
-    <style>
-        .gtfs-main { width: 100%; max-width: 1100px; margin: 0 auto; }
-        .gtfs-heading { padding: 18px 14px 12px; background: var(--board-head); border-bottom: 1px solid var(--border); }
-        .gtfs-heading h1 { font-size: 1.2em; letter-spacing: 0.02em; }
-        .gtfs-heading p { margin-top: 4px; color: var(--text-via); font-size: 0.85em; }
-        .gtfs-form { display: flex; align-items: flex-end; gap: 8px; padding: 12px 14px; background: var(--board-bg); border-bottom: 1px solid var(--border); }
-        .gtfs-field { flex: 1; min-width: 0; }
-        .gtfs-field--number { flex: 2; }
-        .gtfs-form label { display: block; margin-bottom: 5px; color: var(--text-via); font-size: 0.8em; font-weight: 700; }
-        .gtfs-form input { width: 100%; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.18); border-radius: 3px; background: rgba(255,255,255,0.06); color: var(--text-main); font: inherit; }
-        .gtfs-form input:focus { outline: none; border-color: var(--sbb-orange); background: rgba(255,255,255,0.1); }
-        .gtfs-form input::placeholder { color: var(--text-dim); }
-        .gtfs-date-fields { display: flex; gap: 6px; }
-        .gtfs-date-fields #date { flex: 1; min-width: 0; }
-        #date-picker { flex: 0 0 42px; width: 42px; padding: 8px 6px; cursor: pointer; }
-        #date-picker::-webkit-calendar-picker-indicator { filter: invert(1); cursor: pointer; }
-        .gtfs-form button { padding: 8px 18px; border: 0; border-radius: 3px; background: var(--sbb-red); color: #fff; font-weight: 700; cursor: pointer; }
-        .gtfs-form button:hover { background: #c90000; }
-        .gtfs-notice { margin: 12px 14px; padding: 10px 12px; border-left: 3px solid var(--live-red); background: rgba(255,59,48,0.15); color: #ffb0aa; }
-        .gtfs-empty { padding: 18px 14px; color: var(--text-via); }
-        .gtfs-results-title { padding: 16px 14px 8px; font-size: 1em; color: var(--text-main); }
-        .gtfs-trips { display: flex; flex-direction: column; }
-        .gtfs-trip-row { display: block; padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text-main); text-decoration: none; }
-        .gtfs-trip-row:nth-child(even) { background: var(--board-row); }
-        .gtfs-trip-row:nth-child(odd) { background: var(--board-alt); }
-        .gtfs-trip-top, .gtfs-trip-bottom { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
-        .gtfs-trip-top { font-size: 0.9em; }
-        .gtfs-trip-sjyid { color: var(--text-via); font-family: monospace; font-size: 0.86em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .gtfs-trip-bottom { margin-top: 5px; font-size: 0.95em; }
-        .gtfs-trip-arrow { font-weight: 700; font-size: 1.2em;}
-        .gtfs-trip-destination { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700;}
-        .gtfs-trip-hints { margin-left: auto; color: var(--text-via); font-size: 0.8em; text-align: right; white-space: nowrap; }
-        #live-clock { cursor: pointer; }
-        @media (max-width: 640px) {
-            .gtfs-form { align-items: stretch; flex-direction: column; }
-            .gtfs-field--number { flex: 1; }
-            .gtfs-form button { width: 100%; }
-            .gtfs-trip-row { padding: 10px; }
-        }
-    </style>
 </head>
 <body>
 
