@@ -60,21 +60,13 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#061030">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../shared/footer.css">
     <link rel="stylesheet" href="gtfs.css">
     <link rel="icon" type="image/png" href="../nowe.png">
     <link rel="apple-touch-icon" href="../nowe.png">
     <title>öV NOWE • Fahrtensuche</title>
-    <style>
-        #app-header { position: sticky; top: 0; z-index: 100; padding-top: env(safe-area-inset-top); }
-        input, select, textarea { font-size: 16px; }
-    </style>
 </head>
 <body>
 

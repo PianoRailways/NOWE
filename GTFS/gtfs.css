@@ -7,8 +7,6 @@
 .gtfs-field--number { flex: 2; }
 .gtfs-form label { display: block; margin-bottom: 5px; color: var(--text-via); font-size: 0.8em; font-weight: 700; }
 .gtfs-form input { width: 100%; padding: 10px 10px; border: 1px solid rgba(255,255,255,0.18); border-radius: 3px; background: rgba(255,255,255,0.06); color: var(--text-main); font: inherit; }
-.gtfs-form input, .gtfs-form select, .gtfs-form textarea { font-size: 16px; }
-#app-header { position: sticky; top: 0; z-index: 100; padding-top: env(safe-area-inset-top); }
 .gtfs-form input:focus { outline: none; border-color: var(--sbb-orange); background: rgba(255,255,255,0.1); }
 .gtfs-form input::placeholder { color: var(--text-dim); }
 .gtfs-date-fields { display: flex; gap: 6px; }

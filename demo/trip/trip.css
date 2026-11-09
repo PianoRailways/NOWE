@@ -5,9 +5,6 @@
 
 /* ─────── Eingabe-Bereich ────────────────────────────────────────────────────── */
 
-#app-header { position: sticky; top: 0; z-index: 100; padding-top: env(safe-area-inset-top); }
-input, select, textarea { font-size: 16px; }
-
 #trip-input-wrapper {
     padding: 12px 14px;
     background: var(--board-head);
