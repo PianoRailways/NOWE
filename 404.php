@@ -2,6 +2,15 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#061030">
+    <style>
+        #app-header { position: sticky; top: 0; z-index: 100; padding-top: env(safe-area-inset-top); }
+        input, select, textarea { font-size: 16px; }
+    </style>
     <title>STS: Bildfahrplan Manu-Live</title>
 </head>
 <style>

@@ -185,6 +185,15 @@ input, select, button { font-size: 16px; }
 .trip-header__dest { flex: 1; font-weight: 600; font-size: .95em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .02em; }
 .trip-header__num { font-size: .78em; color: var(--text-dim); font-family: monospace; text-align: center; letter-spacing: .04em; text-decoration: none; }
 
+#app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding-top: env(safe-area-inset-top);
+}
+
+input, select, textarea { font-size: 16px; }
+
 @media (max-width: 480px) {
     .trip-header .line-badge { font-size: .8em; padding: 2px 6px; }
 }

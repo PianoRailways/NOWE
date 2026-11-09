@@ -8,6 +8,9 @@ html, body {
 }
 
 #app-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     padding-top: calc(8px + env(safe-area-inset-top));
     padding-left: calc(14px + env(safe-area-inset-left));
     padding-right: calc(14px + env(safe-area-inset-right));
@@ -29,3 +32,5 @@ html, body {
 input, select, button {
     font-size: 16px;
 }
+
+textarea { font-size: 16px; }
