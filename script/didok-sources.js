@@ -64,15 +64,7 @@ async function requestJson(requestUrl) {
 }
 
 async function fetchSource(url) {
-    let data;
-    try {
-        // Direkt von extern laden (benötigt Access-Control-Allow-Origin auf dem Quellserver).
-        data = await requestJson(url);
-    } catch (directError) {
-        // Rückfall über den Proxy, falls CORS nicht freigegeben ist.
-        // Kann entfernt werden, sobald der Header auf tragic.stellwerksim.ch gesetzt ist.
-        data = await requestJson(`${DIDOK_PROXY_URL}${encodeURIComponent(url)}`);
-    }
+    const data = await requestJson(`${DIDOK_PROXY_URL}${encodeURIComponent(url)}`);
     writeCache(url, data);
     return data;
 }
