@@ -49,22 +49,32 @@ function writeCache(url, data) {
     }
 }
 
-async function fetchSource(url) {
+async function requestJson(requestUrl) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
     try {
-        const requestUrl = new URL(url).origin === window.location.origin
-            ? url
-            : `${DIDOK_PROXY_URL}${encodeURIComponent(url)}`;
         const response = await fetch(requestUrl, { signal: controller.signal });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         if (!data || Array.isArray(data) || typeof data !== 'object') throw new Error('Ungültiges DiDok-Format');
-        writeCache(url, data);
         return data;
     } finally {
         clearTimeout(timeout);
     }
+}
+
+async function fetchSource(url) {
+    let data;
+    try {
+        // Direkt von extern laden (benötigt Access-Control-Allow-Origin auf dem Quellserver).
+        data = await requestJson(url);
+    } catch (directError) {
+        // Rückfall über den Proxy, falls CORS nicht freigegeben ist.
+        // Kann entfernt werden, sobald der Header auf tragic.stellwerksim.ch gesetzt ist.
+        data = await requestJson(`${DIDOK_PROXY_URL}${encodeURIComponent(url)}`);
+    }
+    writeCache(url, data);
+    return data;
 }
 
 function loadExternalSources() {
