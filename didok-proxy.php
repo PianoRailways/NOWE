@@ -27,7 +27,6 @@ curl_setopt_array($ch, [
 $response = curl_exec($ch);
 $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $curlError = curl_error($ch);
-curl_close($ch);
 
 if ($response === false || $httpCode < 200 || $httpCode >= 300) {
     http_response_code(502);
