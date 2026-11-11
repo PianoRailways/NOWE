@@ -1,4 +1,5 @@
 import { fetchDepartures, searchStops } from './api-client.js';
+import { initDidokSources, resolveAbbreviation, findAbbreviationByName } from '../script/didok-sources.js';
 
 // ─── Produktkategorie-Mapping ────────────────────────────────────────────────
 const CAT = {
@@ -788,31 +789,15 @@ function updateViaButtonState(btn) {
 }
 
 function checkDidokMapping(query) {
-    if (!window.didokMapping) return null;
-    
     const q = query.trim().toUpperCase();
-    
-    if (window.didokMapping[q]) {
-        const name = window.didokMapping[q];
+    const name = resolveAbbreviation(q);
+    if (name) {
         return { id: q, name, isDidokMatch: true };
     }
-    
-    for (const [key, value] of Object.entries(window.didokMapping)) {
-        if (key.toUpperCase() === q) {
-            return { id: key, name: value, isDidokMatch: true };
-        }
+    if (/^\d{7,8}$/.test(q) && name) {
+        const sloidId = /^85\d{5}$/.test(q) ? `ch:1:sloid:${q.substring(2)}` : q;
+        return { id: sloidId, name, isDidokMatch: true };
     }
-    
-    if (/^\d{7,8}$/.test(q)) {
-        if (window.didokMapping[q]) {
-            const name = window.didokMapping[q];
-            const sloidId = /^85\d{5}$/.test(q) 
-                ? `ch:1:sloid:${q.substring(2)}`
-                : q;
-            return { id: sloidId, name, isDidokMatch: true };
-        }
-    }
-    
     return null;
 }
 
@@ -837,6 +822,7 @@ function initStopSearch() {
 
         searchDebounce = setTimeout(async () => {
             try {
+                await initDidokSources();
                 const didokResult = checkDidokMapping(q);
                 
                 if (didokResult) {
@@ -866,27 +852,7 @@ function initStopSearch() {
                 dropdown.innerHTML = results.map(r => {
                     let shortcut = '';
                     
-                    if (window.didokMapping) {
-                        const numericMatch = r.ref.match(/ch:1:sloid:(\d+)/);
-                        let lookupId = numericMatch ? numericMatch[1] : r.ref;
-                        
-                        if (/^\d{5}$/.test(lookupId)) {
-                            lookupId = `85${lookupId}`;
-                        }
-                        
-                        const foundEntry = Object.entries(window.didokMapping).find(([key, val]) => {
-                            return key === lookupId && !/^\d+$/.test(key); 
-                        });
-                        
-                        if (!foundEntry) {
-                            const codeKey = Object.keys(window.didokMapping).find(key => 
-                                window.didokMapping[key] === r.name && !/^\d+$/.test(key)
-                            );
-                            if (codeKey) shortcut = codeKey;
-                        } else {
-                            shortcut = foundEntry[0];
-                        }
-                    }
+                    shortcut = findAbbreviationByName(r.name) || '';
 
                     return `
                         <li data-id="${r.ref}" data-name="${r.name}">
@@ -919,8 +885,9 @@ function initStopSearch() {
         startAutoRefresh();
     });
 
-    input.addEventListener('keydown', e => {
+    input.addEventListener('keydown', async e => {
         if (e.key === 'Enter') {
+            await initDidokSources();
             const first = dropdown.querySelector('li:not(.no-res)');
             if (first) {
                 STOP_ID     = first.dataset.id;
@@ -943,7 +910,7 @@ function initStopSearch() {
 
             if (STOP_ID) {
                 updateUrlParams();
-                loadBoard();
+                initDidokSources().then(() => loadBoard());
                 updateFavHighlight();
                 startAutoRefresh();
             }
@@ -1128,8 +1095,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (STOP_ID) {
-        loadBoard();
-        startAutoRefresh();
+        initDidokSources().then(() => {
+            const didokResult = checkDidokMapping(STOP_ID);
+            if (didokResult) STOP_ID = didokResult.id;
+            syncInputsFromState();
+            loadBoard();
+            startAutoRefresh();
+        });
     }
     
 	const addFavBtn = document.getElementById('btn-add-fav');

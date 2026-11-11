@@ -60,17 +60,22 @@ async function fetchSource(url) {
 }
 
 function loadExternalSources() {
-    return Promise.allSettled(DIDOK_SOURCE_URLS.map(async url => {
-        const cached = readCache(url);
-        if (cached) mergeSource(cached);
+    const cachedSources = DIDOK_SOURCE_URLS.map(readCache);
+    cachedSources.forEach(source => {
+        if (source) mergeSource(source);
+    });
 
-        try {
-            const fresh = await fetchSource(url);
-            mergeSource(fresh);
-        } catch {
-            if (!cached) return;
-        }
-    }));
+    const refresh = Promise.allSettled(DIDOK_SOURCE_URLS.map(fetchSource)).then(results => {
+        results.forEach((result, index) => {
+            if (result.status === 'fulfilled') mergeSource(result.value);
+        });
+    });
+
+    if (cachedSources.some(Boolean)) {
+        void refresh;
+        return Promise.resolve();
+    }
+    return refresh;
 }
 
 export function initDidokSources() {
@@ -84,9 +89,14 @@ export function resolveAbbreviation(code) {
 }
 
 export function findAbbreviationByName(name) {
+    return findAbbreviationsByName(name)[0] || null;
+}
+
+export function findAbbreviationsByName(name) {
     const normalizedName = String(name || '').trim();
+    const matches = [];
     for (const [code, mappedName] of didokMap) {
-        if (!/^\d+$/.test(code) && mappedName === normalizedName) return code;
+        if (!/^\d+$/.test(code) && mappedName === normalizedName) matches.push(code);
     }
-    return null;
+    return matches;
 }
