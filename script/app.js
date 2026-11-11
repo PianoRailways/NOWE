@@ -436,6 +436,10 @@ function renderBoard(departures) {
     visible.forEach((dep, index) => {
         // ← Vias als komma-separierter String für Zielfilter vorbereiten
         const viasStr = dep.vias ? dep.vias.join(' · ') : '';
+        const destinationTerms = [
+            ...getDestinationTerms(dep.destination),
+            ...(dep.vias || []).flatMap(getDestinationTerms)
+        ];
 
         let fullLine = dep.line;
         if (dep.cat && !dep.line.startsWith(dep.cat)) {
@@ -564,6 +568,7 @@ function renderBoard(departures) {
                 data-index="${index}"
                 data-dest="${dep.destination || ''}"
                 data-vias="${viasStr}"
+                data-dest-terms="${destinationTerms.join('|')}"
                 data-line="${dep.line || ''}"
                 data-trip="${dep.journeyNumber || ''}"
                 data-cat="${dep.cat || ''}"
@@ -1393,22 +1398,50 @@ window.addEventListener('popstate', () => {
  */
 function initDestFilter() {
     const destFilterEl = document.getElementById('destFilter');
+    const dropdown = document.getElementById('dest-filter-dropdown');
     if (!destFilterEl) return;
     const clear = document.querySelector('[data-filter-clear]');
     
     destFilterEl.addEventListener('input', () => {
+        updateDestFilterDropdown();
         applyDestFilter();
     });
+    destFilterEl.addEventListener('focus', updateDestFilterDropdown);
 
     clear?.addEventListener('click', () => {
         destFilterEl.value = '';
+        dropdown?.classList.add('hidden');
         applyDestFilter();
         destFilterEl.focus();
+    });
+
+    dropdown?.addEventListener('mousedown', event => {
+        const option = event.target.closest('[data-dest-value]');
+        if (!option) return;
+        event.preventDefault();
+        destFilterEl.value = option.dataset.destValue;
+        dropdown.classList.add('hidden');
+        applyDestFilter();
     });
 }
 
 function normalizeDestFilterValue(value) {
     return String(value || '').trim().toLocaleLowerCase('de-CH').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+let destinationAliasIndex;
+
+function getDestinationAliasIndex() {
+    if (destinationAliasIndex) return destinationAliasIndex;
+    destinationAliasIndex = new Map();
+    Object.entries(window.didokMapping || {}).forEach(([code, mappedName]) => {
+        const name = normalizeDestFilterValue(mappedName);
+        if (!name) return;
+        const aliases = destinationAliasIndex.get(name) || [];
+        aliases.push(normalizeDestFilterValue(code));
+        destinationAliasIndex.set(name, aliases);
+    });
+    return destinationAliasIndex;
 }
 
 function getDestinationTerms(value) {
@@ -1417,16 +1450,12 @@ function getDestinationTerms(value) {
 
     const normalizedName = normalizeDestFilterValue(name);
     const terms = [normalizedName];
-    for (const [code, mappedName] of Object.entries(window.didokMapping || {})) {
-        if (normalizeDestFilterValue(mappedName) === normalizedName) {
-            terms.push(normalizeDestFilterValue(code));
-        }
-    }
+    terms.push(...(getDestinationAliasIndex().get(normalizedName) || []));
     return terms;
 }
 
 function updateDestFilterOptions(departures) {
-    const options = document.getElementById('dest-filter-options');
+    const options = document.getElementById('dest-filter-dropdown');
     if (!options) return;
 
     const values = new Map();
@@ -1434,15 +1463,33 @@ function updateDestFilterOptions(departures) {
         [dep.destination, ...(dep.vias || [])].forEach(value => {
             const name = String(value || '').trim();
             if (!name) return;
-            values.set(normalizeDestFilterValue(name), name);
-            getDestinationTerms(name).slice(1).forEach(code => values.set(code, code.toUpperCase()));
+            const terms = getDestinationTerms(name);
+            values.set(terms[0], { name, terms });
         });
     });
 
-    options.innerHTML = [...values.values()]
-        .sort((a, b) => a.localeCompare(b, 'de-CH'))
-        .map(value => `<option value="${value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}"></option>`)
-        .join('');
+    options._values = [...values.values()]
+        .sort((a, b) => a.name.localeCompare(b.name, 'de-CH'));
+    options.innerHTML = '';
+}
+
+function updateDestFilterDropdown() {
+    const input = document.getElementById('destFilter');
+    const dropdown = document.getElementById('dest-filter-dropdown');
+    if (!input || !dropdown?._values) return;
+
+    const query = normalizeDestFilterValue(input.value);
+    const matches = dropdown._values
+        .filter(({ name, terms }) => !query || [name, ...terms.slice(1).map(code => code.toUpperCase())]
+            .some(value => normalizeDestFilterValue(value).includes(query)))
+        .slice(0, 8);
+
+    dropdown.innerHTML = matches.map(({ name, terms }) => {
+        const code = terms[1] ? ` <span class="dd-code-center">${terms[1].toUpperCase()}</span>` : '';
+        const escapedName = name.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+        return `<li data-dest-value="${escapedName}"><span class="dd-name">${escapedName}</span>${code}</li>`;
+    }).join('');
+    dropdown.classList.toggle('hidden', matches.length === 0);
 }
 
 /**
@@ -1455,12 +1502,10 @@ function applyDestFilter() {
     if (!destFilterEl) return;
     
     const query = destFilterEl.value.trim().toLowerCase();
+    const normalizedQuery = normalizeDestFilterValue(query);
 
     document.querySelectorAll('.dep-row').forEach(tr => {
-        const terms = [
-            ...getDestinationTerms(tr.dataset.dest),
-            ...(tr.dataset.vias || '').split(' · ').flatMap(getDestinationTerms)
-        ];
+        const terms = (tr.dataset.destTerms || '').split('|');
         
         // Wenn kein Filter, zeige alles
         if (!query) {
@@ -1468,7 +1513,7 @@ function applyDestFilter() {
             return;
         }
         
-        const matches = terms.some(term => term.includes(normalizeDestFilterValue(query)));
+        const matches = terms.some(term => term.includes(normalizedQuery));
         
         tr.classList.toggle('filtered-dest', !matches);
     });
