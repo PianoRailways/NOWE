@@ -6,7 +6,7 @@ body {
 }
 
 body {
-    padding-top: var(--header-h, calc(52px + env(safe-area-inset-top)));
+    padding-top: 0;
 }
 
 #app-header {
