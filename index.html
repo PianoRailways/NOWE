@@ -77,7 +77,8 @@
 
     <!-- ═══════════════ ZIELFILTER ═══════════════ -->
     <div id="dest-filter-bar">
-        <input type="text" id="destFilter" placeholder="Nach Ziel filtern (z.B. Basel, Zürich)…" autocomplete="off">
+        <input type="text" id="destFilter" list="dest-filter-options" placeholder="Nach Ziel filtern (z.B. Basel, Zürich, LTH)…" autocomplete="off">
+        <datalist id="dest-filter-options"></datalist>
         <button type="button" data-filter-clear aria-label="Filter löschen">×</button>
     </div>
 
