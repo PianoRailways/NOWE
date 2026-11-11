@@ -1,4 +1,5 @@
 import { fetchDepartures, searchStops, searchStopsNearLocation } from './api-client.js';
+import { initDidokSources, resolveAbbreviation, findAbbreviationByName, findAbbreviationsByName } from './didok-sources.js';
 import { formatCountdown, parseCountdownTime, formatZurichDateTime, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
 import { initHeaderHeight, blockZoom } from '../shared/header.js?v=1';
 
@@ -1017,35 +1018,15 @@ function updateViaButtonState(btn) {
  * ✅ Löst DiDok-ID immer zu SLOID auf
  */
 function checkDidokMapping(query) {
-    if (!window.didokMapping) return null;
-    
     const q = query.trim().toUpperCase();
-    
-    // 1. Direkte Suche (Key ist exakt oder in Großbuchstaben)
-    if (window.didokMapping[q]) {
-        const name = window.didokMapping[q];
+    const name = resolveAbbreviation(q);
+    if (name) {
         return { id: q, name, isDidokMatch: true };
     }
-    
-    // 2. Fallback: Alle Keys durchsuchen (Case-insensitive)
-    for (const [key, value] of Object.entries(window.didokMapping)) {
-        if (key.toUpperCase() === q) {
-            return { id: key, name: value, isDidokMatch: true };
-        }
+    if (/^\d{7,8}$/.test(q) && name) {
+        const sloidId = /^85\d{5}$/.test(q) ? `ch:1:sloid:${q.substring(2)}` : q;
+        return { id: sloidId, name, isDidokMatch: true };
     }
-    
-    // 3. Numerische ID: Suche ob diese ID im didokmapping vorhanden ist
-    if (/^\d{7,8}$/.test(q)) {
-        if (window.didokMapping[q]) {
-            const name = window.didokMapping[q];
-            // ✅ DiDok-ID zu SLOID konvertieren: 85XXXXX → ch:1:sloid:XXXXX
-            const sloidId = /^85\d{5}$/.test(q) 
-                ? `ch:1:sloid:${q.substring(2)}`
-                : q;
-            return { id: sloidId, name, isDidokMatch: true };
-        }
-    }
-    
     return null;
 }
 
@@ -1070,6 +1051,7 @@ function initStopSearch() {
 
         searchDebounce = setTimeout(async () => {
             try {
+                await initDidokSources();
                 // 1. Zuerst in didokmapping prüfen (Exakter Match für Kürzel/Nummer)
                 const didokResult = checkDidokMapping(q);
                 
@@ -1103,33 +1085,7 @@ function initStopSearch() {
                 dropdown.innerHTML = results.map(r => {
                     let shortcut = '';
                     
-                    if (window.didokMapping) {
-                        // Extrahiere numerische ID aus SLOID (z.B. ch:1:sloid:218 -> 218 oder ch:1:sloid:8502182 -> 8502182)
-                        const numericMatch = r.ref.match(/ch:1:sloid:(\d+)/);
-                        let lookupId = numericMatch ? numericMatch[1] : r.ref;
-                        
-                        // Falls die extrahierte ID 5-stellig ist, ergänzen wir das SBB-Präfix 85 für die Suche im Mapping
-                        if (/^\d{5}$/.test(lookupId)) {
-                            lookupId = `85${lookupId}`;
-                        }
-                        
-                        // Finde das Kürzel anhand der numerischen ID im Mapping
-                        // Da das Mapping { KÜRZEL: "Name" } oder { NUMMER: "Name" } aufgebaut ist, 
-                        // suchen wir den Key, dessen Wert mit dem API-Namen übereinstimmt ODER dessen Key die ID ist.
-                        const foundEntry = Object.entries(window.didokMapping).find(([key, val]) => {
-                            return key === lookupId && !/^\d+$/.test(key); 
-                        });
-                        
-                        // Alternativ-Suche über den Namen, falls im Mapping das Kürzel als Key genutzt wird
-                        if (!foundEntry) {
-                            const codeKey = Object.keys(window.didokMapping).find(key => 
-                                window.didokMapping[key] === r.name && !/^\d+$/.test(key)
-                            );
-                            if (codeKey) shortcut = codeKey;
-                        } else {
-                            shortcut = foundEntry[0];
-                        }
-                    }
+                    shortcut = findAbbreviationByName(r.name) || '';
 
                     return `
                         <li data-id="${r.ref}" data-name="${r.name}">
@@ -1162,8 +1118,9 @@ function initStopSearch() {
         startAutoRefresh();
     });
 
-    input.addEventListener('keydown', e => {
+    input.addEventListener('keydown', async e => {
         if (e.key === 'Enter') {
+            await initDidokSources();
             const first = dropdown.querySelector('li:not(.no-res)');
             if (first) {
                 STOP_ID     = first.dataset.id;
@@ -1410,9 +1367,8 @@ function initDestFilter() {
 
     clear?.addEventListener('click', () => {
         destFilterEl.value = '';
-        dropdown?.classList.add('hidden');
+        closeDestFilterDropdown();
         applyDestFilter();
-        destFilterEl.focus();
     });
 
     dropdown?.addEventListener('mousedown', event => {
@@ -1423,25 +1379,22 @@ function initDestFilter() {
         dropdown.classList.add('hidden');
         applyDestFilter();
     });
+
+    destFilterEl.addEventListener('keydown', event => {
+        if (event.key === 'Escape') closeDestFilterDropdown();
+    });
+
+    document.addEventListener('pointerdown', event => {
+        if (!event.target.closest('#dest-filter-bar')) closeDestFilterDropdown();
+    });
+}
+
+function closeDestFilterDropdown() {
+    document.getElementById('dest-filter-dropdown')?.classList.add('hidden');
 }
 
 function normalizeDestFilterValue(value) {
     return String(value || '').trim().toLocaleLowerCase('de-CH').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-}
-
-let destinationAliasIndex;
-
-function getDestinationAliasIndex() {
-    if (destinationAliasIndex) return destinationAliasIndex;
-    destinationAliasIndex = new Map();
-    Object.entries(window.didokMapping || {}).forEach(([code, mappedName]) => {
-        const name = normalizeDestFilterValue(mappedName);
-        if (!name) return;
-        const aliases = destinationAliasIndex.get(name) || [];
-        aliases.push(normalizeDestFilterValue(code));
-        destinationAliasIndex.set(name, aliases);
-    });
-    return destinationAliasIndex;
 }
 
 function getDestinationTerms(value) {
@@ -1450,7 +1403,7 @@ function getDestinationTerms(value) {
 
     const normalizedName = normalizeDestFilterValue(name);
     const terms = [normalizedName];
-    terms.push(...(getDestinationAliasIndex().get(normalizedName) || []));
+    terms.push(...findAbbreviationsByName(name).map(code => normalizeDestFilterValue(code)));
     return terms;
 }
 
@@ -1471,6 +1424,7 @@ function updateDestFilterOptions(departures) {
     options._values = [...values.values()]
         .sort((a, b) => a.name.localeCompare(b.name, 'de-CH'));
     options.innerHTML = '';
+    closeDestFilterDropdown();
 }
 
 function updateDestFilterDropdown() {
@@ -1582,8 +1536,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (STOP_ID) {
-        loadBoard();
-        startAutoRefresh();
+        initDidokSources().then(() => {
+            const didokResult = checkDidokMapping(STOP_ID);
+            if (didokResult) STOP_ID = didokResult.id;
+            syncInputsFromState();
+            loadBoard();
+            startAutoRefresh();
+        });
     }
 	// In deinen Event-Listenern (DOMContentLoaded)
 	const addFavBtn = document.getElementById('btn-add-fav');

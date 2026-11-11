@@ -1,4 +1,4 @@
-window.didokMapping = {
+const didokMapping = {
     'AA': 'Aarau',
     'AA1': 'Aarau Aussenstelle 1',
     'AAAS': 'Aarau/Suhr (Abzw)',
@@ -5701,3 +5701,5 @@ window.didokMapping = {
 	'RURO': 'Ruswil, Rottalcenter',
 
 };
+
+export default didokMapping;

@@ -1,3 +1,5 @@
+import { initDidokSources, resolveAbbreviation } from './didok-sources.js';
+
 const API_CONFIG = {
     PROXY_URL: './proxy.php',
     REQUESTOR_REF: 'NOWE26',
@@ -56,11 +58,12 @@ function createOJPRequest(stopId, queryTime = null) {
 
 export async function fetchDepartures(stopId, queryTime = null) {
     try {
+        await initDidokSources();
         let actualStopId = stopId;
         
         // ✅ Legacy-Fallback: Falls stopId eine alte DiDok-ID ist, resolve zu SLOID
-        if (window.didokMapping && window.didokMapping[stopId]) {
-            const stationName = window.didokMapping[stopId];
+        const stationName = resolveAbbreviation(stopId);
+        if (stationName) {
             console.log(`🔄 DIDOK-Fallback: "${stopId}" → "${stationName}"`);
             
             const results = await searchStops(stationName);

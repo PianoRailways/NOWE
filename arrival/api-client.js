@@ -1,3 +1,5 @@
+import { initDidokSources, resolveAbbreviation } from '../script/didok-sources.js';
+
 const API_CONFIG = {
     PROXY_URL: './proxy.php',
     REQUESTOR_REF: 'NOWE26',
@@ -56,10 +58,11 @@ function createOJPRequest(stopId, queryTime = null) {
 
 export async function fetchDepartures(stopId, queryTime = null) {
     try {
+        await initDidokSources();
         // DIDOK-Mapping prüfen: Falls stopId ein DIDOK-Code ist, zur echten ID auflösen
         let actualStopId = stopId;
-        if (window.didokMapping && window.didokMapping[stopId]) {
-            const stationName = window.didokMapping[stopId];
+        const stationName = resolveAbbreviation(stopId);
+        if (stationName) {
             console.log(`🔄 DIDOK-Mapping: "${stopId}" → "${stationName}"`);
             // Jetzt müssen wir den Namen in die richtige ID umwandeln
             // Das passiert über die API
