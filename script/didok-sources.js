@@ -3,6 +3,7 @@ import localDidokMapping from './didokMappingNOWE.js';
 const DIDOK_SOURCE_URLS = [
     'https://tragic.stellwerksim.ch/didok/custom.json'
 ];
+const DIDOK_PROXY_URL = './didok-proxy.php?url=';
 const CACHE_PREFIX = 'nowe-didok-source:';
 const FETCH_TIMEOUT_MS = 5000;
 
@@ -48,7 +49,10 @@ async function fetchSource(url) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
     try {
-        const response = await fetch(url, { signal: controller.signal });
+        const requestUrl = new URL(url).origin === window.location.origin
+            ? url
+            : `${DIDOK_PROXY_URL}${encodeURIComponent(url)}`;
+        const response = await fetch(requestUrl, { signal: controller.signal });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
         if (!data || Array.isArray(data) || typeof data !== 'object') throw new Error('Ungültiges DiDok-Format');
