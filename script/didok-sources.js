@@ -7,7 +7,7 @@ const DIDOK_SOURCE_URLS = [
     'https://tragic.stellwerksim.ch/didok/zvv.json',
     'https://tragic.stellwerksim.ch/didok/awelle.json',
 ];
-const DIDOK_PROXY_URL = './didok-proxy.php?url=';
+const DIDOK_PROXY_URL = '../didok-proxy.php?url=';
 const CACHE_PREFIX = 'nowe-didok-source:';
 const FETCH_TIMEOUT_MS = 5000;
 

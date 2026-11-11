@@ -1,17 +1,23 @@
 <?php
 declare(strict_types=1);
 
-$allowedUrl = 'https://tragic.stellwerksim.ch/didok/custom.json';
+$allowedUrls = [
+    'https://tragic.stellwerksim.ch/didok/custom.json',
+    'https://tragic.stellwerksim.ch/didok/ch.json',
+    'https://tragic.stellwerksim.ch/didok/libero.json',
+    'https://tragic.stellwerksim.ch/didok/zvv.json',
+    'https://tragic.stellwerksim.ch/didok/awelle.json',
+];
 $url = $_GET['url'] ?? '';
 
-if ($url !== $allowedUrl) {
+if (!in_array($url, $allowedUrls, true)) {
     http_response_code(400);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode(['error' => 'Nicht erlaubte DiDok-Quelle']);
     exit;
 }
 
-$ch = curl_init($allowedUrl);
+$ch = curl_init($url);
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_FOLLOWLOCATION => false,
