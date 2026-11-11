@@ -1367,9 +1367,8 @@ function initDestFilter() {
 
     clear?.addEventListener('click', () => {
         destFilterEl.value = '';
-        dropdown?.classList.add('hidden');
+        closeDestFilterDropdown();
         applyDestFilter();
-        destFilterEl.focus();
     });
 
     dropdown?.addEventListener('mousedown', event => {
@@ -1380,6 +1379,18 @@ function initDestFilter() {
         dropdown.classList.add('hidden');
         applyDestFilter();
     });
+
+    destFilterEl.addEventListener('keydown', event => {
+        if (event.key === 'Escape') closeDestFilterDropdown();
+    });
+
+    document.addEventListener('pointerdown', event => {
+        if (!event.target.closest('#dest-filter-bar')) closeDestFilterDropdown();
+    });
+}
+
+function closeDestFilterDropdown() {
+    document.getElementById('dest-filter-dropdown')?.classList.add('hidden');
 }
 
 function normalizeDestFilterValue(value) {
@@ -1413,6 +1424,7 @@ function updateDestFilterOptions(departures) {
     options._values = [...values.values()]
         .sort((a, b) => a.name.localeCompare(b.name, 'de-CH'));
     options.innerHTML = '';
+    closeDestFilterDropdown();
 }
 
 function updateDestFilterDropdown() {
