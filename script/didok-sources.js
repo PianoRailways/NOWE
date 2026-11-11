@@ -1,7 +1,11 @@
 import localDidokMapping from './didokMappingNOWE.js';
 
 const DIDOK_SOURCE_URLS = [
-    'https://tragic.stellwerksim.ch/didok/custom.json'
+    'https://tragic.stellwerksim.ch/didok/custom.json',
+    'https://tragic.stellwerksim.ch/didok/ch.json',
+    'https://tragic.stellwerksim.ch/didok/libero.json',
+    'https://tragic.stellwerksim.ch/didok/zvv.json',
+    'https://tragic.stellwerksim.ch/didok/awelle.json',
 ];
 const DIDOK_PROXY_URL = './didok-proxy.php?url=';
 const CACHE_PREFIX = 'nowe-didok-source:';
