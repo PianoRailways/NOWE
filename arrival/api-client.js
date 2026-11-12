@@ -59,21 +59,24 @@ function createOJPRequest(stopId, queryTime = null) {
 export async function fetchDepartures(stopId, queryTime = null) {
     try {
         await initDidokSources();
-        // DIDOK-Mapping prüfen: Falls stopId ein DIDOK-Code ist, zur echten ID auflösen
+        // Legacy-Fallback: Falls stopId ein DiDok-Kürzel ist, zu SLOID auflösen
         let actualStopId = stopId;
         const stationName = resolveAbbreviation(stopId);
         if (stationName) {
-            console.log(`🔄 DIDOK-Mapping: "${stopId}" → "${stationName}"`);
-            // Jetzt müssen wir den Namen in die richtige ID umwandeln
-            // Das passiert über die API
+            console.log(`🔄 DIDOK-Fallback: "${stopId}" → "${stationName}"`);
             const results = await searchStops(stationName);
             if (results && results.length > 0) {
-                actualStopId = results[0].ref;
-                console.log(`✓ Aufgelöst zu ID: "${actualStopId}"`);
+                actualStopId = String(results[0].ref);
+                console.log(`✓ Aufgelöst zu SLOID: "${actualStopId}"`);
             } else {
                 console.warn(`⚠️ DIDOK-Code konnte nicht aufgelöst werden: ${stopId}`);
-                actualStopId = stopId; // Fallback auf Original
+                actualStopId = String(stopId);
             }
+        }
+
+        // Validierung: SLOID oder externe ID (z.B. 8014440_gen:missingSLOID_pf:1, 8718462)
+        if (!/(^ch:1:sloid:\d+$|^\d{3,})/.test(actualStopId)) {
+            console.warn(`⚠️ WARNUNG: Stop-ID ist nicht im erwarteten Format: "${actualStopId}". Versuche trotzdem.`);
         }
 
         const xmlBody = createOJPRequest(actualStopId, queryTime);
@@ -127,7 +130,8 @@ function utcToLocalISO(utcString) {
 // ─── XML Escape Helper ──────────────────────────────────────────────────────
 
 function escapeXml(unsafe) {
-    return unsafe.replace(/[<>&'"]/g, function (c) {
+    const str = String(unsafe || '');
+    return str.replace(/[<>&'"]/g, function (c) {
         switch (c) {
             case '<': return '&lt;';
             case '>': return '&gt;';
@@ -258,6 +262,86 @@ function parseLocationResponse(xmlString) {
     return deduped;
 }
 
+// ─── Stationen in der Nähe (Geo-Suche) ──────────────────────────────────────
+
+function createNearbyLocationRequest(latitude, longitude, radius) {
+        const now = new Date().toISOString();
+        const msgId = 'LIR-' + Math.random().toString(36).substr(2, 9);
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<OJP xmlns="http://www.vdv.de/ojp" xmlns:siri="http://www.siri.org.uk/siri" version="2.0">
+    <OJPRequest>
+        <siri:ServiceRequest>
+            <siri:RequestTimestamp>${now}</siri:RequestTimestamp>
+            <siri:RequestorRef>${API_CONFIG.REQUESTOR_REF}</siri:RequestorRef>
+            <OJPLocationInformationRequest>
+                <siri:RequestTimestamp>${now}</siri:RequestTimestamp>
+                <siri:MessageIdentifier>${msgId}</siri:MessageIdentifier>
+                <InitialInput>
+                    <GeoRestriction>
+                        <Circle>
+                            <Center>
+                                <siri:Longitude>${Number(longitude).toFixed(6)}</siri:Longitude>
+                                <siri:Latitude>${Number(latitude).toFixed(6)}</siri:Latitude>
+                            </Center>
+                            <Radius>${radius}</Radius>
+                        </Circle>
+                    </GeoRestriction>
+                </InitialInput>
+                <Restrictions>
+                    <Type>stop</Type>
+                    <NumberOfResults>10</NumberOfResults>
+                </Restrictions>
+            </OJPLocationInformationRequest>
+        </siri:ServiceRequest>
+    </OJPRequest>
+</OJP>`;
+}
+
+export async function searchStopsNearLocation(latitude, longitude, radius = 1000) {
+        const response = await fetch(API_CONFIG.PROXY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/xml' },
+                body: createNearbyLocationRequest(latitude, longitude, radius)
+        });
+
+        const xmlData = await response.text();
+        if (!response.ok) {
+                throw new Error(`OJP-Fehler (${response.status})`);
+        }
+
+        return parseNearbyLocationResponse(xmlData);
+}
+
+function parseNearbyLocationResponse(xmlString) {
+        const xmlDoc = new DOMParser().parseFromString(xmlString, 'text/xml');
+        if (xmlDoc.getElementsByTagName('parsererror').length > 0) {
+                throw new Error('OJP-Antwort konnte nicht gelesen werden');
+        }
+
+        const firstElementByLocalName = (parent, localName) => Array.from(parent.getElementsByTagName('*'))
+            .find(element => element.localName === localName);
+
+        return Array.from(xmlDoc.getElementsByTagName('PlaceResult')).map(result => {
+                const place = result.getElementsByTagName('Place')[0];
+                const stopPlace = place?.getElementsByTagName('StopPlace')[0];
+                if (!stopPlace) return null;
+
+                const ref = stopPlace.getElementsByTagName('StopPlaceRef')[0]?.textContent?.trim() ?? '';
+                const name = stopPlace.getElementsByTagName('StopPlaceName')[0]
+                        ?.getElementsByTagName('Text')[0]?.textContent?.trim()
+                        || place.getElementsByTagName('Name')[0]?.getElementsByTagName('Text')[0]?.textContent?.trim()
+                        || '';
+                const position = firstElementByLocalName(stopPlace, 'GeoPosition')
+                    || firstElementByLocalName(place, 'GeoPosition');
+                const latitude = Number(position && firstElementByLocalName(position, 'Latitude')?.textContent);
+                const longitude = Number(position && firstElementByLocalName(position, 'Longitude')?.textContent);
+
+                return ref && name && Number.isFinite(latitude) && Number.isFinite(longitude)
+                        ? { ref, name, latitude, longitude }
+                        : null;
+        }).filter(Boolean);
+}
+
 /**
  * Dedupliziert Abfahrten nach: Zugnummer + Zielstation
  * Priorität: Eintrag mit "Fahrplanänderung" gewinnt
@@ -340,25 +424,17 @@ function parseOJPResponse(xmlString) {
 
     function getStopRef(callNode) {
         const spRef = callNode.getElementsByTagName('siri:StopPointRef')[0]?.textContent?.trim();
-        
+
         if (!spRef) return null;
-        
-        // Wenn es bereits eine 7-stellige Nummer ist, gib sie direkt zurück
-        if (/^\d{7}$/.test(spRef)) {
-            return spRef;
+
+        // Swiss SLOID: Parent-SLOID ohne Perron/Quay
+        // ch:1:sloid:79897:0:1 → ch:1:sloid:79897
+        const swissMatch = spRef.match(/^(ch:1:sloid:\d+)(?::|$)/);
+        if (swissMatch) {
+            return swissMatch[1];
         }
-        
-        // Wenn das Format "ch:1:sloid:XXXXX::YYYYY" ist, extrahiere die erste Nummer (Parent-SLOID)
-        // Das Format ist: ch:1:sloid:<parent>::<quay>
-        const match = spRef.match(/ch:1:sloid:(\d+)/);
-        if (match) {
-            const parentSloid = match[1];
-            // Rekonstruiere zu 7-stelliger SLOID: "85" + 5-stellige Nummer
-            const fullSloid = '85' + parentSloid.padStart(5, '0');
-            return fullSloid;
-        }
-        
-        // Fallback: Gib das Original zurück
+
+        // Externe IDs unverändert (z.B. 8014440_gen:missingSLOID_pf:1, 8718462)
         return spRef;
     }
 
@@ -383,6 +459,8 @@ function parseOJPResponse(xmlString) {
 			delayMinutes = Math.round(diffMs / 60000);
 			if (delayMinutes > 0) {
 				delayDisplay = `+${delayMinutes}'`;
+			} else if (delayMinutes < 0) {
+				delayDisplay = `${delayMinutes}'`;
 			}
 		}
 
@@ -432,6 +510,8 @@ function parseOJPResponse(xmlString) {
             const isCancelled = call.getElementsByTagName('NotServicedStop')[0]?.textContent === 'true';
             const noBoardingAtStop = call.getElementsByTagName('NoBoardingAtStop')[0]?.textContent === 'true';
             const noAlightingAtStop = call.getElementsByTagName('NoAlightingAtStop')[0]?.textContent === 'true';
+            const isRequestStop = call.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
+            const unplannedStop = call.getElementsByTagName('UnplannedStop')[0]?.textContent === 'true';
             
             previous.push({
                 name,
@@ -450,8 +530,10 @@ function parseOJPResponse(xmlString) {
                 estimatedPlatform:    q.estimated,
                 platformChanged:      q.isChanged,
                 cancelled:            isCancelled,
+                unplannedStop,
                 noBoardingAtStop,
                 noAlightingAtStop,
+                requestStop:          isRequestStop,
                 stopRef:              getStopRef(call)
             });
         }
@@ -462,6 +544,8 @@ function parseOJPResponse(xmlString) {
             const arr = getTimeInfo(thisCallNode, 'ServiceArrival');
             const dep = getTimeInfo(thisCallNode, 'ServiceDeparture');
             const isCancelled = thisCallNode.getElementsByTagName('NotServicedStop')[0]?.textContent === 'true';
+            const isRequestStop = thisCallNode.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
+            const unplannedStop = thisCallNode.getElementsByTagName('UnplannedStop')[0]?.textContent === 'true';
             return {
                 name:                 getStopName(thisCallNode) ?? currentName,
                 arrivalTime:          arr.timetabled,
@@ -479,6 +563,8 @@ function parseOJPResponse(xmlString) {
                 estimatedPlatform:    q.estimated,
                 platformChanged:      q.isChanged,
                 cancelled:            isCancelled,
+                unplannedStop,
+                requestStop:          isRequestStop,
                 stopRef:              null
             };
         })() : null;
@@ -495,6 +581,8 @@ function parseOJPResponse(xmlString) {
             const isCancelled = call.getElementsByTagName('NotServicedStop')[0]?.textContent === 'true';
             const noBoardingAtStop = call.getElementsByTagName('NoBoardingAtStop')[0]?.textContent === 'true';
             const noAlightingAtStop = call.getElementsByTagName('NoAlightingAtStop')[0]?.textContent === 'true';
+            const isRequestStop = call.getElementsByTagName('RequestStop')[0]?.textContent === 'true';
+            const unplannedStop = call.getElementsByTagName('UnplannedStop')[0]?.textContent === 'true';
             
             onward.push({
                 name,
@@ -513,8 +601,10 @@ function parseOJPResponse(xmlString) {
                 estimatedPlatform:    q.estimated,
                 platformChanged:      q.isChanged,
                 cancelled:            isCancelled,
+                unplannedStop,
                 noBoardingAtStop,
                 noAlightingAtStop,
+                requestStop:          isRequestStop,
                 stopRef:              getStopRef(call)
             });
         }
@@ -527,6 +617,24 @@ function parseOJPResponse(xmlString) {
         if (!el) return null;
         const textNode = el.getElementsByTagName('Text')[0];
         return textNode ? textNode.textContent.trim() : el.textContent.trim();
+    }
+
+    // ─── Service-Attribute extrahieren ──────────────────────────────────────────
+    function getServiceAttributes(service) {
+        const attributes = [];
+        const attrElems = service.getElementsByTagName('Attribute');
+        for (const attr of attrElems) {
+            const userTextEl = attr.getElementsByTagName('UserText')[0];
+            const textEl = userTextEl?.getElementsByTagName('Text')[0];
+            const codeEl = attr.getElementsByTagName('Code')[0];
+
+            if (textEl) {
+                const text = textEl.textContent.trim();
+                const code = codeEl?.textContent?.trim() ?? '';
+                attributes.push({ text, code });
+            }
+        }
+        return attributes;
     }
 
     // --- Hauptverarbeitung ---
@@ -580,7 +688,7 @@ function parseOJPResponse(xmlString) {
         const vias = calls.previous
             .slice(0, 10)
             .map(c => c.name)
-            //.reverse();
+            .filter(n => n !== originText);
         const onwardvias = calls.onward
             .slice(0, 10)
             .map(c => c.name)
@@ -616,7 +724,7 @@ function parseOJPResponse(xmlString) {
             ?? service.getElementsByTagName('siri:OperatorRef')[0]?.textContent?.trim()
             ?? '';
         const operatorName = getText(service, 'OperatorName') ?? operatorRef;
-
+        const serviceAttributes = getServiceAttributes(service);
 
 
         departures.push({
@@ -641,7 +749,8 @@ function parseOJPResponse(xmlString) {
             calls,
             journeyRef,
             operatorRef,
-            operatorName
+            operatorName,
+            serviceAttributes
         });
     }
 
