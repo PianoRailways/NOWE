@@ -10,6 +10,9 @@ body {
 }
 
 #app-header {
+    /* sticky statt fixed: Header bleibt im Fluss (wie in Arrival), nichts verschwindet darunter */
+    position: sticky;
+    top: 0;
     background: var(--header-bg, #061030);
     opacity: 1;
     backdrop-filter: none;
