@@ -1,5 +1,7 @@
-import { fetchDepartures, searchStops } from './api-client.js';
-import { initDidokSources, resolveAbbreviation, findAbbreviationByName } from '../script/didok-sources.js';
+import { fetchDepartures, searchStops, searchStopsNearLocation } from './api-client.js';
+import { initDidokSources, resolveAbbreviation, findAbbreviationByName, findAbbreviationsByName } from '../script/didok-sources.js';
+import { formatCountdown, parseCountdownTime, formatZurichDateTime, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
+import { initHeaderHeight, blockZoom } from '../shared/header.js?v=1';
 
 // ─── Produktkategorie-Mapping ────────────────────────────────────────────────
 const CAT = {
@@ -25,22 +27,43 @@ function getCategory(departure) {
     return 'sonstige';
 }
 
-// ─── Formation-fähige Betreiber ────────────────────────────────────────────────
+// ─── Formation-fähige Betreiber (siehe /formation/betreiber.txt) ────────────
+// Der Formation-Link (Zugnummer klickbar) wird nur angezeigt, wenn der
+// Betreiber (operatorRef) in dieser Liste vorkommt. Sowohl das EVU-Kürzel
+// (z.B. "SBBP") als auch die numerische Business-Org-ID (z.B. "ojp:11")
+// werden akzeptiert, da OJP je nach Betreiber unterschiedliche Werte liefert.
 const FORMATION_OPERATORS = new Set([
-    'blsp', '33',
-    'sbbp', '11',
-    'sob', '82',
-    'zb', '86',
-    'tpf', '53',
-    'rhb', '72',
-    'thurbo', '65',
-    'trn', '73',
+    'blsp', 'ojp:33',
+    'sbbp', 'ojp:11',
+    'sob', 'ojp:82',
+    'zb', 'ojp:86',
+    'tpf', 'ojp:53',
+    'rhb', 'ojp:72',
+    'thurbo', 'ojp:65',
+    'trn', 'ojp:73',
 ]);
 
 function hasFormationSupport(dep) {
     const ref = (dep.operatorRef ?? '').toString().trim();
     if (!ref) return false;
     return FORMATION_OPERATORS.has(ref.toLowerCase());
+}
+
+const toCodeMap = {
+    '33': 'BLSP',
+    '11': 'SBBP',
+    '82': 'SOB',
+    '86': 'zb',
+    '53': 'TPF',
+    '72': 'RhB',
+    '65': 'THURBO',
+    '73': 'TRN',
+};
+
+function getEvuFromOperatorRef(operatorRef) {
+    if (!operatorRef) return '';
+    const cleanRef = operatorRef.toString().toLowerCase().replace('ojp:', '').trim();
+    return toCodeMap[cleanRef] || '';
 }
 
 // ─── Favoriten ───────────────────────────────────────────────────────────────
@@ -108,6 +131,7 @@ const DOM = {
     favBar:         () => document.getElementById('fav-bar'),
     filterBar:      () => document.getElementById('filter-bar'),
     stopDropdown:   () => document.getElementById('stop-dropdown'),
+    nearbyBtn:      () => document.getElementById('btn-nearby'),
 };
 
 // ─── Zustand ─────────────────────────────────────────────────────────────────
@@ -215,6 +239,13 @@ async function mapStationNameToId(stationName) {
     }
 }
 
+function getDepartureSortTime(departure) {
+    const iso = isCountdownDefault()
+        ? (departure.estimatedIso || departure.timetabledIso)
+        : (departure.timetabledIso || departure.estimatedIso);
+    return parseCountdownTime(iso)?.getTime() ?? Number.POSITIVE_INFINITY;
+}
+
 // ─── Board laden ──────────────────────────────────────────────────────────────
 
 async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME) {
@@ -258,11 +289,7 @@ async function loadBoard(stopId = STOP_ID, date = QUERY_DATE, time = QUERY_TIME)
         const results = await Promise.all(requests);
         ALL_DEPS = results.flat();
         
-        ALL_DEPS.sort((a, b) => {
-            const timeA = a.timetabledIso || a.estimatedIso;
-            const timeB = b.timetabledIso || b.estimatedIso;
-            return new Date(timeA) - new Date(timeB);
-        });
+        ALL_DEPS.sort((a, b) => getDepartureSortTime(a) - getDepartureSortTime(b));
         renderBoard(ALL_DEPS);
  
         const boardTitle = document.getElementById('status-message');
@@ -283,6 +310,21 @@ function getDelayClass(delayMinutes) {
     return '';
 }
 
+function updateBoardControls(hasBoard) {
+    document.getElementById('departure-time-controls')?.classList.toggle('hidden', !hasBoard);
+    document.getElementById('departure-time-controls-next')?.classList.toggle('hidden', !hasBoard);
+}
+
+function restripeRows() {
+    let visibleIndex = 0;
+    document.querySelectorAll('.dep-row').forEach(row => {
+        row.classList.remove('row-odd', 'row-even');
+        if (row.classList.contains('filtered-dest')) return;
+        visibleIndex++;
+        row.classList.add(visibleIndex % 2 === 1 ? 'row-odd' : 'row-even');
+    });
+}
+
 function renderBoard(departures) {
     const visible = ACTIVE_CAT.has('all')
     	? departures
@@ -290,6 +332,7 @@ function renderBoard(departures) {
     
     const board = DOM.board();
     if (!board) return;
+    updateBoardControls(visible.length > 0);
 
     if (visible.length === 0) {
         board.innerHTML = '<p class="empty">Keine Ankünfte für diesen Filter gefunden.</p>';
@@ -312,14 +355,14 @@ function renderBoard(departures) {
             <tbody>
     `;
 
-	let depRowCount = 0;
-	
     visible.forEach((dep, index) => {
-        depRowCount++;
-        
         const viasStr = dep.vias ? dep.vias.join(' · ') : '';
+        const destinationTerms = [
+            ...getDestinationTerms(dep.destination),
+            ...(dep.vias || []).flatMap(getDestinationTerms),
+            ...(dep.onwardvias || []).flatMap(getDestinationTerms)
+        ];
 
-    	const bgClass = depRowCount % 2 === 1 ? 'row-odd' : 'row-even';
         let fullLine = dep.line;
         if (dep.cat && !dep.line.startsWith(dep.cat)) {
             fullLine = `${dep.cat}${dep.line}`;
@@ -327,7 +370,7 @@ function renderBoard(departures) {
 
         let lineType;
 
-        if (dep.operatorName === '3849' || dep.operatorName === '849' || dep.operatorName === '46' || dep.operatorName === '41' ) {
+        if (dep.operatorName === 'ojp:3849' || dep.operatorName === 'ojp:849' || dep.operatorName === 'ojp:46' || dep.operatorName === 'ojp:41' ) {
             const cleanCat = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
             
             const coloredBuses = ['31', '32', '33', '46', '61', '62', '72', '80', '89', '301', '302', '303', '304', '305', '306', '307', '308', '309', '314', '317', '325'];
@@ -345,7 +388,9 @@ function renderBoard(departures) {
                 lineType = 'VBZ';
             }
         }
-        else if (dep.operatorName === '801') { lineType = 'PAG'; }
+        else if (dep.operatorName === 'ojp:801' && dep.cat === 'RUB') { lineType = 'RUB-PAG'; }
+        else if (dep.operatorName === 'ojp:801') { lineType = 'PAG'; }
+        else if (dep.operatorName === 'ojp:865') { lineType = 'RhB'; }
         else {
             lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
         }
@@ -356,7 +401,14 @@ function renderBoard(departures) {
             ? `<span class="delay-badge">${dep.delayDisplay}</span>`
             : '';
 
-        let timeCell = `<span class="time">${dep.time}</span><br>${delayBadge}`;
+        const countdownTarget = dep.estimatedIso || dep.timetabledIso || '';
+        const countdownDefault = isCountdownDefault() && !isCancelledAtCurrent && countdownTarget;
+        const timeText = countdownDefault ? formatCountdown(countdownTarget) : dep.time;
+        const timeAttributes = ` data-clock="${dep.time}"${countdownDefault ? ` data-cd-target="${countdownTarget}"` : ''}`;
+        const displayedDelayBadge = countdownDefault
+            ? delayBadge.replace('class="delay-badge"', 'class="delay-badge" style="display:none"')
+            : delayBadge;
+        let timeCell = `<span class="time"${timeAttributes}>${timeText}</span><br>${displayedDelayBadge}`;
         if (isCancelledAtCurrent) {
             timeCell = `<span style="color:red; font-weight:bold; text-decoration:line-through;">${dep.time}</span><br><span style="color:red; font-size: 0.85em;">Ausfall</span>`;
         }
@@ -378,9 +430,16 @@ function renderBoard(departures) {
             ? 'background-color: #00cc44; color: #000; border-radius: 3px; padding: 1px 5px; display: inline-block; border: 1px solid #009933; font-weight: bold;'
             : '';
 
+        let formationUrl = `/formation-new/?train=${dep.journeyNumber}`;
+        const evuCode = getEvuFromOperatorRef(dep.operatorRef);
+        if (evuCode) {
+            formationUrl += `&evu=${encodeURIComponent(evuCode)}`;
+        }
+        formationUrl = withCountdownParam(formationUrl);
+
         const journeyNumHtml = dep.journeyNumber
             ? (hasFormationSupport(dep)
-                ? `<div class="journey-num" style="${unplannedStyle}"><a href="/formation/?train=${dep.journeyNumber}" class="journey-num">${dep.journeyNumber}</a></div>`
+                ? `<div class="journey-num" style="${unplannedStyle}"><a href="${formationUrl}" class="journey-num">${dep.journeyNumber}</a></div>`
                 : `<div class="journey-num" style="${unplannedStyle}">${dep.journeyNumber}</div>`)
             : '';
 
@@ -418,14 +477,20 @@ function renderBoard(departures) {
         const operatingDay = dep.timetabledIso ? dep.timetabledIso.slice(0, 10) : QUERY_DATE;
 
         html += `
-            <tr class="dep-row ${bgClass} ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}" 
+            <tr class="dep-row ${dep.delayed ? 'row-delayed' : ''} ${isCancelledAtCurrent ? 'row-cancelled' : ''}" 
                 data-index="${index}"
                 data-dest="${dep.destination || ''}"
-                data-vias="${viasStr}">
-                <td class="col-time">${timeCell}</td>
+                data-vias="${viasStr}"
+                data-dest-terms="${destinationTerms.join('|')}"
+                data-line="${dep.line || ''}"
+                data-trip="${dep.journeyNumber || ''}"
+                data-cat="${dep.cat || ''}"
+                data-operator-name="${dep.operatorName || ''}"
+                data-operator-ref="${dep.operatorRef || ''}">
+                <td class="col-time" data-tt="${dep.timetabledIso || ''}" data-est="${dep.estimatedIso || ''}">${timeCell}</td>
                 <td class="col-line">
                     <div class="line-container">
-                        <a href="/trip/?sjyid=${encodeURIComponent(dep.journeyRef)}&date=${encodeURIComponent(operatingDay)}"><span class="line-badge" data-type="${lineType}">${fullLine}</span></a>
+                        <a href="${withCountdownParam(`/trip/?sjyid=${encodeURIComponent(dep.journeyRef)}&date=${encodeURIComponent(operatingDay)}`)}"><span class="line-badge" data-type="${lineType}" operator="${dep.operatorName}" data-line="${dep.line}">${fullLine}</span></a>
                         ${journeyNumHtml}
                     </div>
                 </td>
@@ -437,6 +502,7 @@ function renderBoard(departures) {
                 </td>
                 <td class="col-platform">
                     <span class="platform-value ${platClass}">${dep.platform}</span>
+                    ${dep.calls.current?.requestStop ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>' : ''}
                 </td>
             </tr>
             ${situationRowHtml}
@@ -448,6 +514,9 @@ function renderBoard(departures) {
 
     html += '</tbody></table>';
     board.innerHTML = html;
+    updateDestFilterOptions(visible);
+    restripeRows();
+    applyDestFilter();
 
     document.querySelectorAll('.dep-row').forEach(row => {
         row.addEventListener('click', () => {
@@ -462,6 +531,14 @@ function renderBoard(departures) {
             }
         });
     });
+
+    document.querySelectorAll('.col-time').forEach(cell => {
+        if (cell.closest('.row-cancelled')) return;
+        const time = cell.querySelector('.time');
+        const badge = cell.querySelector('.delay-badge');
+        bindTimeToggle(cell, time, badge);
+    });
+    startCountdownTicker();
 
     document.querySelectorAll('.btn-sit-info').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -556,7 +633,7 @@ function buildChain(dep) {
         const isLast    = i === all.length - 1;
         const stopRef   = stop.stopRef ?? '';
         const clickable = (stop.type === 'onward' || stop.type === 'previous') && stopRef;
-        const arrIso    = stop.arrivalTime ?? '';
+        const arrIso    = stop.arrivalTime ?? stop.departureTime ?? '';
         const arrTime   = fmt(stop.arrivalTime);
         const depTime   = fmt(stop.departureTime);
 
@@ -592,6 +669,19 @@ function buildChain(dep) {
         const requestStopBadge = stop.requestStop
             ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>'
             : '';
+
+        // Ausserordentlicher Halt (UnplannedStop) in roter Schrift
+        const unplannedStopStyle = stop.unplannedStop 
+            ? 'color: #a20013; font-weight: normal'
+            : '';
+
+        // Halt nur zum Aussteigen (SD) oder nur zum Einsteigen (SM)
+        let boardingBadge = '';
+        if (stop.noBoardingAtStop && !stop.noAlightingAtStop) {
+            boardingBadge = '<span style="color: #91a7bd; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">SD</span>';
+        } else if (stop.noAlightingAtStop && !stop.noBoardingAtStop) {
+            boardingBadge = '<span style="color: #91a7bd; font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">SM</span>';
+        }
 
         const dotStyle = stop.cancelled 
             ? ' style="background:#555;"' 
@@ -630,7 +720,7 @@ function buildChain(dep) {
                 </div>
 
                 <div class="chain-info">
-                    <div class="chain-name" style="${stopNameStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}${requestStopBadge}</div>
+                    <div class="chain-name" style="${stopNameStyle}${unplannedStopStyle}">${stop.name}${cancelledBadge}${serviceStopBadge}${requestStopBadge}${boardingBadge}</div>
                     ${platHtml ? `<div class="chain-platform">Gl. ${platHtml}</div>` : ''}
                 </div>
             </div>
@@ -649,6 +739,13 @@ function buildChain(dep) {
             </span>`);
     }
     if (dep.operatorName) metaParts.push(`<span class="meta-operator">Betreiber: ${dep.operatorName}</span>`);
+
+    // Service-Attribute anzeigen (Fahrplanänderung, Niederflur, etc.)
+    if (dep.serviceAttributes && dep.serviceAttributes.length > 0) {
+        const attrTexts = dep.serviceAttributes.map(attr => attr.text).join(', ');
+        metaParts.push(`<span class="meta-attributes">Attribute: ${attrTexts}</span>`);
+    }
+
     if (metaParts.length > 0) {
         html += `<div class="chain-meta-footer">${metaParts.join('<span class="meta-sep"> | </span>')}</div>`;
     }
@@ -933,6 +1030,83 @@ function closeDropdown() {
     if (dd) { dd.innerHTML = ''; dd.classList.add('hidden'); }
 }
 
+function distanceInMetres(latitude1, longitude1, latitude2, longitude2) {
+    const earthRadius = 6371000;
+    const toRadians = degrees => degrees * Math.PI / 180;
+    const latitudeDelta = toRadians(latitude2 - latitude1);
+    const longitudeDelta = toRadians(longitude2 - longitude1);
+    const a = Math.sin(latitudeDelta / 2) ** 2
+        + Math.cos(toRadians(latitude1)) * Math.cos(toRadians(latitude2))
+        * Math.sin(longitudeDelta / 2) ** 2;
+    return 2 * earthRadius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function getCurrentPosition() {
+    return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 30000
+        });
+    });
+}
+
+async function findNearbyStations() {
+    const button = DOM.nearbyBtn();
+    const dropdown = DOM.stopDropdown();
+    if (!button || !dropdown) return;
+
+    if (!window.isSecureContext && !['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname)) {
+        showStatus('Standortsuche funktioniert nur über HTTPS.', 'error');
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = '📍 Suche läuft…';
+    closeDropdown();
+
+    try {
+        const position = await getCurrentPosition();
+        const { latitude, longitude } = position.coords;
+        let stations = await searchStopsNearLocation(latitude, longitude, 1000);
+        if (stations.length === 0) stations = await searchStopsNearLocation(latitude, longitude, 3000);
+
+        const uniqueStations = new Map();
+        stations.forEach(station => {
+            const distance = distanceInMetres(latitude, longitude, station.latitude, station.longitude);
+            const current = uniqueStations.get(station.ref);
+            if (!current || distance < current.distance) {
+                uniqueStations.set(station.ref, { ...station, distance });
+            }
+        });
+
+        const nearbyStations = [...uniqueStations.values()].sort((a, b) => a.distance - b.distance);
+        if (nearbyStations.length === 0) {
+            showStatus('Keine Station im Umkreis gefunden.', 'error');
+            return;
+        }
+
+        dropdown.innerHTML = nearbyStations.map(station => `
+            <li data-id="${station.ref}" data-name="${station.name}">
+                <span class="dd-name">${station.name}</span>
+                <span class="dd-distance">${Math.round(station.distance)} m</span>
+            </li>
+        `).join('');
+        dropdown.classList.remove('hidden');
+        showStatus('', '');
+    } catch (error) {
+        const message = error.code === 1
+            ? 'Standortberechtigung verweigert.'
+            : error.code === 2 || error.code === 3
+                ? 'Standort nicht verfügbar oder Zeitüberschreitung.'
+            : 'OJP-Fehler bei der Stationssuche.';
+        showStatus(message, 'error');
+    } finally {
+        button.disabled = false;
+        button.textContent = '📍 In meiner Nähe';
+    }
+}
+
 function updateClock() {
     const el = document.getElementById('live-clock');
     if (!el) return;
@@ -943,37 +1117,70 @@ function updateClock() {
         String(now.getSeconds()).padStart(2,'0');
 }
 
+// ─── Zeit-Controls ───────────────────────────────────────────────────────────
+
 function offsetTime(minutes) {
     const now = new Date();
-    
-    const baseDate = QUERY_DATE || todayISO();
-    const baseTime = QUERY_TIME || now.toTimeString().substring(0, 5);
-    
-    let dateObj = new Date(`${baseDate}T${baseTime}:00`);
-    
-    dateObj.setMinutes(dateObj.getMinutes() + minutes);
-    
-    const offset = dateObj.getTimezoneOffset() * 60000;
-    QUERY_TIME = dateObj.toTimeString().substring(0, 5);
-    QUERY_DATE = (new Date(dateObj - offset)).toISOString().slice(0, 10);
-    
+    const currentZurich = formatZurichDateTime(now);
+    const baseDate = QUERY_DATE || currentZurich.date;
+    const baseTime = QUERY_TIME || currentZurich.time;
+    const dateObj = parseCountdownTime(`${baseDate}T${baseTime}:00`) || now;
+    const target = new Date(dateObj.getTime() + minutes * 60000);
+    setQueryDateTime(target);
+}
+
+function setQueryDateTime(dateObj) {
+    const formatted = formatZurichDateTime(dateObj);
+    QUERY_DATE = formatted.date;
+    QUERY_TIME = formatted.time;
     const di = DOM.dateInput();
     if (di) di.value = QUERY_DATE;
     const ti = DOM.timeInput();
     if (ti) ti.value = QUERY_TIME;
     updateUrlParams();
-    loadBoard();
-    
     stopAutoRefresh();
+    loadBoard();
+}
+
+function visibleDepartureTimes() {
+    return [...document.querySelectorAll('.dep-row:not(.filtered-dest)')]
+        .map(row => {
+            const timeCell = row.querySelector('.col-time');
+            const iso = isCountdownDefault() ? timeCell?.dataset.est : timeCell?.dataset.tt;
+            return parseCountdownTime(iso);
+        })
+        .filter(Boolean)
+        .sort((a, b) => a - b);
+}
+
+function navigateByVisibleDepartures(direction) {
+    const times = visibleDepartureTimes();
+    if (times.length === 0) {
+        offsetTime(direction * 20);
+        return;
+    }
+
+    const first = times[0];
+    const last = times[times.length - 1];
+    if (direction > 0) {
+        setQueryDateTime(new Date(last.getTime() + 60000));
+        return;
+    }
+
+    const spanMinutes = Math.min(180, Math.max(20, Math.round((last - first) / 60000)));
+    setQueryDateTime(new Date(first.getTime() - spanMinutes * 60000));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    initHeaderHeight();
+    blockZoom();
+    updateBoardControls(ALL_DEPS.length > 0);
     const btnPrev = document.getElementById('btn-time-prev');
     const btnNext = document.getElementById('btn-time-next');
     const btnNow = document.getElementById('btn-time-now');
 
-    if (btnPrev) btnPrev.onclick = () => offsetTime(-20);
-    if (btnNext) btnNext.onclick = () => offsetTime(20);
+    if (btnPrev) btnPrev.onclick = () => navigateByVisibleDepartures(-1);
+    if (btnNext) btnNext.onclick = () => navigateByVisibleDepartures(1);
     
     if (btnNow) {
         btnNow.onclick = () => {
@@ -999,42 +1206,123 @@ window.addEventListener('popstate', () => {
     if (STOP_ID) loadBoard();
 });
 
-// ─── ZIELFILTER ──────────────────────────────────────────────────────────────
+// ─── ZIELFILTER (hier: Herkunft) ─────────────────────────────────────────────
 
 function initDestFilter() {
     const destFilterEl = document.getElementById('destFilter');
+    const dropdown = document.getElementById('dest-filter-dropdown');
     if (!destFilterEl) return;
     const clear = document.querySelector('[data-filter-clear]');
     
     destFilterEl.addEventListener('input', () => {
+        updateDestFilterDropdown();
         applyDestFilter();
     });
+    destFilterEl.addEventListener('focus', updateDestFilterDropdown);
 
     clear?.addEventListener('click', () => {
         destFilterEl.value = '';
+        closeDestFilterDropdown();
         applyDestFilter();
-        destFilterEl.focus();
+    });
+
+    dropdown?.addEventListener('mousedown', event => {
+        const option = event.target.closest('[data-dest-value]');
+        if (!option) return;
+        event.preventDefault();
+        destFilterEl.value = option.dataset.destValue;
+        dropdown.classList.add('hidden');
+        applyDestFilter();
+    });
+
+    destFilterEl.addEventListener('keydown', event => {
+        if (event.key === 'Escape') closeDestFilterDropdown();
+    });
+
+    document.addEventListener('pointerdown', event => {
+        if (!event.target.closest('#dest-filter-bar')) closeDestFilterDropdown();
     });
 }
 
+function closeDestFilterDropdown() {
+    document.getElementById('dest-filter-dropdown')?.classList.add('hidden');
+}
+
+function normalizeDestFilterValue(value) {
+    return String(value || '').trim().toLocaleLowerCase('de-CH').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+function getDestinationTerms(value) {
+    const name = String(value || '').trim();
+    if (!name) return [];
+
+    const normalizedName = normalizeDestFilterValue(name);
+    const terms = [normalizedName];
+    terms.push(...findAbbreviationsByName(name).map(code => normalizeDestFilterValue(code)));
+    return terms;
+}
+
+function updateDestFilterOptions(departures) {
+    const options = document.getElementById('dest-filter-dropdown');
+    if (!options) return;
+
+    const values = new Map();
+    departures.forEach(dep => {
+        [dep.destination, ...(dep.vias || []), ...(dep.onwardvias || [])].forEach(value => {
+            const name = String(value || '').trim();
+            if (!name) return;
+            const terms = getDestinationTerms(name);
+            values.set(terms[0], { name, terms });
+        });
+    });
+
+    options._values = [...values.values()]
+        .sort((a, b) => a.name.localeCompare(b.name, 'de-CH'));
+    options.innerHTML = '';
+    closeDestFilterDropdown();
+}
+
+function updateDestFilterDropdown() {
+    const input = document.getElementById('destFilter');
+    const dropdown = document.getElementById('dest-filter-dropdown');
+    if (!input || !dropdown?._values) return;
+
+    const query = normalizeDestFilterValue(input.value);
+    const matches = dropdown._values
+        .filter(({ name, terms }) => !query || [name, ...terms.slice(1).map(code => code.toUpperCase())]
+            .some(value => normalizeDestFilterValue(value).includes(query)))
+        .slice(0, 8);
+
+    dropdown.innerHTML = matches.map(({ name, terms }) => {
+        const code = terms[1] ? ` <span class="dd-code-center">${terms[1].toUpperCase()}</span>` : '';
+        const escapedName = name.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+        return `<li data-dest-value="${escapedName}"><span class="dd-name">${escapedName}</span>${code}</li>`;
+    }).join('');
+    dropdown.classList.toggle('hidden', matches.length === 0);
+}
+
+/**
+ * Filtert nach Herkunft oder Via (inkl. DiDok-Kürzeln).
+ */
 function applyDestFilter() {
     const destFilterEl = document.getElementById('destFilter');
     if (!destFilterEl) return;
     
     const query = destFilterEl.value.trim().toLowerCase();
+    const normalizedQuery = normalizeDestFilterValue(query);
 
     document.querySelectorAll('.dep-row').forEach(tr => {
-        const dest = (tr.dataset.dest || '').toLowerCase();
-        const vias = (tr.dataset.vias || '').toLowerCase();
+        const terms = (tr.dataset.destTerms || '').split('|');
         
         if (!query) {
             tr.classList.remove('filtered-dest');
             return;
         }
         
-        const matches = dest.includes(query) || vias.includes(query);
+        const matches = terms.some(term => term.includes(normalizedQuery));
         tr.classList.toggle('filtered-dest', !matches);
     });
+    restripeRows();
 }
 
 // ─── DOMContentLoaded ────────────────────────────────────────────────────────
@@ -1045,6 +1333,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFavBar();
     initFilterBar();
     initStopSearch();
+    DOM.nearbyBtn()?.addEventListener('click', findNearbyStations);
     updateClock();
     setInterval(updateClock, 1000);
     

@@ -1,0 +1,114 @@
+/* Gemeinsame Linien-Badges (Abfahrten, Arrival, Trip, Formation).
+   Benötigt die Variablen --sbb-red, --sbb-blue, --sbb-orange, --sob-blue, --sob-green, --night-gold. */
+.line-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-weight: 500;
+    font-size: 0.88em;
+    letter-spacing: 0.01em;
+    background: #445;
+    color: white;
+    min-width: 44px;
+    text-align: center;
+    border: 1px solid #000;
+    font-style: normal;
+}
+/* Fernverkehr – rot */
+.line-badge[data-type="ICE"], .line-badge[data-type="EXT"] { background: var(--sbb-red); font-style: italic; font-weight: 400;}
+.line-badge[data-type="IC"],
+.line-badge[data-type="IR"],
+.line-badge[data-type="NJ"],
+.line-badge[data-type="EN"]  { background: var(--sbb-red); }
+.line-badge[data-type="EC"]  { background: var(--sbb-red); font-style: italic; }
+.line-badge[data-type="TGV"] { background: var(--sbb-red); font-style: italic; }
+.line-badge[data-type="RJ"]  { background: var(--sbb-red); }
+.line-badge[data-type="RJX"] { background: var(--sbb-red); }
+
+.line-badge[data-type="VAE"] { background: var(--sob-blue); color: var(--sob-green); }
+
+.line-badge[data-type="PE"] { background: var(--sbb-red); font-style: italic; }
+.line-badge[data-type="LIX"],
+.line-badge[data-type="IRLEX"],
+.line-badge[data-type="IRLIX"],
+.line-badge[data-type="GPX"] { background: var(--sbb-red); font-style: italic; }
+/* Regional – weiß/rot */
+.line-badge[data-type="RE"],
+.line-badge[data-type="IRE"] { background: white; color: var(--sbb-red); border: solid 1px var(--sbb-red); }
+/* S-Bahn – weiß/schwarz */
+.line-badge[data-type="S"],
+.line-badge[data-type="R"],
+.line-badge[data-type="RB"],
+.line-badge[data-type="TER"],
+.line-badge[data-type="CC"] { background: white; color: black; }
+/* Nahverkehr */
+.line-badge[data-type="T"],
+.line-badge[data-type="BP"],
+.line-badge[data-type="EXB"],
+.line-badge[data-type="B"] { background-color: var(--sbb-blue); color: white }
+.line-badge[data-type="EV"] { background-color: var(--sbb-orange); color: #000; }
+.line-badge[data-type="M"] { background-color: #005198; color: #fff }
+.line-badge[data-type="CAR"] { background-color: #7A6F53; color: #1A2E50 }
+/* Nacht */
+.line-badge[data-type="SN"]  { border: 1px solid #000; background-color: #000; color: #fcbb00; }
+.line-badge[data-type="BN"] { border: 1px solid #fcbb00; background-color: #000; color: #fff; }
+.line-badge[data-type="N"]   { background: #000; color: var(--night-gold); border: 1px solid var(--night-gold); }
+/* Schiff */
+.line-badge[data-type="BAT"],
+.line-badge[data-type="FAE"] { background: #1a6ea8; }
+/* Bergbahn */
+.line-badge[data-type="FUN"],
+.line-badge[data-type="ASC"],
+.line-badge[data-type="GB"]  { background: #7f7d32; }
+.line-badge[data-type="PB"]  { background: #2e7d32; }
+
+.line-badge[data-type="VBZ-50"], .line-badge[data-type="VBZ-51"] { background: black; color: white; }
+.line-badge[data-type="VBZ-2"] { background: #e7000e; color: white; }
+.line-badge[data-type="VBZ-3"] { background: #009A38; color: white; }
+.line-badge[data-type="VBZ-4"] { background: #46398e; color: white; }
+.line-badge[data-type="VBZ-5"] { background: #955b29; color: white; }
+.line-badge[data-type="VBZ-6"] { background: #d89d3e; color: white; }
+.line-badge[data-type="VBZ-7"] { background: black; color: white; }
+.line-badge[data-type="VBZ-8"] { background: #A6C700; color: black; }
+.line-badge[data-type="VBZ-9"] { background: #46398e; color: white; }
+.line-badge[data-type="VBZ-10"] { background: #e82788; color: white; }
+.line-badge[data-type="VBZ-11"] { background: #009A38; color: white; }
+.line-badge[data-type="VBZ-12"] { background: #85cfe0; color: black; }
+.line-badge[data-type="VBZ-13"] { background: #ffd200; color: black; }
+.line-badge[data-type="VBZ-14"] { background: #00A1E5; color: white; }
+.line-badge[data-type="VBZ-15"] { background: #e7000e; color: white; }
+.line-badge[data-type="VBZ-16"] { background: #004E67; color: white; }
+.line-badge[data-type="VBZ-17"] { background: #9e1762; color: white; }
+.line-badge[data-type="VBZ-20"] { background: rgb(142,34,77); color: white; }
+
+.line-badge[data-type="VBZ-31"] { background: #9fa3cd; color: white; }
+.line-badge[data-type="VBZ-32"] { background: #dab2d2; color: black; }
+.line-badge[data-type="VBZ-33"] { background: #e9e6a5; color: black; }
+.line-badge[data-type="VBZ-46"] { background: #c5dfa5; color: black; }
+.line-badge[data-type="VBZ-61"] { background: #98908A; color: white; }
+.line-badge[data-type="VBZ-62"] { background: #D0C4B6; color: black; }
+.line-badge[data-type="VBZ-72"] { background: #D8AA99; color: black; }
+.line-badge[data-type="VBZ-80"] { background: #CDD7BB; color: black; }
+.line-badge[data-type="VBZ-89"] { background: #D0C4B6; color: black; }
+
+.line-badge[data-type="VBZ-301"] { background: #A6C700; color: black; }
+.line-badge[data-type="VBZ-302"] { background: #009A38; color: white; }
+.line-badge[data-type="VBZ-303"] { background: #46398e; color: white; }
+.line-badge[data-type="VBZ-304"] { background: #e7000e; color: white; }
+.line-badge[data-type="VBZ-305"] { background: #955b29; color: white; }
+.line-badge[data-type="VBZ-306"] { background: #ffd200; color: black; }
+.line-badge[data-type="VBZ-307"] { background: #d89d3e; color: white; }
+.line-badge[data-type="VBZ-308"] { background: #e82788; color: white; }
+.line-badge[data-type="VBZ-309"] { background: #00A1E5; color: white; }
+.line-badge[data-type="VBZ-314"] { background: #f37b72; color: white; }
+.line-badge[data-type="VBZ-317"] { background: #46398e; color: white; }
+.line-badge[data-type="VBZ-325"] { background: #e82788; color: white; }
+
+.line-badge[data-type="VBZ"] { background: white; color: black; }
+.line-badge[data-type^="VBZ"][data-line="E"] { background: rgb(144,190,227); color: black; }
+.line-badge[data-type="VBZ-18"] { background: #E94F35; color: white; }
+
+.line-badge[data-type="RUB"] { background: #006d68; color: white; }
+.line-badge[data-type="RUB-PAG"] { background: #006d68; color: #ffcc00; }
+.line-badge[data-type="RhB"] { background: #e2001a; color: white; }
+.line-badge[data-type="PAG"] { background: #ffcc00; color: black; }
