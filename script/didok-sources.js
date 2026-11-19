@@ -11,12 +11,10 @@ const DIDOK_PROXY_URL = '../didok-proxy.php?url=';
 const CACHE_PREFIX = 'nowe-didok-source:';
 const FETCH_TIMEOUT_MS = 5000;
 
-const didokMap = new Map(
-    Object.entries(localDidokMapping).map(([code, name]) => [
-        code.trim().toUpperCase(),
-        String(name).trim()
-    ])
-);
+// Kürzel sind nicht eindeutig: CODE -> Liste von Namen (wichtigster zuerst).
+// Werte in den Quellen dürfen ein String oder eine Liste von Strings sein.
+const didokMap = new Map();
+const sourceData = new Map(); // URL -> zuletzt geladene Daten
 
 let initPromise;
 
@@ -24,13 +22,43 @@ function cacheKey(url) {
     return `${CACHE_PREFIX}${url}`;
 }
 
-function mergeSource(source) {
-    Object.entries(source).forEach(([code, name]) => {
-        const normalizedCode = String(code).trim().toUpperCase();
-        const normalizedName = String(name).trim();
-        if (normalizedCode && normalizedName) didokMap.set(normalizedCode, normalizedName);
+function toNames(value) {
+    return (Array.isArray(value) ? value : [value])
+        .map(name => String(name ?? '').trim())
+        .filter(Boolean);
+}
+
+function nameKey(name) {
+    return name.toLowerCase().replace(/["'’`´]/g, "'").replace(/\s+/g, ' ');
+}
+
+// Fügt Namen hinzu, ohne Duplikate. toFront: spätere Quellen haben Vorrang
+// (wie früher beim Überschreiben), ihre Namen stehen also vorne.
+function addEntry(code, value, toFront) {
+    const normalizedCode = String(code).trim().toUpperCase();
+    const names = toNames(value);
+    if (!normalizedCode || names.length === 0) return;
+    const list = didokMap.get(normalizedCode) || [];
+    const known = new Set(list.map(nameKey));
+    const fresh = names.filter(name => {
+        const key = nameKey(name);
+        if (known.has(key)) return false;
+        known.add(key);
+        return true;
+    });
+    didokMap.set(normalizedCode, toFront ? [...fresh, ...list] : [...list, ...fresh]);
+}
+
+function rebuildMap() {
+    didokMap.clear();
+    Object.entries(localDidokMapping).forEach(([code, value]) => addEntry(code, value, false));
+    DIDOK_SOURCE_URLS.forEach(url => {
+        const source = sourceData.get(url);
+        if (source) Object.entries(source).forEach(([code, value]) => addEntry(code, value, true));
     });
 }
+
+rebuildMap();
 
 function readCache(url) {
     try {
@@ -70,18 +98,28 @@ async function fetchSource(url) {
 }
 
 function loadExternalSources() {
-    const cachedSources = DIDOK_SOURCE_URLS.map(readCache);
-    cachedSources.forEach(source => {
-        if (source) mergeSource(source);
+    let hasCache = false;
+    DIDOK_SOURCE_URLS.forEach(url => {
+        const cached = readCache(url);
+        if (cached) {
+            sourceData.set(url, cached);
+            hasCache = true;
+        }
     });
+    if (hasCache) rebuildMap();
 
     const refresh = Promise.allSettled(DIDOK_SOURCE_URLS.map(fetchSource)).then(results => {
+        let changed = false;
         results.forEach((result, index) => {
-            if (result.status === 'fulfilled') mergeSource(result.value);
+            if (result.status === 'fulfilled') {
+                sourceData.set(DIDOK_SOURCE_URLS[index], result.value);
+                changed = true;
+            }
         });
+        if (changed) rebuildMap();
     });
 
-    if (cachedSources.some(Boolean)) {
+    if (hasCache) {
         void refresh;
         return Promise.resolve();
     }
@@ -93,9 +131,15 @@ export function initDidokSources() {
     return initPromise;
 }
 
-export function resolveAbbreviation(code) {
+// Alle Namen zu einem Kürzel (leere Liste, wenn unbekannt).
+export function resolveAbbreviations(code) {
     const normalizedCode = String(code || '').trim().toUpperCase();
-    return didokMap.get(normalizedCode) || null;
+    return [...(didokMap.get(normalizedCode) || [])];
+}
+
+// Erster (wichtigster) Name, für Aufrufer, die nur einen brauchen.
+export function resolveAbbreviation(code) {
+    return resolveAbbreviations(code)[0] || null;
 }
 
 export function findAbbreviationByName(name) {
@@ -105,8 +149,8 @@ export function findAbbreviationByName(name) {
 export function findAbbreviationsByName(name) {
     const normalizedName = String(name || '').trim();
     const matches = [];
-    for (const [code, mappedName] of didokMap) {
-        if (!/^\d+$/.test(code) && mappedName === normalizedName) matches.push(code);
+    for (const [code, mappedNames] of didokMap) {
+        if (!/^\d+$/.test(code) && mappedNames.includes(normalizedName)) matches.push(code);
     }
     return matches;
 }
