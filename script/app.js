@@ -1,5 +1,5 @@
 import { fetchDepartures, searchStops, searchStopsNearLocation } from './api-client.js';
-import { initDidokSources, resolveAbbreviation, resolveAbbreviations, findAbbreviationByName, findAbbreviationsByName } from './didok-sources.js';
+import { initDidokSources, resolveAbbreviation, resolveAbbreviations, findAbbreviationByName, findAbbreviationsByName } from './didok-sources.js?v=2';
 import { formatCountdown, parseCountdownTime, formatZurichDateTime, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
 import { initHeaderHeight, blockZoom } from '../shared/header.js?v=1';
 
