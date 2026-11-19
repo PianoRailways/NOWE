@@ -1,4 +1,5 @@
 import { withCountdownParam } from './countdown.js';
+import { getLineType } from './line-type.js';
 
 const FORMATION_OPERATOR_CODES = new Map([
     ['bls', 'BLSP'],
@@ -16,10 +17,10 @@ const FORMATION_OPERATOR_CODES = new Map([
 ]);
 
 export function renderTripHeader(trip, { links = 'trip' } = {}) {
-    const lineType = (trip.category || '').replace(/[0-9\s]/g, '').trim();
     const operatorRef = String(trip.operatorRef || '').trim().toLowerCase();
     const evuCode = FORMATION_OPERATOR_CODES.get(operatorRef);
     const agencyName = trip.operatorName || trip.operatorRef || '';
+    const lineType = getLineType({ category: trip.category, line: trip.line, operatorName: trip.operatorName });
     const lineBadge = `<span class="line-badge" data-type="${lineType}" operator="${agencyName}" agency-name="${agencyName}" data-line="${trip.line || ''}">${trip.line || ''}</span>`;
     const operatingDay = trip.operatingDay || trip.journeyMeta?.operationDate || '';
     const href = links === 'formation'
