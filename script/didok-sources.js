@@ -24,7 +24,8 @@ function cacheKey(url) {
 
 function toNames(value) {
     return (Array.isArray(value) ? value : [value])
-        .map(name => String(name ?? '').trim())
+        // Quellen schreiben den Apostroph teils als " (z.B. L"Aberieu)
+        .map(name => String(name ?? '').trim().replace(/"/g, "'"))
         .filter(Boolean);
 }
 
