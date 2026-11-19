@@ -2,7 +2,7 @@ import { fetchTripInfo } from '../trip/trip-api-client.js';
 import * as sharedStopChain from '../shared/stop-chain.js';
 import { renderTripHeader } from '../shared/trip-header.js';
 import { formatCountdown, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
-import { initHeaderHeight, blockZoom } from '../shared/header.js?v=1';
+import { initHeaderHeight, blockZoom } from '../shared/header.js';
 
 let tripRefreshTimer = null;
 let markerRefreshTimer = null;

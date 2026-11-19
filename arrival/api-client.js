@@ -1,4 +1,4 @@
-import { initDidokSources, resolveAbbreviation } from '../script/didok-sources.js?v=2';
+import { initDidokSources, resolveAbbreviation } from '../script/didok-sources.js';
 
 const API_CONFIG = {
     PROXY_URL: './proxy.php',
@@ -650,12 +650,9 @@ function parseOJPResponse(xmlString) {
         if (!service || !thisCall) continue;
 
         const journeyNumber = getText(service, 'TrainNumber') ?? '';
-        let timetabled    = thisCall.getElementsByTagName('TimetabledTime')[0]?.textContent?.trim();
-        let estimated     = thisCall.getElementsByTagName('EstimatedTime')[0]?.textContent?.trim();
-        
-        // Konvertiere in lokale Zeit
-        if (timetabled) timetabled = utcToLocalISO(timetabled);
-        if (estimated) estimated = utcToLocalISO(estimated);
+        const timeData = getTimeInfo(thisCall, 'ServiceArrival');
+        let timetabled    = timeData.timetabled;
+        let estimated     = timeData.estimated;
         
         const delayed       = !!estimated && estimated !== timetabled;
 
@@ -679,8 +676,6 @@ function parseOJPResponse(xmlString) {
             const secs = totalSeconds % 60;
             delayDisplay = `+${mins}:${secs.toString().padStart(2, '0')}`;
         }
-        const timeData = getTimeInfo(thisCall, 'ServiceDeparture'); // Nutzt die Hilfsfunktion für den Haupt-Stop
-
         const calls = parseCalls(event, 'Unbekannt', thisCall);
         const originText = calls.previous.length > 0 
             ? `${calls.previous[0].name}`

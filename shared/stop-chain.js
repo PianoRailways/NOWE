@@ -1,6 +1,6 @@
 import { fetchTripInfo } from '../trip/trip-api-client.js';
 import { formatCountdown, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from './countdown.js';
-export { initHeaderHeight } from './header.js?v=1';
+export { initHeaderHeight } from './header.js';
 
 export function updateClock() {
     const element = document.getElementById('live-clock');

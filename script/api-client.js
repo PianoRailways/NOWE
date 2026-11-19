@@ -1,4 +1,4 @@
-import { initDidokSources, resolveAbbreviation } from './didok-sources.js?v=2';
+import { initDidokSources, resolveAbbreviation } from './didok-sources.js';
 
 const API_CONFIG = {
     PROXY_URL: './proxy.php',

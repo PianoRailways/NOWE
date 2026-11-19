@@ -7,7 +7,7 @@ import {
     updateClock
 } from '../shared/stop-chain.js';
 import { renderTripHeader } from '../shared/trip-header.js';
-import { initHeaderHeight, blockZoom } from '../shared/header.js?v=1';
+import { initHeaderHeight, blockZoom } from '../shared/header.js';
 
 const state = {
     trip: null,
