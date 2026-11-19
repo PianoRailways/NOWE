@@ -1,5 +1,5 @@
 import { fetchDepartures, searchStops, searchStopsNearLocation } from './api-client.js';
-import { initDidokSources, resolveAbbreviation, findAbbreviationByName, findAbbreviationsByName } from '../script/didok-sources.js';
+import { initDidokSources, resolveAbbreviation, resolveAbbreviations, findAbbreviationByName, findAbbreviationsByName } from '../script/didok-sources.js';
 import { formatCountdown, parseCountdownTime, formatZurichDateTime, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
 import { initHeaderHeight, blockZoom } from '../shared/header.js?v=1';
 
@@ -898,6 +898,29 @@ function checkDidokMapping(query) {
     return null;
 }
 
+/**
+ * Wie checkDidokMapping, liefert aber alle Haltestellen zu einem Kürzel
+ * (Kürzel sind nicht eindeutig). Leere Liste, wenn unbekannt.
+ */
+function checkDidokMappings(query) {
+    const q = query.trim().toUpperCase();
+    return resolveAbbreviations(q).map(name => ({ id: q, name, isDidokMatch: true }));
+}
+
+/**
+ * Löst einen Haltestellennamen zur SLOID auf (exakter Namenstreffer bevorzugt).
+ */
+async function resolveStopIdByName(name) {
+    try {
+        const results = await searchStops(name);
+        const match = results?.find(r => r.name === name) || results?.[0];
+        return match ? String(match.ref) : null;
+    } catch (err) {
+        console.error(`Namensauflösung fehlgeschlagen für "${name}":`, err);
+        return null;
+    }
+}
+
 function initStopSearch() {
     const input    = DOM.stopInput();
     const dropdown = DOM.stopDropdown();
@@ -920,19 +943,21 @@ function initStopSearch() {
         searchDebounce = setTimeout(async () => {
             try {
                 await initDidokSources();
-                const didokResult = checkDidokMapping(q);
-                
-                if (didokResult) {
-                    console.log(`✓ didokmapping Match: "${q}" → "${didokResult.name}" (ID: ${didokResult.id})`);
-                    const displayCode = q.toUpperCase() !== didokResult.id.toUpperCase() ? q.toUpperCase() : '';
-                    
-                    dropdown.innerHTML = `
-                        <li data-id="${didokResult.id}" data-name="${didokResult.name}" class="didok-match">
+                const didokResults = checkDidokMappings(q);
+
+                if (didokResults.length > 0) {
+                    console.log(`✓ didokmapping Match: "${q}" → ${didokResults.length} Treffer`, didokResults.map(r => r.name));
+                    // Der erste Treffer behält das Kürzel als ID, weitere werden beim Klick über den Namen aufgelöst
+                    dropdown.innerHTML = didokResults.map((didokResult, index) => {
+                        const displayCode = q.toUpperCase() !== didokResult.id.toUpperCase() ? q.toUpperCase() : '';
+                        return `
+                        <li data-id="${didokResult.id}" data-name="${didokResult.name}"${index > 0 ? ' data-resolve-name="1"' : ''} class="didok-match">
                             <span class="dd-name">${didokResult.name}</span>
                             <span class="dd-code-center">${displayCode}</span>
                             <span class="dd-id">${didokResult.id}</span>
                         </li>
                     `;
+                    }).join('');
                     dropdown.classList.remove('hidden');
                     return;
                 }
@@ -968,14 +993,20 @@ function initStopSearch() {
         }, 300);
     });
 
-    dropdown.addEventListener('click', e => {
+    dropdown.addEventListener('click', async e => {
         const li = e.target.closest('li');
         if (!li || li.classList.contains('no-res')) return;
 
-        STOP_ID = li.dataset.id;
+        let stopId = li.dataset.id;
         input.value = li.dataset.name;
-
         closeDropdown();
+
+        // Weitere Treffer zu einem mehrdeutigen Kürzel: Kürzel allein wäre nicht eindeutig
+        if (li.dataset.resolveName) {
+            stopId = await resolveStopIdByName(li.dataset.name) || stopId;
+        }
+        STOP_ID = stopId;
+
         updateUrlParams();
         loadBoard();
         updateFavHighlight();

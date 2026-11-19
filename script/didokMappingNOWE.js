@@ -5695,7 +5695,7 @@ const didokMapping = {
 	'GURKE': 'Kilchberg ZH, Schwelle',
 	'FWF': 'Otelfingen',
 	'LOSL': 'Lörrach-Stetten',
-	'BIER': 'Bern, Bierhübeli',
+	'BIER': ['Bière', 'Bern, Bierhübeli'],
 	'EIPL': 'Bern, Eigerplatz',
 	'HELP': 'Hellbühl, Post',
 	'RURO': 'Ruswil, Rottalcenter',
