@@ -940,8 +940,8 @@ tr.dep-row.filtered-dest + tr.chain-row {
 
 /* HaV - Halt auf Verlangen */
 .requestStopBadge {
-    border: 1.5px solid var(--sbb-red);
-    color: var(--sbb-red);
+    border: 1.5px solid var(--plat-change);
+    color: var(--plat-change);
     font-size: 0.72em;
     margin-left: 6px;
     font-weight: bold;
