@@ -458,7 +458,7 @@ function renderBoard(departures) {
                 </td>
                 <td class="col-platform">
                     <span class="platform-value ${platClass}">${dep.platform}</span>
-                    ${dep.calls.current?.requestStop ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>' : ''}
+                    ${dep.calls.current?.requestStop ? '<span class="request-stop-badge">HaV</span>' : ''}
                 </td>
             </tr>
             ${situationRowHtml}
@@ -627,7 +627,7 @@ function buildChain(dep) {
 
         // ✅ FIX #4: Request-Stop (Halt auf Verlangen)
         const requestStopBadge = stop.requestStop
-            ? '<span style="border:1.5px solid var(--sbb-red); color:var(--sbb-red); font-size:0.72em; margin-left:6px; font-weight:bold; padding:1px 6px; border-radius:3px; letter-spacing:0.03em;">HaV</span>'
+            ? '<span class="request-stop-badge">HaV</span>'
             : '';
 
         // Dot-Farbe: ausgefallene Halte grau, Diensthalte schwarz

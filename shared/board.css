@@ -236,6 +236,5 @@ input, select, button { font-size: 16px; }
 .chain-stop-text small { color: var(--text-dim); margin-top: 2px; }
 .no-formation-hint { color: var(--text-dim); font-size: .72rem; }
 .access-icon { margin-left: 5px; font-size: .85em; }
-.hav-badge { margin-left: 5px; border: 1px solid var(--plat-change); color: var(--plat-change); padding: 1px 4px; border-radius: 3px; font-size: .65em; }
 .stop-arrow { align-self: center; justify-self: end; color: var(--text-via); font-size: 1.5rem; transition: transform .15s; }
 .formation-stop.is-open .stop-arrow { transform: rotate(90deg); }

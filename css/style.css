@@ -937,15 +937,3 @@ tr.dep-row.filtered-dest + tr.chain-row {
     font-size: 0.9em;
     color: var(--text-secondary, #999);
 }
-
-/* HaV - Halt auf Verlangen */
-.requestStopBadge {
-    border: 1.5px solid var(--plat-change);
-    color: var(--plat-change);
-    font-size: 0.72em;
-    margin-left: 6px;
-    font-weight: bold;
-    padding: 1px 6px;
-    border-radius: 3px;
-    letter-spacing: 0.03em;
-}

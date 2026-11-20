@@ -709,7 +709,7 @@ function renderStopChain() {
         const unplanned = row.unplannedStop === true;
         const service = row.serviceStop === true;
         const stopClasses = [unplanned ? 'stop-unplanned' : '', cancelled ? 'stop-cancelled' : '', service ? 'service-name' : ''].filter(Boolean).join(' ');
-        const rowBody = `<span class="chain-stop-text"><a class="${stopClasses}" href="${link}">${stopLabel(stop.uic, row.name)}</a>${cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quayHtml ? `<small class="${row.platformChanged ? 'platform-changed' : ''}">${quayHtml}</small>` : ''}</span>`;
+        const rowBody = `<span class="chain-stop-text"><a class="${stopClasses}" href="${link}">${stopLabel(stop.uic, row.name)}</a>${cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${accessIcon(row.accessibility)}${row.requestStop ? '<span class="request-stop-badge">HaV</span>' : ''}${quayHtml ? `<small class="${row.platformChanged ? 'platform-changed' : ''}">${quayHtml}</small>` : ''}</span>`;
         const stopClass = [isFirst ? 'formation-stop--first' : '', isLast ? 'formation-stop--last' : '', service ? 'is-service' : ''].filter(Boolean).join(' ');
         return `${daySeparator}
             <section class="formation-stop ${stopClass}" data-stop-index="${fIdx ?? ''}" data-row-index="${idx}" data-trip-index="${row.tripIndex ?? ''}">
