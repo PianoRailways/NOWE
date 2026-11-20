@@ -65,7 +65,7 @@ const toCodeMap = {
     '33': 'BLSP',
     '11': 'SBBP',
     '82': 'SOB',
-    '86': 'zb',
+    '86': 'ZB',
     '53': 'TPF',
     '72': 'RhB',
     '65': 'THURBO',
