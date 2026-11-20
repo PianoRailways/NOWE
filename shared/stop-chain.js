@@ -83,7 +83,7 @@ export function renderStopChain(state, { expandable = false, stopLabel = stopNam
             <${canExpand ? 'button' : 'div'} class="formation-stop-row ${row.cancelled ? 'stop-cancelled' : ''}" type="${canExpand ? 'button' : ''}" data-formation-index="${row.fIdx ?? ''}" ${canExpand ? '' : 'disabled'}>
                 <span class="chain-times">${times}</span>
                 <span class="chain-marker"><span class="chain-dot"></span></span>
-                <span class="chain-stop-text"><a class="${classes}" href="${stopLink}">${name}</a>${row.cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${formationHint}${accessIcon(row.accessibility)}${row.requestStop ? '<b class="hav-badge">HaV</b>' : ''}${quay ? `<small>${quay}</small>` : ''}</span>
+                <span class="chain-stop-text"><a class="${classes}" href="${stopLink}">${name}</a>${row.cancelled ? '<small class="stop-cancelled">Halt entfällt</small>' : ''}${formationHint}${accessIcon(row.accessibility)}${row.requestStop ? '<span class="request-stop-badge">HaV</span>' : ''}${quay ? `<small>${quay}</small>` : ''}</span>
                 ${canExpand ? '<span class="stop-arrow" aria-hidden="true">›</span>' : ''}
             </${canExpand ? 'button' : 'div'}>
             ${canExpand ? `<div class="formation-panel" id="formation-panel-${row.fIdx}"></div>` : ''}
