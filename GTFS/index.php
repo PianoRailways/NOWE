@@ -64,6 +64,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../shared/footer.css">
     <link rel="stylesheet" href="gtfs.css">
+    <link rel="stylesheet" href="../shared/navigation.css">
     <link rel="icon" type="image/png" href="../nowe.png">
     <link rel="apple-touch-icon" href="../nowe.png">
     <title>öV NOWE • Fahrtensuche</title>
@@ -72,6 +73,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
 
 <header id="app-header">
     <div id="header-left">
+        <button id="btn-menu-toggle" type="button" title="Menü öffnen" aria-label="Menü öffnen" aria-expanded="false">☰</button>
         <button id="btn-home" title="Startseite" onclick="window.location='../'">⌂ Home</button>
     </div>
     <div id="header-center">
@@ -81,6 +83,20 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
         <span id="app-title">öV NOWE</span>
     </div>
 </header>
+<div id="menu-overlay" aria-hidden="true"></div>
+<nav id="menu-sidebar" aria-label="NOWE-Navigation">
+    <div class="menu-header">
+        <h2 class="menu-title">NOWE</h2>
+        <button id="btn-menu-close" type="button" title="Menü schließen" aria-label="Menü schließen">✕</button>
+    </div>
+    <ul class="menu-list">
+        <li><a class="menu-link" href="../">Abfahrten</a></li>
+        <li><a class="menu-link" href="../arrival/">Ankünfte</a></li>
+        <li><a class="menu-link" href="../GTFS/">Fahrtnummersuche</a></li>
+        <li><a class="menu-link" href="../formation-new/">Formationssuche</a></li>
+        <li><a class="menu-link" href="../trip/">Trip-Suche</a></li>
+    </ul>
+</nav>
 
 <main class="gtfs-main">
     <section class="gtfs-heading">
@@ -179,6 +195,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
         updateClock();
         setInterval(updateClock, 1000);
     </script>
+    <script src="../shared/navigation.js"></script>
     <script src="../shared/footer.js"></script>
 </body>
 </html>

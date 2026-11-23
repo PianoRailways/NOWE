@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="shared/board.css">
     <link rel="stylesheet" href="shared/footer.css">
     <link rel="stylesheet" href="shared/base.css">
+    <link rel="stylesheet" href="shared/navigation.css">
     <title>öV NOWE26</title>
 </head>
 <body>
@@ -22,6 +23,7 @@
     <!-- ═══════════════ HEADER ═══════════════ -->
     <header id="app-header">
         <div id="header-left">
+            <button id="btn-menu-toggle" type="button" title="Menü öffnen" aria-label="Menü öffnen" aria-expanded="false">☰</button>
             <button id="btn-home" title="Startseite">⌂ Home</button>
         </div>
         <div id="header-center">
@@ -31,6 +33,20 @@
 			<span id="app-title" style="text-decoration: none;" onclick="toggleArrival()">öV NOWE</span>
 		</div>
 		    </header>
+    <div id="menu-overlay" aria-hidden="true"></div>
+    <nav id="menu-sidebar" aria-label="NOWE-Navigation">
+        <div class="menu-header">
+            <h2 class="menu-title">NOWE</h2>
+            <button id="btn-menu-close" type="button" title="Menü schließen" aria-label="Menü schließen">✕</button>
+        </div>
+        <ul class="menu-list">
+            <li><a class="menu-link" href="./">Abfahrten</a></li>
+            <li><a class="menu-link" href="./arrival/">Ankünfte</a></li>
+            <li><a class="menu-link" href="./GTFS/">Fahrtnummersuche</a></li>
+            <li><a class="menu-link" href="./formation-new/">Formationssuche</a></li>
+            <li><a class="menu-link" href="./trip/">Trip-Suche</a></li>
+        </ul>
+    </nav>
     <!-- ═══════════════ FAVORITENLEISTE ═══════════════ -->
 
     <nav id="fav-bar">
@@ -112,6 +128,7 @@ function toggleArrival() {
   }
 }
 </script>
+    <script src="shared/navigation.js"></script>
     <script src="shared/footer.js"></script>
 </body>
 </html>

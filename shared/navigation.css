@@ -1,0 +1,97 @@
+#btn-menu-toggle {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 1.1em;
+    line-height: 1;
+    transition: background 0.15s;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#btn-menu-toggle:hover,
+#btn-menu-toggle:active {
+    background: rgba(255,255,255,0.22);
+}
+
+#menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 29;
+    background: rgba(0,0,0,0.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+#menu-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#menu-sidebar {
+    position: fixed;
+    z-index: 30;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: min(320px, 85vw);
+    padding: calc(8px + env(safe-area-inset-top)) 14px env(safe-area-inset-bottom);
+    background: var(--header-bg, #061030);
+    border-right: 1px solid rgba(255,255,255,0.14);
+    box-shadow: 8px 0 24px rgba(0,0,0,0.35);
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+#menu-sidebar.active {
+    transform: translateX(0);
+}
+
+.menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 42px;
+    margin-bottom: 14px;
+}
+
+.menu-title {
+    color: var(--text-main, #fff);
+    font-size: 1.1em;
+}
+
+#btn-menu-close {
+    min-width: 42px;
+    min-height: 42px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+    color: var(--text-main, #fff);
+    cursor: pointer;
+    font-size: 1.1em;
+}
+
+.menu-list {
+    display: grid;
+    gap: 4px;
+    list-style: none;
+}
+
+.menu-link {
+    display: block;
+    padding: 13px 12px;
+    border-radius: 4px;
+    color: var(--text-main, #fff);
+    text-decoration: none;
+}
+
+.menu-link:hover,
+.menu-link:focus-visible {
+    background: rgba(255,255,255,0.12);
+    outline: none;
+}
