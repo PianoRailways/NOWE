@@ -46,23 +46,17 @@
         const estimated = parseTime(stopTime?.estimated);
         const timetabled = parseTime(stopTime?.timetabled);
 
-        // Prognosen sind für die Position maßgeblich. Falls eine einzelne
-        // Prognose älter als die vorherige verfügbare Zeit ist, verwende den
-        // Sollwert dieses Ereignisses, damit der gesamte Positionspfad nicht
-        // wegen gemischter Live-Daten verworfen wird.
-        if (estimated && (!previousTime || estimated >= previousTime)) {
-            return estimated;
+        // Prognose bevorzugt; rückwärts laufende Zeiten werden angehoben.
+        const result = estimated || timetabled;
+        if (result && previousTime && result < previousTime) {
+            return new Date(previousTime.getTime());
         }
-        if (timetabled && (!previousTime || timetabled >= previousTime)) {
-            return timetabled;
-        }
-        return estimated || timetabled;
+        return result;
     }
 
     function calculateVehiclePosition(stops, currentTime = new Date(), trip = null) {
         if (!Array.isArray(stops) || stops.length === 0) return null;
         if (trip?.cancelled || trip?.isCancelled || trip?.status === 'cancelled') return null;
-        if (stops.some(stop => stop?.cancelled || stop?.isCancelled)) return null;
 
         const now = parseTime(currentTime);
         if (!now) return null;
@@ -70,9 +64,12 @@
         const timedStops = [];
         let previousTime = null;
         stops.forEach((stop, originalIndex) => {
-            const arrival = actualTime(stop?.arrival, previousTime);
+            if (stop?.cancelled || stop?.isCancelled) return;
+            let arrival = actualTime(stop?.arrival, previousTime);
             if (arrival) previousTime = arrival;
-            const departure = actualTime(stop?.departure, previousTime);
+            let departure = actualTime(stop?.departure, previousTime);
+            if (!arrival && departure) arrival = departure;
+            if (!departure && arrival) departure = arrival;
             if (departure) previousTime = departure;
             if (arrival || departure) {
                 timedStops.push({ stop, originalIndex, arrival, departure });
@@ -81,18 +78,12 @@
 
         if (timedStops.length === 0) return null;
 
-        let validatedPreviousTime = null;
-        for (const item of timedStops) {
-            if (item.arrival && item.departure && item.arrival > item.departure) return null;
-            for (const time of [item.arrival, item.departure]) {
-                if (time && validatedPreviousTime && time < validatedPreviousTime) return null;
-                if (time) validatedPreviousTime = time;
-            }
-        }
-
         const first = timedStops[0];
         const last = timedStops[timedStops.length - 1];
         if (first.departure && now < first.departure) {
+            const leadTimeMinutes = /bus/i.test(String(trip?.category || '')) ? 10 : 25;
+            const markerStart = new Date(first.departure.getTime() - leadTimeMinutes * 60 * 1000);
+            if (now < markerStart) return null;
             return { stopIndex: first.originalIndex, state: 'inStation' };
         }
         if (last.arrival && now >= last.arrival) {
