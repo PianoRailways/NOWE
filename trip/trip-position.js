@@ -46,17 +46,12 @@
         const estimated = parseTime(stopTime?.estimated);
         const timetabled = parseTime(stopTime?.timetabled);
 
-        // Prognosen sind für die Position maßgeblich. Falls eine einzelne
-        // Prognose älter als die vorherige verfügbare Zeit ist, verwende den
-        // Sollwert dieses Ereignisses, damit der gesamte Positionspfad nicht
-        // wegen gemischter Live-Daten verworfen wird.
-        if (estimated && (!previousTime || estimated >= previousTime)) {
-            return estimated;
+        // Prognose bevorzugt, rückwärts laufende Zeiten werden angehoben.
+        const result = estimated || timetabled;
+        if (result && previousTime && result < previousTime) {
+            return new Date(previousTime.getTime());
         }
-        if (timetabled && (!previousTime || timetabled >= previousTime)) {
-            return timetabled;
-        }
-        return estimated || timetabled;
+        return result;
     }
 
     function calculateVehiclePosition(stops, currentTime = new Date(), trip = null) {
@@ -82,15 +77,6 @@
         });
 
         if (timedStops.length === 0) return null;
-
-        let validatedPreviousTime = null;
-        for (const item of timedStops) {
-            if (item.arrival && item.departure && item.arrival > item.departure) return null;
-            for (const time of [item.arrival, item.departure]) {
-                if (time && validatedPreviousTime && time < validatedPreviousTime) return null;
-                if (time) validatedPreviousTime = time;
-            }
-        }
 
         const first = timedStops[0];
         const last = timedStops[timedStops.length - 1];
