@@ -62,7 +62,6 @@
     function calculateVehiclePosition(stops, currentTime = new Date(), trip = null) {
         if (!Array.isArray(stops) || stops.length === 0) return null;
         if (trip?.cancelled || trip?.isCancelled || trip?.status === 'cancelled') return null;
-        if (stops.some(stop => stop?.cancelled || stop?.isCancelled)) return null;
 
         const now = parseTime(currentTime);
         if (!now) return null;
@@ -70,6 +69,7 @@
         const timedStops = [];
         let previousTime = null;
         stops.forEach((stop, originalIndex) => {
+            if (stop?.cancelled || stop?.isCancelled) return;
             const arrival = actualTime(stop?.arrival, previousTime);
             if (arrival) previousTime = arrival;
             const departure = actualTime(stop?.departure, previousTime);
