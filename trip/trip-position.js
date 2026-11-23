@@ -46,7 +46,7 @@
         const estimated = parseTime(stopTime?.estimated);
         const timetabled = parseTime(stopTime?.timetabled);
 
-        // Prognose bevorzugt, rückwärts laufende Zeiten werden angehoben.
+        // Prognose bevorzugt; rückwärts laufende Zeiten werden angehoben.
         const result = estimated || timetabled;
         if (result && previousTime && result < previousTime) {
             return new Date(previousTime.getTime());
@@ -81,6 +81,9 @@
         const first = timedStops[0];
         const last = timedStops[timedStops.length - 1];
         if (first.departure && now < first.departure) {
+            const leadTimeMinutes = /bus/i.test(String(trip?.category || '')) ? 10 : 25;
+            const markerStart = new Date(first.departure.getTime() - leadTimeMinutes * 60 * 1000);
+            if (now < markerStart) return null;
             return { stopIndex: first.originalIndex, state: 'inStation' };
         }
         if (last.arrival && now >= last.arrival) {
