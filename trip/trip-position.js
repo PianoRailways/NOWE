@@ -70,9 +70,11 @@
         let previousTime = null;
         stops.forEach((stop, originalIndex) => {
             if (stop?.cancelled || stop?.isCancelled) return;
-            const arrival = actualTime(stop?.arrival, previousTime);
+            let arrival = actualTime(stop?.arrival, previousTime);
             if (arrival) previousTime = arrival;
-            const departure = actualTime(stop?.departure, previousTime);
+            let departure = actualTime(stop?.departure, previousTime);
+            if (!arrival && departure) arrival = departure;
+            if (!departure && arrival) departure = arrival;
             if (departure) previousTime = departure;
             if (arrival || departure) {
                 timedStops.push({ stop, originalIndex, arrival, departure });
