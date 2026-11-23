@@ -3,8 +3,13 @@ $number = trim($_GET['number'] ?? '');
 $dateInput = trim($_GET['date'] ?? '');
 $date = date('Ymd');
 $error = '';
+$numberCandidates = $number === '' ? [] : [$number];
+if (preg_match('/:(\d+)$/', $number, $numberMatch)) {
+    $numberCandidates[] = $numberMatch[1];
+}
+$numberCandidates = array_values(array_unique($numberCandidates));
 
-if ($number !== '' && !ctype_digit($number)) {
+if ($number !== '' && count(array_filter($numberCandidates, 'ctype_digit')) === 0) {
     $error = 'Bitte eine gültige Fahrtnummer eingeben.';
 }
 
@@ -39,13 +44,14 @@ if ($number !== '' && $error === '' && file_exists($dbFile)) {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
         ]);
 
+        $numberPlaceholders = implode(', ', array_fill(0, count($numberCandidates), '?'));
         $stmt = $pdo->prepare("
             SELECT DISTINCT t.destination, t.sjyid, t.hints
             FROM trips t
             JOIN service_dates d ON d.service_id = t.service_id
-            WHERE t.trip_short_name = :number AND d.date = :date
+            WHERE t.trip_short_name IN ($numberPlaceholders) AND d.date = ?
         ");
-        $stmt->execute([':number' => $number, ':date' => (int) $date]);
+        $stmt->execute([...$numberCandidates, (int) $date]);
         $results = $stmt->fetchAll();
 
     } catch (Exception $e) {
