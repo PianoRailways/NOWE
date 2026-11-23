@@ -49,6 +49,7 @@ function stopName(row) {
 export function renderStopChain(state, { expandable = false, stopLabel = stopName, onToggle, renderPanel } = {}) {
     const chain = document.getElementById('stopChain');
     if (!chain) return;
+    state.positionMarkerCentered = false;
     const rows = state.rows || state.trip?.stops || [];
     let previousDay = null;
     chain.innerHTML = rows.map((row, index) => {
@@ -170,6 +171,14 @@ export function updateVehicleMarker(state) {
     marker.style.top = `${currentRect.top + currentRect.height / 2 - chainRect.top + (nextRect.top - currentRect.top) * progress}px`;
     marker.style.left = `${currentRect.left + currentRect.width / 2 - chainRect.left}px`;
     marker.removeAttribute('hidden');
+    if (!state.positionMarkerCentered) {
+        state.positionMarkerCentered = true;
+        requestAnimationFrame(() => marker.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'nearest'
+        }));
+    }
 }
 
 export function stopTripRefresh(state) {
