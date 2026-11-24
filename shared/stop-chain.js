@@ -122,7 +122,7 @@ export function updateTripRows(state, trip) {
             time.dataset.tt = value.timetabled;
             time.dataset.est = value.estimated || '';
             time.dataset.delay = value.delaySec || 0;
-            time.querySelector('.ps-time').dataset.cdTarget = value.estimated || value.timetabled;
+            if (isCountdownDefault()) time.querySelector('.ps-time').dataset.cdTarget = value.estimated || value.timetabled;
             time.querySelector('.ps-time').dataset.clock = fmtTime(value.timetabled) || '--:--';
             if (time.querySelector('.ps-time').dataset.cdTemp !== '1' && !isCountdownDefault()) {
                 time.querySelector('.ps-time').textContent = fmtTime(value.timetabled) || '--:--';
