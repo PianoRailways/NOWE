@@ -66,6 +66,7 @@ let countdownVisibilityBound = false;
 
 function updateCountdownElements() {
     if (document.hidden) return;
+    if (!isCountdownDefault()) return;
     document.querySelectorAll('[data-cd-target]').forEach((element) => {
         if (element.dataset.cdTemp === '1') return;
         element.textContent = formatCountdown(element.dataset.cdTarget);
