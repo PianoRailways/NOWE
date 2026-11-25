@@ -3,6 +3,7 @@ import * as sharedStopChain from '../shared/stop-chain.js';
 import { renderTripHeader } from '../shared/trip-header.js';
 import { formatCountdown, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
 import { initHeaderHeight, blockZoom } from '../shared/header.js';
+import { showVerkehrstage } from '../shared/verkehrstage.js';
 
 let tripRefreshTimer = null;
 let markerRefreshTimer = null;
@@ -100,8 +101,10 @@ async function loadTripOnly(sjyid, date) {
         }));
         document.getElementById('result').innerHTML = `
             ${renderTripHeader(trip, { links: 'formation' })}
-            <div class="stop-chain" id="stopChain"></div>`;
+            <div class="stop-chain" id="stopChain"></div>
+            <section class="verkehrstage" id="verkehrstage"></section>`;
         window.formationData = { formations: [], stops, rows, trip, relationships: [] };
+        showVerkehrstage(document.getElementById('verkehrstage'), [sjyid, trip.swissJourneyId], { markedDate: date || '' });
         sharedStopChain.renderStopChain(window.formationData, {
             expandable: false,
             stopLabel: (row) => stopLabel(row.uic, row.name)
@@ -255,9 +258,13 @@ async function fetchFormation() {
                 <a class="related-journey-value" id="nextTrainNumber">-</a>
             </div>
         </div>
+        <section class="verkehrstage" id="verkehrstage"></section>
     `;
 
     resultDiv.innerHTML = html;
+    if (swissJourneyId || trip?.swissJourneyId) {
+        showVerkehrstage(document.getElementById('verkehrstage'), [swissJourneyId, trip?.swissJourneyId], { markedDate: operationDate || '' });
+    }
 
     window.formationData = {
         formations: foundData.formations || [],
