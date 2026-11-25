@@ -2,6 +2,7 @@ import { fetchDepartures, searchStops, searchStopsNearLocation } from './api-cli
 import * as didokSources from '../script/didok-sources.js';
 import { formatCountdown, parseCountdownTime, formatZurichDateTime, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
 import { initHeaderHeight, blockZoom } from '../shared/header.js';
+import { getLineType } from '../shared/line-type.js';
 
 const {
     initDidokSources,
@@ -380,31 +381,9 @@ function renderBoard(departures) {
             fullLine = `${dep.cat}${dep.line}`;
         }
 
-        let lineType;
-
-        if (dep.operatorName === 'ojp:3849' || dep.operatorName === 'ojp:849' || dep.operatorName === 'ojp:46' || dep.operatorName === 'ojp:41' ) {
-            const cleanCat = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
-            
-            const coloredBuses = ['31', '32', '33', '46', '61', '62', '72', '80', '89', '301', '302', '303', '304', '305', '306', '307', '308', '309', '314', '317', '325'];
-            if (cleanCat === 'T') {
-                if (dep.line === '18') {
-                    fullLine = `S18`;
-                }
-                lineType = `VBZ-${dep.line}`;
-            } else if (cleanCat === 'B' && coloredBuses.includes(String(dep.line))) {
-                lineType = `VBZ-${dep.line}`;
-            } else if (cleanCat === 'T' && dep.line === '20' ) {
-                lineType = `VBZ-${dep.line}`;
-            }
-            else {
-                lineType = 'VBZ';
-            }
-        }
-        else if (dep.operatorName === 'ojp:801' && dep.cat === 'RUB') { lineType = 'RUB-PAG'; }
-        else if (dep.operatorName === 'ojp:801') { lineType = 'PAG'; }
-        else if (dep.operatorName === 'ojp:865') { lineType = 'RhB'; }
-        else {
-            lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
+        const lineType = getLineType({ category: dep.cat, line: dep.line, operatorRef: dep.operatorRef, operatorName: dep.operatorName });
+        if (lineType === 'VBZ-18') {
+            fullLine = 'S18';
         }
 
         const isCancelledAtCurrent = dep.calls.current?.cancelled;

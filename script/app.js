@@ -2,6 +2,7 @@ import { fetchDepartures, searchStops, searchStopsNearLocation } from './api-cli
 import { initDidokSources, resolveAbbreviation, resolveAbbreviations, findAbbreviationByName, findAbbreviationsByName } from './didok-sources.js';
 import { formatCountdown, parseCountdownTime, formatZurichDateTime, isCountdownDefault, withCountdownParam, bindTimeToggle, startCountdownTicker } from '../shared/countdown.js';
 import { initHeaderHeight, blockZoom } from '../shared/header.js';
+import { getLineType } from '../shared/line-type.js';
 
 // ─── Produktkategorie-Mapping ────────────────────────────────────────────────
 const CAT = {
@@ -447,38 +448,9 @@ function renderBoard(departures) {
             fullLine = `${dep.cat}${dep.line}`;
         }
 
-        // ✅ VBZ-spezifische data-type Logik mit gezielter Bus-Whitelist
-        let lineType;
-
-        if (dep.operatorName === 'ojp:3849' || dep.operatorName === 'ojp:849' || dep.operatorName === 'ojp:46' || dep.operatorName === 'ojp:41' ) {
-            const cleanCat = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
-            
-            // Liste der Buslinien, für die du spezifische Farben definiert hast
-            const coloredBuses = ['31', '32', '33', '46', '61', '62', '72', '80', '89', '301', '302', '303', '304', '305', '306', '307', '308', '309', '314', '317', '325']; // Hier einfach deine Linien als Strings eintragen
-            if (cleanCat === 'T') {
-                if (dep.line === '18') {
-                    fullLine = `S18`;
-                }
-                // Trams bekommen immer die spezifische Kennung
-                lineType = `VBZ-${dep.line}`;
-            } else if (cleanCat === 'B' && coloredBuses.includes(String(dep.line))) {
-                // Busse nur, wenn sie in der Whitelist stehen
-                lineType = `VBZ-${dep.line}`;
-            } else if (cleanCat === 'T' && dep.line === '20' ) {
-                lineType = `VBZ-${dep.line}`;
-            }
-            
-            else {
-                // Fallback für alle anderen Busse und VBZ-Verkehrsmittel
-                lineType = 'VBZ';
-            }
-        }
-            else if (dep.operatorName === 'ojp:801' && dep.cat === 'RUB') { lineType = 'RUB-PAG'; }
-            else if (dep.operatorName === 'ojp:801') { lineType = 'PAG'; }
-            else if (dep.operatorName === 'ojp:865') { lineType = 'RhB'; }
-        
-            else {
-            lineType = dep.cat.replace(/[0-9\s]/g, '').trim().toUpperCase();
+        const lineType = getLineType({ category: dep.cat, line: dep.line, operatorRef: dep.operatorRef, operatorName: dep.operatorName });
+        if (lineType === 'VBZ-18') {
+            fullLine = 'S18';
         }
 
         const isCancelledAtCurrent = dep.calls.current?.cancelled;
