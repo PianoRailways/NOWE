@@ -9,7 +9,7 @@ date_default_timezone_set('Europe/Zurich');
 
 // Zeitfenster der Betriebstage, die in der DB landen
 const DAYS_BACK  = 1;
-const DAYS_AHEAD = 60;
+const DAYS_AHEAD = 120;
 
 $feedUrl   = 'https://data.opentransportdata.swiss/dataset/timetable-2026-gtfs2020/permalink';
 $zipFile   = __DIR__ . '/gtfs_feed.zip';
