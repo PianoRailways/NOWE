@@ -57,3 +57,57 @@
     .trip-input-row { flex-wrap: wrap; }
     #trip-input { flex-basis: calc(100% - 58px); }
 }
+
+/* Verkehrstage (GTFS) */
+.verkehrstage {
+    padding: 14px max(14px, env(safe-area-inset-left)) 24px max(14px, env(safe-area-inset-right));
+    color: var(--text-main);
+}
+.vt-title {
+    margin: 0 0 10px;
+    font-size: 1em;
+    color: var(--text-via);
+}
+.vt-months {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 20px;
+}
+.vt-month { min-width: 196px; flex: 0 0 auto; }
+.vt-month-title {
+    margin-bottom: 4px;
+    font-weight: 700;
+    font-size: .9em;
+}
+.vt-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 26px);
+    gap: 2px;
+}
+.vt-head, .vt-day, .vt-empty {
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    font-size: .78em;
+}
+.vt-head { color: var(--text-dim); }
+.vt-day {
+    border-radius: 3px;
+    color: var(--text-dim);
+    opacity: .55;
+}
+.vt-day.vt-on {
+    background: var(--board-row);
+    color: var(--text-main);
+    opacity: 1;
+    font-weight: 700;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.25);
+}
+.vt-day.vt-out { opacity: .25; }
+.vt-day.vt-marked { box-shadow: inset 0 0 0 2px var(--sbb-red); opacity: 1; }
+.vt-day.vt-today { text-decoration: underline; }
+.vt-note {
+    margin-top: 10px;
+    font-size: .85em;
+    color: var(--text-via);
+}
