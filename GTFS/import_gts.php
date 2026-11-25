@@ -109,6 +109,10 @@ $pdo->exec('CREATE TABLE trips (
     sjyid TEXT,
     hints TEXT
 )');
+$pdo->exec('CREATE TABLE agencies (
+    agency_id TEXT PRIMARY KEY,
+    agency_name TEXT NOT NULL
+) WITHOUT ROWID');
 $pdo->exec('CREATE TABLE service_dates (
     service_id INTEGER NOT NULL,
     date INTEGER NOT NULL,
@@ -136,6 +140,28 @@ $serviceIds = [];
 function serviceId(string $name): int {
     global $serviceIds;
     return $serviceIds[$name] ??= count($serviceIds) + 1;
+}
+
+// 0. Betreiber aus agency.txt (agency_id -> Klartextname), landet auch in operators.json
+writeLog('Verarbeite agency.txt...');
+$operators = [];
+if ($zip->locateName('agency.txt') !== false) {
+    [$fp, $c, $n] = openCsv($zip, 'agency.txt', ['agency_id', 'agency_name']);
+    $insAgency = $pdo->prepare('INSERT OR REPLACE INTO agencies VALUES (?, ?)');
+    $pdo->beginTransaction();
+    while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
+        if (count($r) < $n) continue;
+        $aid = trim($r[$c['agency_id']]);
+        $aname = trim($r[$c['agency_name']]);
+        if ($aid === '' || $aname === '') continue;
+        $insAgency->execute([$aid, $aname]);
+        $operators[$aid] = $aname;
+    }
+    fclose($fp);
+    $pdo->commit();
+    writeLog('Betreiber gespeichert: ' . count($operators));
+} else {
+    writeLog('agency.txt fehlt im ZIP, Betreiber werden übersprungen.');
 }
 
 // 1. Regelmässige Verkehrstage aus calendar.txt (nur im Fenster)
@@ -233,9 +259,14 @@ writeLog("Ohne SJYID: $derived abgeleitet (ojp:...), $unresolved nicht ableitbar
 
 writeLog('Erstelle Index...');
 $pdo->exec('CREATE INDEX idx_trips_name ON trips(trip_short_name)');
+$pdo->exec('CREATE INDEX idx_trips_sjyid ON trips(sjyid)');
 $pdo = null;
 
 rename($dbTemp, $dbFinal);
+if ($operators) {
+    ksort($operators, SORT_NATURAL);
+    file_put_contents(__DIR__ . '/operators.json', json_encode($operators, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+}
 if ($newMeta !== null) {
     file_put_contents($metaFile, json_encode($newMeta));
     @unlink($zipFile);
