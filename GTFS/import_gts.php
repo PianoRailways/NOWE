@@ -3,6 +3,12 @@
 // Aufruf: php import.php             lädt den Feed, falls er sich geändert hat
 //         php import.php datei.zip   importiert ein lokales ZIP (z.B. zum Testen)
 
+// Nur über die Serverkonsole starten, nicht über den Webserver
+if (PHP_SAPI !== 'cli') {
+    http_response_code(403);
+    exit('Nur über die Kommandozeile aufrufbar.');
+}
+
 ini_set('memory_limit', '512M');
 set_time_limit(0);
 date_default_timezone_set('Europe/Zurich');
