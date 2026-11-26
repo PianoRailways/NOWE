@@ -178,17 +178,30 @@ export function renderVerkehrstage(data, { markedDate = '', today = '' } = {}) {
         ${difference}`;
 }
 
+function renderDisclosure(content) {
+    return `<details class="vt-disclosure">
+        <summary class="vt-title">Verkehrstage</summary>
+        <div class="vt-disclosure-content">${content}</div>
+    </details>`;
+}
+
+function setDisclosureContent(container, content) {
+    const wasOpen = container.querySelector('.vt-disclosure')?.open || false;
+    container.innerHTML = renderDisclosure(content);
+    if (wasOpen) container.querySelector('.vt-disclosure').open = true;
+}
+
 // Befüllt einen Container. Fehler zeigen nur einen Hinweis, die Tripansicht bleibt davon unberührt.
 export async function showVerkehrstage(container, sjyids, { markedDate = '' } = {}) {
     if (!container) return;
-    container.innerHTML = '<h2 class="vt-title">Verkehrstage</h2><div class="vt-note">Lade Verkehrstage…</div>';
+    setDisclosureContent(container, '<div class="vt-note">Lade Verkehrstage…</div>');
     try {
         const data = await fetchVerkehrstage(sjyids);
         const now = new Date();
         const today = iso(now.getFullYear(), now.getMonth() + 1, now.getDate());
-        container.innerHTML = `<h2 class="vt-title">Verkehrstage</h2>${renderVerkehrstage(data, { markedDate, today })}`;
+        setDisclosureContent(container, renderVerkehrstage(data, { markedDate, today }));
     } catch (error) {
-        container.innerHTML = '<h2 class="vt-title">Verkehrstage</h2><div class="vt-note">Verkehrstage sind gerade nicht verfügbar.</div>';
+        setDisclosureContent(container, '<div class="vt-note">Verkehrstage sind gerade nicht verfügbar.</div>');
         console.warn('Verkehrstage:', error);
     }
 }

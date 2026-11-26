@@ -3,10 +3,34 @@
     padding: 14px max(14px, env(safe-area-inset-left)) 24px max(14px, env(safe-area-inset-right));
     color: var(--text-main);
 }
+.vt-disclosure {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
 .vt-title {
-    margin: 0 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 8px 10px;
     font-size: 1em;
     color: var(--text-via);
+    background: var(--board-row);
+    cursor: pointer;
+    list-style: none;
+}
+.vt-title::-webkit-details-marker { display: none; }
+.vt-title::before {
+    content: '›';
+    font-size: 1.2em;
+    transition: transform .15s ease;
+}
+.vt-disclosure[open] > .vt-title::before { transform: rotate(90deg); }
+.vt-disclosure[open] > .vt-title { border-bottom: 1px solid var(--border); }
+.vt-title:focus-visible { outline: 2px solid var(--sbb-orange); outline-offset: -2px; }
+.vt-disclosure-content {
+    padding: 0 10px 10px;
 }
 .vt-months {
     display: flex;
