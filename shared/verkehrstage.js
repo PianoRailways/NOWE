@@ -84,6 +84,12 @@ function collectDays(data) {
     return info;
 }
 
+function displayTime(value) {
+    const time = String(value ?? '');
+    const match = time.match(/^(\d+:\d{2})(?::\d{2})?$/);
+    return match ? match[1] : time || '–';
+}
+
 function detailLines(details) {
     if (!details) return ['Detaildaten fehlen – bitte den GTFS-Import mit Detaildaten ausführen.'];
     const lines = [];
@@ -98,16 +104,30 @@ function detailLines(details) {
     }
     for (const change of details.times || []) {
         const times = [];
-        if (change.from_arrival !== change.to_arrival) {
-            times.push(`Ankunft ${escapeHtml(change.from_arrival || '–')} → ${escapeHtml(change.to_arrival || '–')}`);
+        const fromArrival = displayTime(change.from_arrival);
+        const toArrival = displayTime(change.to_arrival);
+        const fromDeparture = displayTime(change.from_departure);
+        const toDeparture = displayTime(change.to_departure);
+        if (fromArrival !== toArrival) {
+            times.push(`Ankunft ${escapeHtml(fromArrival)} → ${escapeHtml(toArrival)}`);
         }
-        if (change.from_departure !== change.to_departure) {
-            times.push(`Abfahrt ${escapeHtml(change.from_departure || '–')} → ${escapeHtml(change.to_departure || '–')}`);
+        if (fromDeparture !== toDeparture) {
+            times.push(`Abfahrt ${escapeHtml(fromDeparture)} → ${escapeHtml(toDeparture)}`);
         }
-        lines.push(`Zeiten ${escapeHtml(change.stop)}: ${times.join(', ')}`);
+        if (times.length) lines.push(`Zeiten ${escapeHtml(change.stop)}: ${times.join(', ')}`);
     }
     for (const change of details.tracks || []) {
-        lines.push(`Gleis ${escapeHtml(change.stop)}: ${escapeHtml(change.from || '–')} → ${escapeHtml(change.to || '–')}`);
+        const from = change.from || '';
+        const to = change.to || '';
+        const fromPlatform = from.split(':', 1)[0];
+        const toPlatform = to.split(':', 1)[0];
+        const valueClass = from.includes(':') && to.includes(':') && fromPlatform && toPlatform
+            ? (fromPlatform === toPlatform ? 'vt-track-same-platform' : 'vt-track-platform-changed')
+            : '';
+        const toValue = valueClass
+            ? `<span class="${valueClass}">${escapeHtml(to || '–')}</span>`
+            : escapeHtml(to || '–');
+        lines.push(`Gleis ${escapeHtml(change.stop)}: ${escapeHtml(from || '–')} → ${toValue}`);
     }
     return lines.length ? lines : ['Keine Einzeldifferenzen verfügbar.'];
 }
