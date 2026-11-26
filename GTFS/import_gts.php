@@ -1,7 +1,7 @@
 <?php
 // GTFS-Import für NOWE (schlanke Variante)
-// Aufruf: php import.php             lädt den Feed, falls er sich geändert hat
-//         php import.php datei.zip   importiert ein lokales ZIP (z.B. zum Testen)
+// Aufruf: php import_gts.php                     lädt die Feeds, falls sich einer geändert hat
+//         php import_gts.php fp2026.zip fp2027.zip   importiert lokale ZIPs in der Reihenfolge der Feeds (z.B. zum Testen)
 
 // Nur über die Serverkonsole starten, nicht über den Webserver
 if (PHP_SAPI !== 'cli') {
@@ -13,18 +13,33 @@ ini_set('memory_limit', '512M');
 set_time_limit(0);
 date_default_timezone_set('Europe/Zurich');
 
-// Zeitfenster der Betriebstage, die in der DB landen
-const DAYS_BACK  = 1;
-const DAYS_AHEAD = 120;
+// Betriebstage, die in der DB landen (YYYYMMDD, beide Grenzen inklusive)
+const WINDOW_FROM = 20260901;
+const WINDOW_TO   = 20270430;
 
-$feedUrl   = 'https://data.opentransportdata.swiss/dataset/timetable-2026-gtfs2020/permalink';
-$zipFile   = __DIR__ . '/gtfs_feed.zip';
+// Jeder Feed liefert nur Tage innerhalb seines Fahrplanjahres, damit sich die Feeds nicht überlappen.
+// Fahrplanjahr 2026: 14.12.2025 bis 12.12.2026, Fahrplanjahr 2027 beginnt am 13.12.2026.
+$feeds = [
+    [
+        'key' => 'fp2026',
+        'url' => 'https://data.opentransportdata.swiss/dataset/timetable-2026-gtfs2020/permalink',
+        'valid_from' => 20251214,
+        'valid_to' => 20261212,
+    ],
+    [
+        'key' => 'fp2027',
+        'url' => 'https://data.opentransportdata.swiss/dataset/timetable-2027-gtfs2020/permalink',
+        'valid_from' => 20261213,
+        'valid_to' => 20271211,
+    ],
+];
+
 $dbTemp    = __DIR__ . '/transit_new.sqlite';
 $dbFinal   = __DIR__ . '/transit.sqlite';
 $lockFile  = __DIR__ . '/import.lock';
 $logFile   = __DIR__ . '/import.log';
 $metaFile  = __DIR__ . '/feed_meta.json';
-$localZip  = $argv[1] ?? null;
+$localZips = array_slice($argv, 1);
 
 function writeLog($msg) {
     global $logFile;
@@ -43,11 +58,10 @@ if (!flock($fpLock, LOCK_EX | LOCK_NB)) {
 }
 
 writeLog('Start.');
-$newMeta = null;
 
-if ($localZip === null) {
-    // Prüfen, ob sich der Feed geändert hat
-    $ch = curl_init($feedUrl);
+// ETag und Last-Modified eines Feeds (Bei Redirects gibt es mehrere Header-Blöcke, der letzte zählt)
+function fetchRemoteMeta(string $url): array {
+    $ch = curl_init($url);
     curl_setopt_array($ch, [
         CURLOPT_NOBODY => true,
         CURLOPT_RETURNTRANSFER => true,
@@ -56,49 +70,54 @@ if ($localZip === null) {
     ]);
     $headers = (string)curl_exec($ch);
     curl_close($ch);
-
-    // Bei Redirects gibt es mehrere Header-Blöcke, der letzte zählt
     preg_match_all('/^ETag:\s*(.+)$/mi', $headers, $e);
     preg_match_all('/^Last-Modified:\s*(.+)$/mi', $headers, $m);
-    $newMeta = [
+    return [
         'etag' => isset($e[1]) && $e[1] ? trim(end($e[1])) : null,
         'last_modified' => isset($m[1]) && $m[1] ? trim(end($m[1])) : null,
     ];
+}
 
+$sources = [];   // key => ZIP-Pfad
+$newMeta = [];   // key => Meta, nur bei Download
+
+if (!$localZips) {
+    // Prüfen, ob sich ein Feed geändert hat
     $oldMeta = file_exists($metaFile) ? json_decode(file_get_contents($metaFile), true) : null;
-    $hasRemoteInfo = $newMeta['etag'] !== null || $newMeta['last_modified'] !== null;
-    if ($hasRemoteInfo && $oldMeta && $oldMeta === $newMeta && file_exists($dbFinal)) {
-        writeLog('Feed unverändert. Kein Import nötig.');
+    $allKnown = is_array($oldMeta) && file_exists($dbFinal);
+    foreach ($feeds as $feed) {
+        $newMeta[$feed['key']] = fetchRemoteMeta($feed['url']);
+        $meta = $newMeta[$feed['key']];
+        $hasRemoteInfo = $meta['etag'] !== null || $meta['last_modified'] !== null;
+        if (!$hasRemoteInfo || ($oldMeta[$feed['key']] ?? null) !== $meta) $allKnown = false;
+    }
+    if ($allKnown) {
+        writeLog('Feeds unverändert. Kein Import nötig.');
         exit(0);
     }
 
-    writeLog('Lade Feed herunter...');
-    $fpZip = fopen($zipFile, 'w+');
-    $ch = curl_init($feedUrl);
-    curl_setopt_array($ch, [
-        CURLOPT_FILE => $fpZip,
-        CURLOPT_FOLLOWLOCATION => true,
-    ]);
-    $ok = curl_exec($ch);
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    fclose($fpZip);
-    if (!$ok || $code !== 200) fail("Download fehlgeschlagen (HTTP $code)");
-    $source = $zipFile;
+    foreach ($feeds as $feed) {
+        $zipFile = __DIR__ . '/gtfs_feed_' . $feed['key'] . '.zip';
+        writeLog('Lade Feed ' . $feed['key'] . ' herunter...');
+        $fpZip = fopen($zipFile, 'w+');
+        $ch = curl_init($feed['url']);
+        curl_setopt_array($ch, [
+            CURLOPT_FILE => $fpZip,
+            CURLOPT_FOLLOWLOCATION => true,
+        ]);
+        $ok = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        fclose($fpZip);
+        if (!$ok || $code !== 200) fail('Download von ' . $feed['key'] . " fehlgeschlagen (HTTP $code). Bestehende Datenbank bleibt unverändert.");
+        $sources[$feed['key']] = $zipFile;
+    }
 } else {
-    $source = $localZip;
+    foreach ($feeds as $i => $feed) {
+        if (!isset($localZips[$i])) break;
+        $sources[$feed['key']] = $localZips[$i];
+    }
 }
-
-// Zeitfenster
-$today = new DateTimeImmutable('today');
-$window = [];
-for ($i = -DAYS_BACK; $i <= DAYS_AHEAD; $i++) {
-    $d = $today->modify(sprintf('%+d day', $i));
-    $window[] = [(int)$d->format('Ymd'), (int)$d->format('N') - 1];
-}
-$winStart = $window[0][0];
-$winEnd = $window[count($window) - 1][0];
-writeLog("Zeitfenster: $winStart bis $winEnd");
 
 // Datenbank
 if (file_exists($dbTemp)) unlink($dbTemp);
@@ -125,9 +144,6 @@ $pdo->exec('CREATE TABLE service_dates (
     PRIMARY KEY (service_id, date)
 ) WITHOUT ROWID');
 
-$zip = new ZipArchive();
-if ($zip->open($source) !== true) fail('ZIP lässt sich nicht öffnen.');
-
 function openCsv(ZipArchive $zip, string $name, array $required): array {
     $fp = $zip->getStream($name);
     if (!$fp) fail("$name fehlt im ZIP.");
@@ -141,79 +157,13 @@ function openCsv(ZipArchive $zip, string $name, array $required): array {
     return [$fp, $idx, count($header)];
 }
 
-// Service-IDs als Integer, spart Platz
+// Service-IDs als Integer, spart Platz. Der Präfix hält die Feeds auseinander,
+// weil dieselbe service_id in zwei Feeds etwas anderes bedeuten kann.
 $serviceIds = [];
-function serviceId(string $name): int {
+function serviceId(string $prefix, string $name): int {
     global $serviceIds;
-    return $serviceIds[$name] ??= count($serviceIds) + 1;
+    return $serviceIds[$prefix . '|' . $name] ??= count($serviceIds) + 1;
 }
-
-// 0. Betreiber aus agency.txt (agency_id -> Klartextname), landet auch in operators.json
-writeLog('Verarbeite agency.txt...');
-$operators = [];
-if ($zip->locateName('agency.txt') !== false) {
-    [$fp, $c, $n] = openCsv($zip, 'agency.txt', ['agency_id', 'agency_name']);
-    $insAgency = $pdo->prepare('INSERT OR REPLACE INTO agencies VALUES (?, ?)');
-    $pdo->beginTransaction();
-    while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
-        if (count($r) < $n) continue;
-        $aid = trim($r[$c['agency_id']]);
-        $aname = trim($r[$c['agency_name']]);
-        if ($aid === '' || $aname === '') continue;
-        $insAgency->execute([$aid, $aname]);
-        $operators[$aid] = $aname;
-    }
-    fclose($fp);
-    $pdo->commit();
-    writeLog('Betreiber gespeichert: ' . count($operators));
-} else {
-    writeLog('agency.txt fehlt im ZIP, Betreiber werden übersprungen.');
-}
-
-// 1. Regelmässige Verkehrstage aus calendar.txt (nur im Fenster)
-writeLog('Verarbeite calendar.txt...');
-[$fp, $c, $n] = openCsv($zip, 'calendar.txt', [
-    'service_id', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
-    'start_date', 'end_date',
-]);
-$dayCols = [$c['monday'], $c['tuesday'], $c['wednesday'], $c['thursday'], $c['friday'], $c['saturday'], $c['sunday']];
-$ins = $pdo->prepare('INSERT OR IGNORE INTO service_dates VALUES (?, ?)');
-$pdo->beginTransaction();
-while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
-    if (count($r) < $n) continue;
-    $id = serviceId($r[$c['service_id']]);
-    $start = (int)$r[$c['start_date']];
-    $end = (int)$r[$c['end_date']];
-    foreach ($window as [$date, $wd]) {
-        if ($date < $start || $date > $end) continue;
-        if ($r[$dayCols[$wd]] === '1') $ins->execute([$id, $date]);
-    }
-}
-fclose($fp);
-$pdo->commit();
-
-// 2. Ausnahmen streamen, nur Fenster, nichts im RAM halten
-writeLog('Verarbeite calendar_dates.txt...');
-[$fp, $c, $n] = openCsv($zip, 'calendar_dates.txt', ['service_id', 'date', 'exception_type']);
-$del = $pdo->prepare('DELETE FROM service_dates WHERE service_id = ? AND date = ?');
-$pdo->beginTransaction();
-while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
-    if (count($r) < $n) continue;
-    $date = (int)$r[$c['date']];
-    if ($date < $winStart || $date > $winEnd) continue;
-    $id = serviceId($r[$c['service_id']]);
-    $type = (int)$r[$c['exception_type']];
-    if ($type === 1) $ins->execute([$id, $date]);
-    elseif ($type === 2) $del->execute([$id, $date]);
-}
-fclose($fp);
-$pdo->commit();
-
-$active = [];
-foreach ($pdo->query('SELECT DISTINCT service_id FROM service_dates') as $row) {
-    $active[(int)$row[0]] = true;
-}
-writeLog('Services mit Betrieb im Fenster: ' . count($active) . ' von ' . count($serviceIds));
 
 // Fahrten ohne SJYID: OJP-ID aus trip_id und direction_id ableiten
 // .ojp-91-44-B.1.TA.45.j26 + direction 0  ->  ojp:91044:B:H:j26:45
@@ -223,45 +173,143 @@ function deriveOjpId(string $tripId, string $direction): string {
     return sprintf('ojp:%s%03d:%s:%s:%s:%s', $m[1], (int)$m[2], $m[3], $dir, $m[5], $m[4]);
 }
 
-// 3. Trips: eine Zeile pro Fahrt, nur wenn sie im Fenster fährt
-writeLog('Verarbeite trips.txt...');
-[$fp, $c, $n] = openCsv($zip, 'trips.txt', [
-    'service_id', 'trip_id', 'trip_headsign', 'trip_short_name', 'direction_id', 'original_trip_id',
-]);
-$iHints = $c['hints'] ?? null;
-$insTrip = $pdo->prepare('INSERT INTO trips VALUES (?, ?, ?, ?, ?)');
-$pdo->beginTransaction();
-$count = 0;
-$skipped = 0;
-$derived = 0;
-$unresolved = 0;
-while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
-    if (count($r) < $n) continue;
-    $short = trim($r[$c['trip_short_name']]);
-    $id = $serviceIds[$r[$c['service_id']]] ?? null;
-    if ($short === '' || $id === null || !isset($active[$id])) {
-        $skipped++;
+$operators = [];
+
+function importFeed(PDO $pdo, string $key, string $source, int $from, int $to): void {
+    global $operators;
+    writeLog("[$key] Zeitfenster: $from bis $to");
+
+    // Tage des Fensters mit Wochentag (0 = Montag)
+    $window = [];
+    $d = DateTimeImmutable::createFromFormat('Ymd', (string)$from);
+    $end = DateTimeImmutable::createFromFormat('Ymd', (string)$to);
+    for (; $d <= $end; $d = $d->modify('+1 day')) {
+        $window[] = [(int)$d->format('Ymd'), (int)$d->format('N') - 1];
+    }
+
+    $zip = new ZipArchive();
+    if ($zip->open($source) !== true) fail("ZIP $key lässt sich nicht öffnen.");
+
+    // 0. Betreiber aus agency.txt (agency_id -> Klartextname), landet auch in operators.json
+    writeLog("[$key] Verarbeite agency.txt...");
+    if ($zip->locateName('agency.txt') !== false) {
+        [$fp, $c, $n] = openCsv($zip, 'agency.txt', ['agency_id', 'agency_name']);
+        $insAgency = $pdo->prepare('INSERT OR REPLACE INTO agencies VALUES (?, ?)');
+        $pdo->beginTransaction();
+        while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
+            if (count($r) < $n) continue;
+            $aid = trim($r[$c['agency_id']]);
+            $aname = trim($r[$c['agency_name']]);
+            if ($aid === '' || $aname === '') continue;
+            $insAgency->execute([$aid, $aname]);
+            $operators[$aid] = $aname;
+        }
+        fclose($fp);
+        $pdo->commit();
+    } else {
+        writeLog("[$key] agency.txt fehlt im ZIP, Betreiber werden übersprungen.");
+    }
+
+    // 1. Regelmässige Verkehrstage aus calendar.txt (nur im Fenster)
+    writeLog("[$key] Verarbeite calendar.txt...");
+    [$fp, $c, $n] = openCsv($zip, 'calendar.txt', [
+        'service_id', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
+        'start_date', 'end_date',
+    ]);
+    $dayCols = [$c['monday'], $c['tuesday'], $c['wednesday'], $c['thursday'], $c['friday'], $c['saturday'], $c['sunday']];
+    $ins = $pdo->prepare('INSERT OR IGNORE INTO service_dates VALUES (?, ?)');
+    $pdo->beginTransaction();
+    while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
+        if (count($r) < $n) continue;
+        $id = serviceId($key, $r[$c['service_id']]);
+        $start = (int)$r[$c['start_date']];
+        $stop = (int)$r[$c['end_date']];
+        foreach ($window as [$date, $wd]) {
+            if ($date < $start || $date > $stop) continue;
+            if ($r[$dayCols[$wd]] === '1') $ins->execute([$id, $date]);
+        }
+    }
+    fclose($fp);
+    $pdo->commit();
+
+    // 2. Ausnahmen streamen, nur Fenster, nichts im RAM halten
+    writeLog("[$key] Verarbeite calendar_dates.txt...");
+    [$fp, $c, $n] = openCsv($zip, 'calendar_dates.txt', ['service_id', 'date', 'exception_type']);
+    $del = $pdo->prepare('DELETE FROM service_dates WHERE service_id = ? AND date = ?');
+    $pdo->beginTransaction();
+    while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
+        if (count($r) < $n) continue;
+        $date = (int)$r[$c['date']];
+        if ($date < $from || $date > $to) continue;
+        $id = serviceId($key, $r[$c['service_id']]);
+        $type = (int)$r[$c['exception_type']];
+        if ($type === 1) $ins->execute([$id, $date]);
+        elseif ($type === 2) $del->execute([$id, $date]);
+    }
+    fclose($fp);
+    $pdo->commit();
+
+    // Services dieses Feeds mit Betrieb im Fenster (IDs sind feedübergreifend eindeutig)
+    global $serviceIds;
+    $active = [];
+    foreach ($pdo->query('SELECT DISTINCT service_id FROM service_dates') as $row) {
+        $active[(int)$row[0]] = true;
+    }
+
+    // 3. Trips: eine Zeile pro Fahrt, nur wenn sie im Fenster fährt
+    writeLog("[$key] Verarbeite trips.txt...");
+    [$fp, $c, $n] = openCsv($zip, 'trips.txt', [
+        'service_id', 'trip_id', 'trip_headsign', 'trip_short_name', 'direction_id', 'original_trip_id',
+    ]);
+    $iHints = $c['hints'] ?? null;
+    $insTrip = $pdo->prepare('INSERT INTO trips VALUES (?, ?, ?, ?, ?)');
+    $pdo->beginTransaction();
+    $count = 0;
+    $skipped = 0;
+    $derived = 0;
+    $unresolved = 0;
+    while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
+        if (count($r) < $n) continue;
+        $short = trim($r[$c['trip_short_name']]);
+        $id = $serviceIds[$key . '|' . $r[$c['service_id']]] ?? null;
+        if ($short === '' || $id === null || !isset($active[$id])) {
+            $skipped++;
+            continue;
+        }
+        $sjyid = $r[$c['original_trip_id']];
+        if ($sjyid === '') {
+            $sjyid = deriveOjpId($r[$c['trip_id']], $r[$c['direction_id']]);
+            if ($sjyid !== '') $derived++; else $unresolved++;
+        }
+        $insTrip->execute([
+            $short,
+            $id,
+            $r[$c['trip_headsign']],
+            $sjyid,
+            $iHints !== null ? $r[$iHints] : '',
+        ]);
+        $count++;
+    }
+    fclose($fp);
+    $pdo->commit();
+    $zip->close();
+    writeLog("[$key] Trips gespeichert: $count, übersprungen: $skipped");
+    writeLog("[$key] Ohne SJYID: $derived abgeleitet (ojp:...), $unresolved nicht ableitbar");
+}
+
+$imported = 0;
+foreach ($feeds as $feed) {
+    if (!isset($sources[$feed['key']])) continue;
+    $from = max(WINDOW_FROM, $feed['valid_from']);
+    $to = min(WINDOW_TO, $feed['valid_to']);
+    if ($from > $to) {
+        writeLog('[' . $feed['key'] . '] Liegt ausserhalb des Zeitfensters, übersprungen.');
         continue;
     }
-    $sjyid = $r[$c['original_trip_id']];
-    if ($sjyid === '') {
-        $sjyid = deriveOjpId($r[$c['trip_id']], $r[$c['direction_id']]);
-        if ($sjyid !== '') $derived++; else $unresolved++;
-    }
-    $insTrip->execute([
-        $short,
-        $id,
-        $r[$c['trip_headsign']],
-        $sjyid,
-        $iHints !== null ? $r[$iHints] : '',
-    ]);
-    $count++;
+    importFeed($pdo, $feed['key'], $sources[$feed['key']], $from, $to);
+    $imported++;
 }
-fclose($fp);
-$pdo->commit();
-$zip->close();
-writeLog("Trips gespeichert: $count, übersprungen: $skipped");
-writeLog("Ohne SJYID: $derived abgeleitet (ojp:...), $unresolved nicht ableitbar");
+if ($imported === 0) fail('Kein Feed importiert.');
 
 writeLog('Erstelle Index...');
 $pdo->exec('CREATE INDEX idx_trips_name ON trips(trip_short_name)');
@@ -273,8 +321,9 @@ if ($operators) {
     ksort($operators, SORT_NATURAL);
     file_put_contents(__DIR__ . '/operators.json', json_encode($operators, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 }
-if ($newMeta !== null) {
+if (!$localZips) {
     file_put_contents($metaFile, json_encode($newMeta));
-    @unlink($zipFile);
+    foreach ($sources as $zipFile) @unlink($zipFile);
 }
-writeLog('Import erfolgreich abgeschlossen. DB: ' . round(filesize($dbFinal) / 1048576) . ' MB');
+
+writeLog(sprintf('Import erfolgreich abgeschlossen. DB: %d MB', round(filesize($dbFinal) / 1048576)));
