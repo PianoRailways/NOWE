@@ -128,22 +128,32 @@ try {
     $cols = array_column($pdo->query('PRAGMA table_info(trips)')->fetchAll(), 'name');
     $hasFamily = count(array_diff(['agency_id', 'route_id', 'direction_id'], $cols)) === 0;
     $lookupFields = $hasFamily ? 'trip_short_name, agency_id, route_id, direction_id' : 'trip_short_name';
-    $stmt = $pdo->prepare("SELECT $lookupFields FROM trips WHERE sjyid = ? LIMIT 1");
+    $stmt = $pdo->prepare("SELECT $lookupFields FROM trips WHERE sjyid = ?");
     $stmt->execute([$sjyid]);
-    $trip = $stmt->fetch();
-    if ($trip === false) {
+    $tripRows = $stmt->fetchAll();
+    if (!$tripRows) {
         echo json_encode(['sjyid' => $sjyid, 'dates' => [], 'days' => [], 'window' => $window], JSON_UNESCAPED_SLASHES);
         exit;
     }
+    $trip = $tripRows[0];
     $number = $trip['trip_short_name'];
     $variantWhere = 't.sjyid = ?';
     $variantParams = [$sjyid];
-    if ($hasFamily
-        && $trip['agency_id'] !== ''
-        && $trip['route_id'] !== ''
-        && $trip['direction_id'] !== '') {
-        $variantWhere = 't.trip_short_name = ? AND t.agency_id = ? AND t.route_id = ? AND t.direction_id = ?';
-        $variantParams = [$number, $trip['agency_id'], $trip['route_id'], $trip['direction_id']];
+    if ($hasFamily) {
+        $families = [];
+        foreach ($tripRows as $tripRow) {
+            if ($tripRow['agency_id'] === '' || $tripRow['route_id'] === '' || $tripRow['direction_id'] === '') continue;
+            $family = [$tripRow['trip_short_name'], $tripRow['agency_id'], $tripRow['route_id'], $tripRow['direction_id']];
+            $families[implode("\0", $family)] = $family;
+        }
+        if ($families) {
+            $familyConditions = [];
+            foreach ($families as $family) {
+                $familyConditions[] = '(t.trip_short_name = ? AND t.agency_id = ? AND t.route_id = ? AND t.direction_id = ?)';
+                array_push($variantParams, ...$family);
+            }
+            $variantWhere = '(t.sjyid = ? OR ' . implode(' OR ', $familyConditions) . ')';
+        }
     }
 
     // Ältere Datenbanken haben noch keine Abdrücke
