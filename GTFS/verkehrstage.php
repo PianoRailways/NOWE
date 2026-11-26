@@ -12,6 +12,7 @@
 //   "window": { "from": "...", "to": "..." }
 // }
 // days enthält alle Tage, an denen die Zugnummer fährt, und je Tag die dort gültige Variante.
+// Bei mehreren Fahrplan-Signaturen einer SJYID dient deren häufigste Signatur als Soll.
 // kind: soll = wie die Standardvariante, stops = andere Halte, times = andere Zeiten (gleiche Halte),
 //       tracks = nur anderes Gleis, variant = andere Variante, Unterschied nicht bekannt (keine stop_times importiert).
 // Nur Tage im Importfenster (siehe WINDOW_FROM / WINDOW_TO in import_gts.php).
@@ -78,18 +79,30 @@ try {
     ");
     $stmt->execute([$number]);
 
-    $variants = [];   // sjyid => ['sig_*' => ..., 'dates' => [date => true]]
+    $variants = [];   // sjyid => date/signature combinations
     foreach ($stmt->fetchAll() as $row) {
         $id = $row['sjyid'];
+        $date = (int)$row['date'];
+        $signature = [
+            'sig_stops' => $row['sig_stops'],
+            'sig_times' => $row['sig_times'],
+            'sig_tracks' => $row['sig_tracks'],
+        ];
+        $signatureKey = json_encode(array_values($signature));
         if (!isset($variants[$id])) {
             $variants[$id] = [
-                'sig_stops' => $row['sig_stops'],
-                'sig_times' => $row['sig_times'],
-                'sig_tracks' => $row['sig_tracks'],
+                'dates' => [],
+                'signatures' => [],
+            ];
+        }
+        $variants[$id]['dates'][$date][$signatureKey] = $signature;
+        if (!isset($variants[$id]['signatures'][$signatureKey])) {
+            $variants[$id]['signatures'][$signatureKey] = [
+                'signature' => $signature,
                 'dates' => [],
             ];
         }
-        $variants[$id]['dates'][(int)$row['date']] = true;
+        $variants[$id]['signatures'][$signatureKey]['dates'][$date] = true;
     }
 
     if (!$variants) {
@@ -110,6 +123,18 @@ try {
         }
     }
 
+    // Eine SJYID kann je nach Betriebstag mehrere Fahrplan-Signaturen haben.
+    // Als Soll-Signatur dient die innerhalb der häufigsten SJYID meistgenutzte.
+    $sollSignatureKey = null;
+    foreach ($variants[$soll]['signatures'] as $key => $signature) {
+        if ($sollSignatureKey === null
+            || count($signature['dates']) > count($variants[$soll]['signatures'][$sollSignatureKey]['dates'])
+            || (count($signature['dates']) === count($variants[$soll]['signatures'][$sollSignatureKey]['dates']) && strcmp($key, $sollSignatureKey) < 0)) {
+            $sollSignatureKey = $key;
+        }
+    }
+    $sollSignature = $variants[$soll]['signatures'][$sollSignatureKey]['signature'];
+
     // Je Tag die gültige Variante: das Soll, sonst die geöffnete Fahrt, sonst die kleinste SJYID
     $allDates = [];
     foreach ($variants as $v) foreach ($v['dates'] as $d => $_) $allDates[$d] = true;
@@ -127,7 +152,15 @@ try {
                 if (isset($v['dates'][$d]) && ($pick === null || strcmp($id, $pick) < 0)) $pick = $id;
             }
         }
-        $kind = $pick === $soll ? 'soll' : classify($variants[$soll], $variants[$pick]);
+        $daySignatures = $variants[$pick]['dates'][$d];
+        if (isset($daySignatures[$sollSignatureKey])) {
+            $daySignature = $daySignatures[$sollSignatureKey];
+        } else {
+            $daySignatureKeys = array_keys($daySignatures);
+            sort($daySignatureKeys, SORT_STRING);
+            $daySignature = $daySignatures[$daySignatureKeys[0]];
+        }
+        $kind = classify($sollSignature, $daySignature);
         $days[] = ['date' => fmt($d), 'sjyid' => $pick, 'kind' => $kind];
     }
 
