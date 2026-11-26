@@ -1,5 +1,7 @@
 <?php
+$searchType = ($_GET['search'] ?? 'number') === 'sjyid' ? 'sjyid' : 'number';
 $number = trim($_GET['number'] ?? '');
+$sjyidQuery = trim($_GET['sjyid'] ?? '');
 $dateInput = trim($_GET['date'] ?? '');
 $date = date('Ymd');
 $error = '';
@@ -9,15 +11,15 @@ if (preg_match('/:(\d+)$/', $number, $numberMatch)) {
 }
 $numberCandidates = array_values(array_unique($numberCandidates));
 
-if ($number !== '' && count(array_filter($numberCandidates, 'ctype_digit')) === 0) {
+if ($searchType === 'number' && $number !== '' && count(array_filter($numberCandidates, 'ctype_digit')) === 0) {
     $error = 'Bitte eine gültige Fahrtnummer eingeben.';
 }
 
-if ($dateInput === '') {
+if ($searchType === 'number' && $dateInput === '') {
     $dateInput = date('d.m.Y');
-} elseif (preg_match('/^(\d{2})\.(\d{2})\.(\d{4})$/', $dateInput, $dateParts) && checkdate((int) $dateParts[2], (int) $dateParts[1], (int) $dateParts[3])) {
+} elseif ($searchType === 'number' && preg_match('/^(\d{2})\.(\d{2})\.(\d{4})$/', $dateInput, $dateParts) && checkdate((int) $dateParts[2], (int) $dateParts[1], (int) $dateParts[3])) {
     $date = $dateParts[3] . $dateParts[2] . $dateParts[1];
-} elseif (preg_match('/^\d{8}$/', $dateInput)) {
+} elseif ($searchType === 'number' && preg_match('/^\d{8}$/', $dateInput)) {
     $yearMonthDayValid = checkdate((int) substr($dateInput, 4, 2), (int) substr($dateInput, 6, 2), (int) substr($dateInput, 0, 4));
     $dayMonthYearValid = checkdate((int) substr($dateInput, 2, 2), (int) substr($dateInput, 0, 2), (int) substr($dateInput, 4, 4));
 
@@ -30,14 +32,16 @@ if ($dateInput === '') {
     } else {
         $error = $error ?: 'Bitte ein gültiges Datum im Format TT.MM.JJJJ eingeben.';
     }
-} else {
+} elseif ($searchType === 'number') {
     $error = $error ?: 'Bitte ein gültiges Datum im Format TT.MM.JJJJ eingeben.';
 }
 
 $results = [];
+$sjyidResults = [];
+$formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2) : date('Y-m-d');
 $dbFile = __DIR__ . '/transit.sqlite';
 
-if ($number !== '' && $error === '' && file_exists($dbFile)) {
+if ($searchType === 'number' && $number !== '' && $error === '' && file_exists($dbFile)) {
     try {
         $pdo = new PDO('sqlite:' . $dbFile, null, null, [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -59,8 +63,45 @@ if ($number !== '' && $error === '' && file_exists($dbFile)) {
     }
 }
 
-// Datum für den NOWE-Link formatieren (YYYYMMDD zu YYYY-MM-DD)
-$formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2) : date('Y-m-d');
+if ($searchType === 'sjyid' && $sjyidQuery !== '' && $error === '') {
+    if (strlen($sjyidQuery) > 200) {
+        $error = 'Die SJYID-Suche darf höchstens 200 Zeichen lang sein.';
+    } elseif (file_exists($dbFile)) {
+        try {
+            $pdo = new PDO('sqlite:' . $dbFile, null, null, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+            ]);
+
+            $escapedQuery = str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $sjyidQuery);
+            $stmt = $pdo->prepare("
+                SELECT DISTINCT t.sjyid, t.trip_short_name, t.destination, t.hints, d.date
+                FROM trips t
+                JOIN service_dates d ON d.service_id = t.service_id
+                WHERE t.sjyid LIKE ? ESCAPE '!'
+                ORDER BY t.sjyid, d.date
+            ");
+            $stmt->execute(['%' . $escapedQuery . '%']);
+
+            foreach ($stmt->fetchAll() as $row) {
+                $id = $row['sjyid'];
+                if (!isset($sjyidResults[$id])) {
+                    $sjyidResults[$id] = [
+                        'number' => $row['trip_short_name'],
+                        'destination' => $row['destination'],
+                        'hints' => $row['hints'],
+                        'dates' => [],
+                    ];
+                }
+                $serviceDate = (string) $row['date'];
+                $formattedServiceDate = substr($serviceDate, 6, 2) . '.' . substr($serviceDate, 4, 2) . '.' . substr($serviceDate, 0, 4);
+                $sjyidResults[$id]['dates'][$formattedServiceDate] = true;
+            }
+        } catch (Exception $e) {
+            $error = 'Datenbankfehler bei der Abfrage.';
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -73,7 +114,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
     <link rel="stylesheet" href="../shared/navigation.css">
     <link rel="icon" type="image/png" href="../nowe.png">
     <link rel="apple-touch-icon" href="../nowe.png">
-    <title>öV NOWE • Fahrtensuche</title>
+    <title>öV NOWE • Fahrten- und SJYID-Suche</title>
 </head>
 <body>
 
@@ -98,7 +139,7 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
     <ul class="menu-list">
         <li><a class="menu-link" href="../">Abfahrten</a></li>
         <li><a class="menu-link" href="../arrival/">Ankünfte</a></li>
-        <li><a class="menu-link" href="../GTFS/">Fahrtnummersuche</a></li>
+        <li><a class="menu-link" href="../GTFS/">Fahrten- und SJYID-Suche</a></li>
         <li><a class="menu-link" href="../formation-new/">Formationssuche</a></li>
         <li><a class="menu-link" href="../trip/">Trip-Suche</a></li>
     </ul>
@@ -106,30 +147,66 @@ $formattedDate = strlen($date) === 8 ? substr($date, 0, 4) . '-' . substr($date,
 
 <main class="gtfs-main">
     <section class="gtfs-heading">
-        <h1>Fahrtensuche</h1>
+        <h1>Fahrten- und SJYID-Suche</h1>
     </section>
 
     <form class="gtfs-form" method="GET" action="">
-            <div class="gtfs-field gtfs-field--number">
-                <label for="number">Fahrtnummer:</label>
-                <input type="text" id="number" name="number" value="<?= htmlspecialchars($number) ?>" placeholder="z.B. 450" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required>
+        <input type="hidden" name="search" value="number">
+        <div class="gtfs-field gtfs-field--number">
+            <label for="number">Fahrtnummer:</label>
+            <input type="text" id="number" name="number" value="<?= htmlspecialchars($number) ?>" placeholder="z.B. 450" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required>
+        </div>
+        <div class="gtfs-field">
+            <label for="date">Datum (TT.MM.JJJJ):</label>
+            <div class="gtfs-date-fields">
+                <input type="text" id="date" name="date" value="<?= htmlspecialchars($dateInput) ?>" placeholder="z.B. 02.11.2026" inputmode="numeric" pattern="[0-9.]*" maxlength="10" autocomplete="off" required>
+                <input type="date" id="date-picker" value="<?= htmlspecialchars(substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2)) ?>" aria-label="Kalender öffnen" title="Kalender öffnen">
             </div>
-            <div class="gtfs-field">
-                <label for="date">Datum (TT.MM.JJJJ):</label>
-                <div class="gtfs-date-fields">
-                    <input type="text" id="date" name="date" value="<?= htmlspecialchars($dateInput) ?>" placeholder="z.B. 02.11.2026" inputmode="numeric" pattern="[0-9.]*" maxlength="10" autocomplete="off" required>
-                    <input type="date" id="date-picker" value="<?= htmlspecialchars(substr($date, 0, 4) . '-' . substr($date, 4, 2) . '-' . substr($date, 6, 2)) ?>" aria-label="Kalender öffnen" title="Kalender öffnen">
-                </div>
-            </div>
+        </div>
         <button type="submit">Suchen</button>
+    </form>
+
+    <form class="gtfs-form gtfs-sjyid-form" method="GET" action="">
+        <input type="hidden" name="search" value="sjyid">
+        <div class="gtfs-field">
+            <label for="sjyid">SJYID (vollständig oder Teil):</label>
+            <input type="text" id="sjyid" name="sjyid" value="<?= htmlspecialchars($sjyidQuery) ?>" placeholder="z.B. ch:1:sjyid:100015:16484-002" maxlength="200" autocomplete="off" required>
+        </div>
+        <button type="submit">SJYID suchen</button>
     </form>
 
     <?php if ($error): ?>
         <div class="gtfs-notice"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <?php if ($number !== '' && empty($results) && !$error): ?>
+    <?php if ($searchType === 'number' && $number !== '' && empty($results) && !$error): ?>
         <p class="gtfs-empty">Keine Fahrten für Zug <?= htmlspecialchars($number) ?> am <?= htmlspecialchars($date) ?> gefunden.</p>
+    <?php endif; ?>
+
+    <?php if ($searchType === 'sjyid' && $sjyidQuery !== '' && empty($sjyidResults) && !$error): ?>
+        <p class="gtfs-empty">Keine SJYIDs passend zu „<?= htmlspecialchars($sjyidQuery) ?>“ gefunden.</p>
+    <?php endif; ?>
+
+    <?php if (!empty($sjyidResults)): ?>
+        <h2 class="gtfs-results-title">Gefundene SJYIDs (<?= count($sjyidResults) ?>)</h2>
+        <div class="gtfs-trips">
+            <?php foreach ($sjyidResults as $sjyid => $row): ?>
+                <div class="gtfs-trip-row">
+                    <span class="gtfs-trip-top">
+                        <?= htmlspecialchars($row['number']) ?>
+                        <span class="gtfs-trip-sjyid"><?= htmlspecialchars($sjyid) ?></span>
+                    </span>
+                    <span class="gtfs-trip-bottom">
+                        <span class="gtfs-trip-arrow">→</span>
+                        <span class="gtfs-trip-destination"><?= htmlspecialchars($row['destination'] ?: '-') ?></span>
+                        <span class="gtfs-trip-hints"><?= htmlspecialchars($row['hints'] ?: '-') ?></span>
+                    </span>
+                    <span class="gtfs-sjyid-dates">
+                        Verkehrstage (<?= count($row['dates']) ?>): <?= htmlspecialchars(implode(', ', array_keys($row['dates']))) ?>
+                    </span>
+                </div>
+            <?php endforeach; ?>
+        </div>
     <?php endif; ?>
 
     <?php if (!empty($results)): ?>

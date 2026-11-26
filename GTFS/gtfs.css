@@ -3,6 +3,7 @@
 .gtfs-heading h1 { font-size: 1.2em; letter-spacing: 0.02em; }
 .gtfs-heading p { margin-top: 4px; color: var(--text-via); font-size: 0.85em; }
 .gtfs-form { display: flex; align-items: flex-end; gap: 8px; padding: 12px 14px; background: var(--board-bg); border-bottom: 1px solid var(--border); }
+.gtfs-sjyid-form .gtfs-field { flex: 1; }
 .gtfs-field { flex: 1; min-width: 0; }
 .gtfs-field--number { flex: 2; }
 .gtfs-form label { display: block; margin-bottom: 5px; color: var(--text-via); font-size: 0.8em; font-weight: 700; }
@@ -29,6 +30,7 @@
 .gtfs-trip-arrow { font-weight: 700; font-size: 1.2em;}
 .gtfs-trip-destination { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700;}
 .gtfs-trip-hints { margin-left: auto; color: var(--text-via); font-size: 0.8em; text-align: right; white-space: nowrap; }
+.gtfs-sjyid-dates { display: block; margin-top: 7px; color: var(--text-via); font-size: 0.82em; line-height: 1.5; overflow-wrap: anywhere; }
 #live-clock { cursor: pointer; }
 @media (max-width: 640px) {
     .gtfs-form { align-items: stretch; flex-direction: column; }
