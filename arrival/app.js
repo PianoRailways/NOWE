@@ -729,7 +729,7 @@ function buildChain(dep) {
                 ${dep.journeyRef}
             </span>`);
     }
-    if (dep.operatorName) metaParts.push(`<span class="meta-operator">Betreiber: ${dep.operatorName}</span>`);
+    if (dep.operatorName) metaParts.push(`<span class="meta-operator">Betreiber: ${dep.operatorName}${dep.operatorRef && dep.operatorRef !== dep.operatorName ? ` (${dep.operatorRef})` : ''}</span>`);
 
     // Service-Attribute anzeigen (Fahrplanänderung, Niederflur, etc.)
     if (dep.serviceAttributes && dep.serviceAttributes.length > 0) {
