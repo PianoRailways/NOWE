@@ -1,9 +1,13 @@
 // Verkehrstage einer Fahrt aus dem GTFS-Import (GTFS/verkehrstage.php) als Monatskalender.
 // Die Trip-API von opentransportdata liefert die Verkehrstage nicht zuverlässig, GTFS schon.
 
+import { searchStops } from '../script/api-client.js';
+
 const ENDPOINT = new URL('../GTFS/verkehrstage.php', import.meta.url).href;
+const LOCATION_PROXY_URL = new URL('../proxy.php', import.meta.url).href;
 const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 const WEEKDAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+const stopNameCache = new Map();
 
 const pad = (n) => String(n).padStart(2, '0');
 const iso = (y, m, d) => `${y}-${pad(m)}-${pad(d)}`;
@@ -14,6 +18,45 @@ const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => 
     '"': '&quot;',
     "'": '&#39;'
 })[char]);
+
+function stopReferenceMarkup(stop) {
+    const ref = String(stop ?? '');
+    const escapedRef = escapeHtml(ref);
+    return `<span class="vt-stop-reference" data-stop-ref="${escapedRef}">${escapedRef}</span>`;
+}
+
+async function lookupStopName(stopRef) {
+    if (stopNameCache.has(stopRef)) return stopNameCache.get(stopRef);
+    const results = await searchStops(stopRef, LOCATION_PROXY_URL);
+    const result = results.find((candidate) => candidate.ref === stopRef);
+    if (result?.name) stopNameCache.set(stopRef, result.name);
+    return result?.name || '';
+}
+
+async function resolveStopNames(container, details) {
+    if (!details) return;
+    const stopRefs = [
+        ...(details.stops?.removed || []),
+        ...(details.stops?.added || []),
+        ...(details.stops?.flags || []).map((change) => change.stop),
+        ...(details.times || []).map((change) => change.stop),
+        ...(details.tracks || []).map((change) => change.stop),
+    ].filter((ref) => typeof ref === 'string' && ref.startsWith('ch:1:sloid:'));
+    const uniqueRefs = [...new Set(stopRefs)];
+    const names = new Map();
+    await Promise.all(uniqueRefs.map(async (ref) => {
+        const name = await lookupStopName(ref);
+        if (name) names.set(ref, name);
+    }));
+    for (const element of container.querySelectorAll('.vt-stop-reference')) {
+        const ref = element.dataset.stopRef;
+        const name = names.get(ref);
+        if (name) {
+            element.textContent = name;
+            element.title = ref;
+        }
+    }
+}
 
 // Fahrt per SJYID abfragen. Mehrere Kandidaten möglich, der erste mit Treffern gewinnt.
 export async function fetchVerkehrstage(sjyids, { url = ENDPOINT } = {}) {
@@ -94,13 +137,13 @@ function detailLines(details) {
     if (!details) return ['Detaildaten fehlen – bitte den GTFS-Import mit Detaildaten ausführen.'];
     const lines = [];
     for (const stop of details.stops?.removed || []) {
-        lines.push(`Halt entfällt: ${escapeHtml(stop)}`);
+        lines.push(`Halt entfällt: ${stopReferenceMarkup(stop)}`);
     }
     for (const stop of details.stops?.added || []) {
-        lines.push(`Zusätzlicher Halt: ${escapeHtml(stop)}`);
+        lines.push(`Zusätzlicher Halt: ${stopReferenceMarkup(stop)}`);
     }
     for (const change of details.stops?.flags || []) {
-        lines.push(`Einstiegs-/Ausstiegsregel ${escapeHtml(change.stop)}: ${escapeHtml(change.from || '–')} → ${escapeHtml(change.to || '–')}`);
+        lines.push(`Einstiegs-/Ausstiegsregel ${stopReferenceMarkup(change.stop)}: ${escapeHtml(change.from || '–')} → ${escapeHtml(change.to || '–')}`);
     }
     for (const change of details.times || []) {
         const times = [];
@@ -114,7 +157,7 @@ function detailLines(details) {
         if (fromDeparture !== toDeparture) {
             times.push(`Abfahrt ${escapeHtml(fromDeparture)} → ${escapeHtml(toDeparture)}`);
         }
-        if (times.length) lines.push(`Zeiten ${escapeHtml(change.stop)}: ${times.join(', ')}`);
+        if (times.length) lines.push(`Zeiten ${stopReferenceMarkup(change.stop)}: ${times.join(', ')}`);
     }
     for (const change of details.tracks || []) {
         const from = change.from || '';
@@ -127,7 +170,7 @@ function detailLines(details) {
         const toValue = valueClass
             ? `<span class="${valueClass}">${escapeHtml(to || '–')}</span>`
             : escapeHtml(to || '–');
-        lines.push(`Gleis ${escapeHtml(change.stop)}: ${escapeHtml(from || '–')} → ${toValue}`);
+        lines.push(`Gleis ${stopReferenceMarkup(change.stop)}: ${escapeHtml(from || '–')} → ${toValue}`);
     }
     return lines.length ? lines : ['Keine Einzeldifferenzen verfügbar.'];
 }
@@ -200,6 +243,8 @@ export async function showVerkehrstage(container, sjyids, { markedDate = '' } = 
         const now = new Date();
         const today = iso(now.getFullYear(), now.getMonth() + 1, now.getDate());
         setDisclosureContent(container, renderVerkehrstage(data, { markedDate, today }));
+        const details = data.days?.find((day) => day.date === markedDate)?.details;
+        await resolveStopNames(container, details);
     } catch (error) {
         setDisclosureContent(container, '<div class="vt-note">Verkehrstage sind gerade nicht verfügbar.</div>');
         console.warn('Verkehrstage:', error);

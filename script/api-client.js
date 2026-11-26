@@ -178,13 +178,13 @@ function createLocationRequest(queryString) {
 </OJP>`;
 }
 
-export async function searchStops(queryString) {
+export async function searchStops(queryString, proxyUrl = API_CONFIG.PROXY_URL) {
     try {
         const xmlBody = createLocationRequest(queryString);
         //console.log('🔍 Suche nach:', queryString);
         //console.log('📤 XML-Body:', xmlBody.substring(0, 300));
         
-        const response = await fetch(API_CONFIG.PROXY_URL, {
+        const response = await fetch(proxyUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/xml' },
             body: xmlBody
