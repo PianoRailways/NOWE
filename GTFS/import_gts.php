@@ -17,6 +17,10 @@ date_default_timezone_set('Europe/Zurich');
 const WINDOW_FROM = 20260901;
 const WINDOW_TO   = 20270430;
 
+// Pro Fahrt einen Abdruck aus Halten, Zeiten und Gleisen speichern (liest stop_times.txt, verlängert den Import).
+// Damit erkennt die Tripansicht, ob eine Fahrt von der Standardvariante abweicht.
+const COMPARE_STOP_TIMES = true;
+
 // Jeder Feed liefert nur Tage innerhalb seines Fahrplanjahres, damit sich die Feeds nicht überlappen.
 // Fahrplanjahr 2026: 14.12.2025 bis 12.12.2026, Fahrplanjahr 2027 beginnt am 13.12.2026.
 $feeds = [
@@ -132,7 +136,12 @@ $pdo->exec('CREATE TABLE trips (
     service_id INTEGER NOT NULL,
     destination TEXT,
     sjyid TEXT,
-    hints TEXT
+    hints TEXT,
+    trip_id TEXT,
+    feed TEXT,
+    sig_stops TEXT,
+    sig_times TEXT,
+    sig_tracks TEXT
 )');
 $pdo->exec('CREATE TABLE agencies (
     agency_id TEXT PRIMARY KEY,
@@ -171,6 +180,75 @@ function deriveOjpId(string $tripId, string $direction): string {
     if (!preg_match('/^\.ojp-(\d+)-(\d+)-([A-Za-z]+)\.\d+\.[A-Za-z]+\.(\d+)\.(j\d+)$/', $tripId, $m)) return '';
     $dir = $direction === '1' ? 'R' : 'H';
     return sprintf('ojp:%s%03d:%s:%s:%s:%s', $m[1], (int)$m[2], $m[3], $dir, $m[5], $m[4]);
+}
+
+// Ergebnis: 1 gespeichert, 0 Fahrt nicht in der DB, -1 Fahrt kam schon vor (stop_times nicht gruppiert)
+function storeSignature(PDOStatement $check, PDOStatement $upd, string $key, string $tripId, string $stops, string $times, string $tracks): int {
+    $check->execute([$key, $tripId]);
+    $row = $check->fetch(PDO::FETCH_NUM);
+    if (!$row) return 0;
+    if ($row[0] !== null) return -1;
+    $upd->execute([substr(md5($stops), 0, 12), substr(md5($times), 0, 12), substr(md5($tracks), 0, 12), $key, $tripId]);
+    return 1;
+}
+
+// Abdruck je Fahrt aus stop_times.txt: Halte (Stopp-ID ohne Gleis plus Ein-/Ausstieg), Zeiten, Gleise.
+// Das Gleis steht in der Stopp-ID, z.B. 8503000:0:7 (UIC:0:Gleis).
+function importStopSignatures(PDO $pdo, ZipArchive $zip, string $key): void {
+    if (!COMPARE_STOP_TIMES) return;
+    if ($zip->locateName('stop_times.txt') === false) {
+        writeLog("[$key] stop_times.txt fehlt, Varianten werden nicht verglichen.");
+        return;
+    }
+    writeLog("[$key] Verarbeite stop_times.txt (Abdruck je Fahrt)...");
+    $pdo->exec('CREATE INDEX IF NOT EXISTS idx_trips_tripid ON trips(feed, trip_id)');
+    [$fp, $c, $n] = openCsv($zip, 'stop_times.txt', ['trip_id', 'arrival_time', 'departure_time', 'stop_id']);
+    $iPick = $c['pickup_type'] ?? null;
+    $iDrop = $c['drop_off_type'] ?? null;
+    $check = $pdo->prepare('SELECT sig_stops FROM trips WHERE feed = ? AND trip_id = ? LIMIT 1');
+    $upd = $pdo->prepare('UPDATE trips SET sig_stops = ?, sig_times = ?, sig_tracks = ? WHERE feed = ? AND trip_id = ?');
+
+    $current = null;
+    $stops = $times = $tracks = '';
+    $stored = 0;
+    $pending = 0;
+    $broken = false;
+    $pdo->beginTransaction();
+    $flush = function () use (&$current, &$stops, &$times, &$tracks, &$stored, &$pending, &$broken, $check, $upd, $key, $pdo) {
+        if ($current === null) return;
+        $res = storeSignature($check, $upd, $key, $current, $stops, $times, $tracks);
+        if ($res === 1) $stored++;
+        elseif ($res === -1) $broken = true;
+        if (++$pending >= 20000) {
+            $pdo->commit();
+            $pdo->beginTransaction();
+            $pending = 0;
+        }
+    };
+    while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
+        if (count($r) < $n) continue;
+        $tid = $r[$c['trip_id']];
+        if ($tid !== $current) {
+            $flush();
+            $current = $tid;
+            $stops = $times = $tracks = '';
+        }
+        $parts = explode(':', $r[$c['stop_id']]);
+        $base = preg_replace('/^Parent/', '', $parts[0]);
+        $flags = ($iPick !== null ? (int)$r[$iPick] : 0) . ($iDrop !== null ? (int)$r[$iDrop] : 0);
+        $stops .= $base . '/' . $flags . ';';
+        $times .= $r[$c['arrival_time']] . '-' . $r[$c['departure_time']] . ';';
+        $tracks .= ($parts[2] ?? '') . ';';
+    }
+    $flush();
+    fclose($fp);
+    $pdo->commit();
+    if ($broken) {
+        $pdo->exec("UPDATE trips SET sig_stops = NULL, sig_times = NULL, sig_tracks = NULL WHERE feed = " . $pdo->quote($key));
+        writeLog("[$key] WARNUNG: stop_times.txt ist nicht nach trip_id gruppiert, Abdrücke verworfen. Varianten werden nur als 'andere Variante' erkannt.");
+    } else {
+        writeLog("[$key] Abdrücke gespeichert: $stored");
+    }
 }
 
 $operators = [];
@@ -262,7 +340,7 @@ function importFeed(PDO $pdo, string $key, string $source, int $from, int $to): 
         'service_id', 'trip_id', 'trip_headsign', 'trip_short_name', 'direction_id', 'original_trip_id',
     ]);
     $iHints = $c['hints'] ?? null;
-    $insTrip = $pdo->prepare('INSERT INTO trips VALUES (?, ?, ?, ?, ?)');
+    $insTrip = $pdo->prepare('INSERT INTO trips (trip_short_name, service_id, destination, sjyid, hints, trip_id, feed) VALUES (?, ?, ?, ?, ?, ?, ?)');
     $pdo->beginTransaction();
     $count = 0;
     $skipped = 0;
@@ -287,11 +365,14 @@ function importFeed(PDO $pdo, string $key, string $source, int $from, int $to): 
             $r[$c['trip_headsign']],
             $sjyid,
             $iHints !== null ? $r[$iHints] : '',
+            $r[$c['trip_id']],
+            $key,
         ]);
         $count++;
     }
     fclose($fp);
     $pdo->commit();
+    importStopSignatures($pdo, $zip, $key);
     $zip->close();
     writeLog("[$key] Trips gespeichert: $count, übersprungen: $skipped");
     writeLog("[$key] Ohne SJYID: $derived abgeleitet (ojp:...), $unresolved nicht ableitbar");
