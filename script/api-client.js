@@ -1,4 +1,5 @@
 import { initDidokSources, resolveAbbreviation } from './didok-sources.js';
+import { resolveOperatorName } from '../shared/operators.js';
 
 const API_CONFIG = {
     PROXY_URL: './proxy.php',
@@ -728,7 +729,7 @@ function parseOJPResponse(xmlString) {
         const operatorRef = service.getElementsByTagName('OperatorRef')[0]?.textContent?.trim()
             ?? service.getElementsByTagName('siri:OperatorRef')[0]?.textContent?.trim()
             ?? '';
-        const operatorName = getText(service, 'OperatorName') ?? operatorRef;
+        const operatorName = resolveOperatorName(operatorRef, getText(service, 'OperatorName'));
 
         // ─── OperatingDays Parsing ──────────────────────────────────────────────
         const operatingDaysEl = event?.getElementsByTagName('OperatingDays')[0];

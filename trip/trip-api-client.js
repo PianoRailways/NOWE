@@ -1,3 +1,4 @@
+import { resolveOperatorName } from '../shared/operators.js';
 // ─── Konfiguration ────────────────────────────────────────────────────────────
 
 const TRIP_API_CONFIG = {
@@ -164,7 +165,7 @@ function parseTripInfoResponse(xmlString, swissJourneyId, operatingDay) {
     const operatorRef  = svc.getElementsByTagName('siri:OperatorRef')[0]?.textContent?.trim()
                       || svc.getElementsByTagName('OperatorRef')[0]?.textContent?.trim()
                       || '';
-    const operatorName = g(svc, 'OperatorName') || operatorRef;
+    const operatorName = resolveOperatorName(operatorRef, g(svc, 'OperatorName'));
 
     // Kategorie: ProductCategory/ShortName/Text, Fallback Mode/ShortName/Text
     const prodCat = svc.getElementsByTagName('ProductCategory')[0];

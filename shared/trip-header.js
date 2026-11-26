@@ -20,8 +20,8 @@ export function renderTripHeader(trip, { links = 'trip' } = {}) {
     const operatorRef = String(trip.operatorRef || '').trim().toLowerCase();
     const evuCode = FORMATION_OPERATOR_CODES.get(operatorRef);
     const agencyName = trip.operatorName || trip.operatorRef || '';
-    const lineType = getLineType({ category: trip.category, line: trip.line, operatorName: trip.operatorName });
-    const lineBadge = `<span class="line-badge" data-type="${lineType}" operator="${agencyName}" agency-name="${agencyName}" data-line="${trip.line || ''}">${trip.line || ''}</span>`;
+    const lineType = getLineType({ category: trip.category, line: trip.line, operatorRef: trip.operatorRef, operatorName: trip.operatorName });
+    const lineBadge = `<span class="line-badge" data-type="${lineType}" operator="${trip.operatorRef || agencyName}" agency-name="${agencyName}" data-line="${trip.line || ''}">${trip.line || ''}</span>`;
     const operatingDay = trip.operatingDay || trip.journeyMeta?.operationDate || '';
     const href = links === 'formation'
         ? (trip.swissJourneyId

@@ -8,6 +8,7 @@ import {
 } from '../shared/stop-chain.js';
 import { renderTripHeader } from '../shared/trip-header.js';
 import { initHeaderHeight, blockZoom } from '../shared/header.js';
+import { showVerkehrstage } from '../shared/verkehrstage.js';
 
 const state = {
     trip: null,
@@ -25,12 +26,14 @@ function showMessage(message, type = 'info') {
     result.innerHTML = `<div class="${type === 'error' ? 'error-message' : 'info-message'}">${message}</div>`;
 }
 
-function renderTrip(trip) {
+function renderTrip(trip, requestedJourneyId = '') {
     state.trip = trip;
     state.rows = trip.stops.map((stop, tripIndex) => ({ ...stop, tripIndex }));
-    $('result').innerHTML = `${renderTripHeader(trip, { links: 'trip' })}<div class="stop-chain" id="stopChain"></div>`;
+    $('result').innerHTML = `${renderTripHeader(trip, { links: 'trip' })}<div class="stop-chain" id="stopChain"></div><section class="verkehrstage" id="verkehrstage"></section>`;
     renderStopChain(state, { expandable: false, stopLabel: (row) => row.name || row.stopName || 'Unbekannter Halt' });
     updateVehicleMarker(state);
+    // Erst die eingegebene ID probieren (passt zur Fahrtensuche), dann die von der API gelieferte
+    showVerkehrstage($('verkehrstage'), [requestedJourneyId, trip.swissJourneyId], { markedDate: trip.operatingDay || '' });
 }
 
 async function loadTrip(journeyId, date) {
@@ -44,7 +47,7 @@ async function loadTrip(journeyId, date) {
             return;
         }
         trip.operatingDay = date || trip.stops[0].departure?.timetabled?.slice(0, 10) || null;
-        renderTrip(trip);
+        renderTrip(trip, journeyId);
         const url = new URL(window.location.href);
         url.searchParams.set('sjyid', journeyId);
         if (date) url.searchParams.set('date', date);
