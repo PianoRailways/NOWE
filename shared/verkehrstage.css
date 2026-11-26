@@ -54,6 +54,7 @@
 
 /* Abweichungen vom Soll */
 a.vt-day { text-decoration: none; cursor: pointer; }
+a.vt-day:focus-visible { outline: 2px solid var(--sbb-orange); outline-offset: 2px; }
 .vt-day.vt-dev-stops, .vt-swatch.vt-dev-stops { background: #c62828; color: #fff; }
 .vt-day.vt-dev-times, .vt-swatch.vt-dev-times { background: #ef7d00; color: #1a1a1a; }
 .vt-day.vt-dev-tracks, .vt-swatch.vt-dev-tracks { background: #f3e9a3; color: #1a1a1a; }
@@ -77,3 +78,14 @@ a.vt-day { text-decoration: none; cursor: pointer; }
     border-radius: 3px;
     box-sizing: border-box;
 }
+.vt-difference {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-left: 3px solid var(--sbb-orange);
+    background: var(--board-row);
+    font-size: .85em;
+}
+.vt-difference h3 { margin: 0 0 6px; font-size: 1em; }
+.vt-difference p { margin: 0; color: var(--text-via); }
+.vt-difference ul { margin: 6px 0 0; padding-left: 20px; }
+.vt-difference li { margin-top: 3px; overflow-wrap: anywhere; }

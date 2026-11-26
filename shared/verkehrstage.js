@@ -7,6 +7,13 @@ const WEEKDAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
 const pad = (n) => String(n).padStart(2, '0');
 const iso = (y, m, d) => `${y}-${pad(m)}-${pad(d)}`;
+const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+})[char]);
 
 // Fahrt per SJYID abfragen. Mehrere Kandidaten möglich, der erste mit Treffern gewinnt.
 export async function fetchVerkehrstage(sjyids, { url = ENDPOINT } = {}) {
@@ -24,13 +31,13 @@ export async function fetchVerkehrstage(sjyids, { url = ENDPOINT } = {}) {
 }
 
 const KIND_LABELS = {
-    stops: 'Andere Halte',
-    times: 'Andere Zeiten',
-    tracks: 'Anderes Gleis (nur Info)',
-    variant: 'Andere Variante (Unterschied nicht bekannt)',
+    stops: 'Andere Halte als Soll',
+    times: 'Andere Zeiten als Soll',
+    tracks: 'Anderes Gleis als Soll (nur Info)',
+    variant: 'Andere Variante als Soll (Unterschied nicht bekannt)',
 };
 
-// Link zur abweichenden Variante. Tripansicht und Formationssuche liegen beide eine Ebene unter dem Wurzelverzeichnis.
+// Tripansicht und Formationssuche liegen beide eine Ebene unter dem Wurzelverzeichnis.
 function variantHref(sjyid, date) {
     return `../trip/?sjyid=${encodeURIComponent(sjyid)}&date=${encodeURIComponent(date)}`;
 }
@@ -56,8 +63,7 @@ function monthGrid(year, month, info, from, to, marked, today) {
         } else if (date < from || date > to) cls.push('vt-out');
         if (date === marked) cls.push('vt-marked');
         if (date === today) cls.push('vt-today');
-        // Abweichende Tage anderer Varianten führen zur jeweiligen Fahrt
-        if (day && day.kind !== 'soll' && !day.own && day.sjyid) {
+        if (day && day.sjyid) {
             cells.push(`<a class="${cls.join(' ')}" href="${variantHref(day.sjyid, date)}" title="${title}">${d}</a>`);
         } else {
             cells.push(`<span class="${cls.join(' ')}" title="${title}">${d}</span>`);
@@ -71,11 +77,49 @@ function collectDays(data) {
     const own = new Set(data.dates || []);
     const info = new Map();
     if (Array.isArray(data.days) && data.days.length) {
-        for (const d of data.days) info.set(d.date, { kind: d.kind || 'soll', sjyid: d.sjyid, own: own.has(d.date) });
+        for (const d of data.days) info.set(d.date, { kind: d.kind || 'soll', sjyid: d.sjyid, own: own.has(d.date), details: d.details || null });
     } else {
-        for (const date of own) info.set(date, { kind: 'soll', sjyid: data.sjyid, own: true });
+        for (const date of own) info.set(date, { kind: 'soll', sjyid: data.sjyid, own: true, details: null });
     }
     return info;
+}
+
+function detailLines(details) {
+    if (!details) return ['Detaildaten fehlen – bitte den GTFS-Import mit Detaildaten ausführen.'];
+    const lines = [];
+    for (const stop of details.stops?.removed || []) {
+        lines.push(`Halt entfällt: ${escapeHtml(stop)}`);
+    }
+    for (const stop of details.stops?.added || []) {
+        lines.push(`Zusätzlicher Halt: ${escapeHtml(stop)}`);
+    }
+    for (const change of details.stops?.flags || []) {
+        lines.push(`Einstiegs-/Ausstiegsregel ${escapeHtml(change.stop)}: ${escapeHtml(change.from || '–')} → ${escapeHtml(change.to || '–')}`);
+    }
+    for (const change of details.times || []) {
+        const times = [];
+        if (change.from_arrival !== change.to_arrival) {
+            times.push(`Ankunft ${escapeHtml(change.from_arrival || '–')} → ${escapeHtml(change.to_arrival || '–')}`);
+        }
+        if (change.from_departure !== change.to_departure) {
+            times.push(`Abfahrt ${escapeHtml(change.from_departure || '–')} → ${escapeHtml(change.to_departure || '–')}`);
+        }
+        lines.push(`Zeiten ${escapeHtml(change.stop)}: ${times.join(', ')}`);
+    }
+    for (const change of details.tracks || []) {
+        lines.push(`Gleis ${escapeHtml(change.stop)}: ${escapeHtml(change.from || '–')} → ${escapeHtml(change.to || '–')}`);
+    }
+    return lines.length ? lines : ['Keine Einzeldifferenzen verfügbar.'];
+}
+
+function renderDifference(day, date, soll) {
+    if (!day || day.kind === 'soll') return '';
+    const lines = detailLines(day.details);
+    return `<section class="vt-difference">
+        <h3>Abweichungen am ${escapeHtml(date.split('-').reverse().join('.'))} (${escapeHtml(day.sjyid)})</h3>
+        <p>Verglichen mit der Soll-Signatur von ${escapeHtml(soll || 'unbekannter SJYID')}:</p>
+        <ul>${lines.map((line) => `<li>${line}</li>`).join('')}</ul>
+    </section>`;
 }
 
 export function renderVerkehrstage(data, { markedDate = '', today = '' } = {}) {
@@ -106,9 +150,12 @@ export function renderVerkehrstage(data, { markedDate = '', today = '' } = {}) {
     const summary = `${info.size} Verkehrstage laut GTFS-Fahrplan, ${from.split('-').reverse().join('.')} bis ${to.split('-').reverse().join('.')}.`
         + (hasVariants ? ` ${deviating} davon weichen vom Soll ab.` : ' Alle Tage identisch.');
     const ownHint = hasVariants ? '<span class="vt-legend-item"><span class="vt-swatch vt-on vt-own"></span>Tage dieser Fahrt</span>' : '';
+    const difference = renderDifference(info.get(markedDate), markedDate, data.soll);
     return `<div class="vt-months">${months.join('')}</div>
         ${legend || ownHint ? `<div class="vt-legend">${legend}${ownHint}</div>` : ''}
-        <div class="vt-note">${summary}</div>`;
+        <div class="vt-note">${summary}</div>
+        <div class="vt-note">Betriebstage anklicken, um die Fahrt an diesem Datum zu öffnen.</div>
+        ${difference}`;
 }
 
 // Befüllt einen Container. Fehler zeigen nur einen Hinweis, die Tripansicht bleibt davon unberührt.

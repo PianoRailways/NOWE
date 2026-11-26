@@ -8,11 +8,12 @@
 //   "number": "450",                 Zugnummer (trip_short_name)
 //   "dates": ["2026-11-26", ...],    Tage dieser Fahrt (SJYID)
 //   "soll": "...",                   Variante mit den meisten Verkehrstagen = Soll
-//   "days": [ { "date": "...", "sjyid": "...", "kind": "soll|stops|times|tracks|variant" }, ... ],
+//   "days": [ { "date": "...", "sjyid": "...", "kind": "...", "details": { ... } }, ... ],
 //   "window": { "from": "...", "to": "..." }
 // }
 // days enthält alle Tage, an denen die Zugnummer fährt, und je Tag die dort gültige Variante.
 // Bei mehreren Fahrplan-Signaturen einer SJYID dient deren häufigste Signatur als Soll.
+// details listet bei Abweichungen hinzugefügte/entfallene Halte sowie geänderte Zeiten und Gleise.
 // kind: soll = wie die Standardvariante, stops = andere Halte, times = andere Zeiten (gleiche Halte),
 //       tracks = nur anderes Gleis, variant = andere Variante, Unterschied nicht bekannt (keine stop_times importiert).
 // Nur Tage im Importfenster (siehe WINDOW_FROM / WINDOW_TO in import_gts.php).
@@ -47,6 +48,74 @@ function classify(array $s, array $v): string {
     return 'soll';
 }
 
+function decodeDetails(?string $json): ?array {
+    if ($json === null || $json === '') return null;
+    $compressed = base64_decode($json, true);
+    if ($compressed === false) throw new RuntimeException('Ungültige Haltestellendetails');
+    $decoded = gzuncompress($compressed);
+    if ($decoded === false) throw new RuntimeException('Haltestellendetails lassen sich nicht entpacken');
+    $details = json_decode($decoded, true, 512, JSON_THROW_ON_ERROR);
+    if (!is_array($details)) throw new RuntimeException('Ungültige Haltestellendetails');
+    return $details;
+}
+
+function indexDetails(?array $details): ?array {
+    if ($details === null) return null;
+    $indexed = [];
+    $occurrences = [];
+    foreach ($details as $stop) {
+        if (!is_array($stop) || !isset($stop['id'])) throw new RuntimeException('Ungültiger Haltestelleneintrag');
+        $id = (string)$stop['id'];
+        $occurrence = $occurrences[$id] ?? 0;
+        $occurrences[$id] = $occurrence + 1;
+        $indexed[$id . "\0" . $occurrence] = $stop;
+    }
+    return $indexed;
+}
+
+function compareDetails(?array $reference, ?array $actual): ?array {
+    $referenceStops = indexDetails($reference);
+    $actualStops = indexDetails($actual);
+    if ($referenceStops === null || $actualStops === null) return null;
+
+    $added = [];
+    $removed = [];
+    $flags = [];
+    $times = [];
+    $tracks = [];
+    foreach ($actualStops as $key => $stop) {
+        if (!isset($referenceStops[$key])) {
+            $added[] = $stop['id'];
+            continue;
+        }
+        $before = $referenceStops[$key];
+        if (($before['flags'] ?? '') !== ($stop['flags'] ?? '')) {
+            $flags[] = ['stop' => $stop['id'], 'from' => $before['flags'] ?? '', 'to' => $stop['flags'] ?? ''];
+        }
+        if (($before['arrival'] ?? '') !== ($stop['arrival'] ?? '') || ($before['departure'] ?? '') !== ($stop['departure'] ?? '')) {
+            $times[] = [
+                'stop' => $stop['id'],
+                'from_arrival' => $before['arrival'] ?? '',
+                'to_arrival' => $stop['arrival'] ?? '',
+                'from_departure' => $before['departure'] ?? '',
+                'to_departure' => $stop['departure'] ?? '',
+            ];
+        }
+        if (($before['track'] ?? '') !== ($stop['track'] ?? '')) {
+            $tracks[] = ['stop' => $stop['id'], 'from' => $before['track'] ?? '', 'to' => $stop['track'] ?? ''];
+        }
+    }
+    foreach ($referenceStops as $key => $stop) {
+        if (!isset($actualStops[$key])) $removed[] = $stop['id'];
+    }
+
+    return [
+        'stops' => ['added' => $added, 'removed' => $removed, 'flags' => $flags],
+        'times' => $times,
+        'tracks' => $tracks,
+    ];
+}
+
 try {
     $pdo = new PDO('sqlite:' . $dbFile, null, null, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -69,10 +138,11 @@ try {
     $sig = in_array('sig_stops', $cols, true)
         ? 't.sig_stops, t.sig_times, t.sig_tracks'
         : 'NULL AS sig_stops, NULL AS sig_times, NULL AS sig_tracks';
+    $detail = in_array('sig_detail', $cols, true) ? 't.sig_detail' : 'NULL AS sig_detail';
 
     // Alle Varianten dieser Zugnummer mit ihren Tagen
     $stmt = $pdo->prepare("
-        SELECT t.sjyid, $sig, d.date
+        SELECT t.sjyid, $sig, $detail, d.date
         FROM trips t
         JOIN service_dates d ON d.service_id = t.service_id
         WHERE t.trip_short_name = ?
@@ -88,17 +158,21 @@ try {
             'sig_times' => $row['sig_times'],
             'sig_tracks' => $row['sig_tracks'],
         ];
-        $signatureKey = json_encode(array_values($signature));
+        $signatureKey = json_encode(array_values($signature), JSON_THROW_ON_ERROR);
+        $signatureRecord = [
+            'signature' => $signature,
+            'details' => decodeDetails($row['sig_detail']),
+        ];
         if (!isset($variants[$id])) {
             $variants[$id] = [
                 'dates' => [],
                 'signatures' => [],
             ];
         }
-        $variants[$id]['dates'][$date][$signatureKey] = $signature;
+        $variants[$id]['dates'][$date][$signatureKey] = $signatureRecord;
         if (!isset($variants[$id]['signatures'][$signatureKey])) {
             $variants[$id]['signatures'][$signatureKey] = [
-                'signature' => $signature,
+                'signature' => $signatureRecord,
                 'dates' => [],
             ];
         }
@@ -133,7 +207,7 @@ try {
             $sollSignatureKey = $key;
         }
     }
-    $sollSignature = $variants[$soll]['signatures'][$sollSignatureKey]['signature'];
+    $sollRecord = $variants[$soll]['signatures'][$sollSignatureKey]['signature'];
 
     // Je Tag die gültige Variante: das Soll, sonst die geöffnete Fahrt, sonst die kleinste SJYID
     $allDates = [];
@@ -154,14 +228,15 @@ try {
         }
         $daySignatures = $variants[$pick]['dates'][$d];
         if (isset($daySignatures[$sollSignatureKey])) {
-            $daySignature = $daySignatures[$sollSignatureKey];
+            $dayRecord = $daySignatures[$sollSignatureKey];
         } else {
             $daySignatureKeys = array_keys($daySignatures);
             sort($daySignatureKeys, SORT_STRING);
-            $daySignature = $daySignatures[$daySignatureKeys[0]];
+            $dayRecord = $daySignatures[$daySignatureKeys[0]];
         }
-        $kind = classify($sollSignature, $daySignature);
-        $days[] = ['date' => fmt($d), 'sjyid' => $pick, 'kind' => $kind];
+        $kind = classify($sollRecord['signature'], $dayRecord['signature']);
+        $differences = $kind === 'soll' ? null : compareDetails($sollRecord['details'], $dayRecord['details']);
+        $days[] = ['date' => fmt($d), 'sjyid' => $pick, 'kind' => $kind, 'details' => $differences];
     }
 
     echo json_encode([

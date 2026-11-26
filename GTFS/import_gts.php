@@ -141,7 +141,8 @@ $pdo->exec('CREATE TABLE trips (
     feed TEXT,
     sig_stops TEXT,
     sig_times TEXT,
-    sig_tracks TEXT
+    sig_tracks TEXT,
+    sig_detail TEXT
 )');
 $pdo->exec('CREATE TABLE agencies (
     agency_id TEXT PRIMARY KEY,
@@ -183,12 +184,12 @@ function deriveOjpId(string $tripId, string $direction): string {
 }
 
 // Ergebnis: 1 gespeichert, 0 Fahrt nicht in der DB, -1 Fahrt kam schon vor (stop_times nicht gruppiert)
-function storeSignature(PDOStatement $check, PDOStatement $upd, string $key, string $tripId, string $stops, string $times, string $tracks): int {
+function storeSignature(PDOStatement $check, PDOStatement $upd, string $key, string $tripId, string $stops, string $times, string $tracks, string $detail): int {
     $check->execute([$key, $tripId]);
     $row = $check->fetch(PDO::FETCH_NUM);
     if (!$row) return 0;
     if ($row[0] !== null) return -1;
-    $upd->execute([substr(md5($stops), 0, 12), substr(md5($times), 0, 12), substr(md5($tracks), 0, 12), $key, $tripId]);
+    $upd->execute([substr(md5($stops), 0, 12), substr(md5($times), 0, 12), substr(md5($tracks), 0, 12), $detail, $key, $tripId]);
     return 1;
 }
 
@@ -206,17 +207,22 @@ function importStopSignatures(PDO $pdo, ZipArchive $zip, string $key): void {
     $iPick = $c['pickup_type'] ?? null;
     $iDrop = $c['drop_off_type'] ?? null;
     $check = $pdo->prepare('SELECT sig_stops FROM trips WHERE feed = ? AND trip_id = ? LIMIT 1');
-    $upd = $pdo->prepare('UPDATE trips SET sig_stops = ?, sig_times = ?, sig_tracks = ? WHERE feed = ? AND trip_id = ?');
+    $upd = $pdo->prepare('UPDATE trips SET sig_stops = ?, sig_times = ?, sig_tracks = ?, sig_detail = ? WHERE feed = ? AND trip_id = ?');
 
     $current = null;
     $stops = $times = $tracks = '';
+    $stopDetails = [];
     $stored = 0;
     $pending = 0;
     $broken = false;
     $pdo->beginTransaction();
-    $flush = function () use (&$current, &$stops, &$times, &$tracks, &$stored, &$pending, &$broken, $check, $upd, $key, $pdo) {
+    $flush = function () use (&$current, &$stops, &$times, &$tracks, &$stopDetails, &$stored, &$pending, &$broken, $check, $upd, $key, $pdo) {
         if ($current === null) return;
-        $res = storeSignature($check, $upd, $key, $current, $stops, $times, $tracks);
+        $json = json_encode($stopDetails, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        $compressed = gzcompress($json, 6);
+        if ($compressed === false) throw new RuntimeException('Haltestellendetails lassen sich nicht komprimieren.');
+        $detail = base64_encode($compressed);
+        $res = storeSignature($check, $upd, $key, $current, $stops, $times, $tracks, $detail);
         if ($res === 1) $stored++;
         elseif ($res === -1) $broken = true;
         if (++$pending >= 20000) {
@@ -232,6 +238,7 @@ function importStopSignatures(PDO $pdo, ZipArchive $zip, string $key): void {
             $flush();
             $current = $tid;
             $stops = $times = $tracks = '';
+            $stopDetails = [];
         }
         $stopId = $r[$c['stop_id']];
         if (preg_match('/^(?:Parent)?([^:]+):0:([^:]+)$/', $stopId, $stopParts)) {
@@ -245,12 +252,19 @@ function importStopSignatures(PDO $pdo, ZipArchive $zip, string $key): void {
         $stops .= $base . '/' . $flags . ';';
         $times .= $r[$c['arrival_time']] . '-' . $r[$c['departure_time']] . ';';
         $tracks .= $track . ';';
+        $stopDetails[] = [
+            'id' => $base,
+            'flags' => $flags,
+            'arrival' => $r[$c['arrival_time']],
+            'departure' => $r[$c['departure_time']],
+            'track' => $track,
+        ];
     }
     $flush();
     fclose($fp);
     $pdo->commit();
     if ($broken) {
-        $pdo->exec("UPDATE trips SET sig_stops = NULL, sig_times = NULL, sig_tracks = NULL WHERE feed = " . $pdo->quote($key));
+        $pdo->exec("UPDATE trips SET sig_stops = NULL, sig_times = NULL, sig_tracks = NULL, sig_detail = NULL WHERE feed = " . $pdo->quote($key));
         writeLog("[$key] WARNUNG: stop_times.txt ist nicht nach trip_id gruppiert, Abdrücke verworfen. Varianten werden nur als 'andere Variante' erkannt.");
     } else {
         writeLog("[$key] Abdrücke gespeichert: $stored");
