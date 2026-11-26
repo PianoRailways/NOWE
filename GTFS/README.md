@@ -7,4 +7,4 @@
   Die `agency_id` entspricht der Zahl der OJP-Betreiberref (`ojp:801` = `801`).
   Neu ausführen, wenn Betreiber dazukommen: `python3 GTFS/generate_operator_mapping.py agency.txt`
 
-`COMPARE_STOP_TIMES` in `import_gts.php` steuert, ob `stop_times.txt` gelesen wird (verlängert den Import). Das Gleis wird aus der Stopp-ID gelesen (`UIC:0:Gleis`).
+`COMPARE_STOP_TIMES` in `import_gts.php` steuert, ob `stop_times.txt` gelesen wird (verlängert den Import). Der Halteabdruck bewahrt die vollständige Stopp-ID; bei `UIC:0:Gleis` wird das Gleis separat verglichen. Nach Änderungen an der Abdrucklogik muss der Import erneut ausgeführt werden.

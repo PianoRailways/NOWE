@@ -233,12 +233,18 @@ function importStopSignatures(PDO $pdo, ZipArchive $zip, string $key): void {
             $current = $tid;
             $stops = $times = $tracks = '';
         }
-        $parts = explode(':', $r[$c['stop_id']]);
-        $base = preg_replace('/^Parent/', '', $parts[0]);
+        $stopId = $r[$c['stop_id']];
+        if (preg_match('/^(?:Parent)?([^:]+):0:([^:]+)$/', $stopId, $stopParts)) {
+            $base = $stopParts[1];
+            $track = $stopParts[2];
+        } else {
+            $base = preg_replace('/^Parent/', '', $stopId);
+            $track = '';
+        }
         $flags = ($iPick !== null ? (int)$r[$iPick] : 0) . ($iDrop !== null ? (int)$r[$iDrop] : 0);
         $stops .= $base . '/' . $flags . ';';
         $times .= $r[$c['arrival_time']] . '-' . $r[$c['departure_time']] . ';';
-        $tracks .= ($parts[2] ?? '') . ';';
+        $tracks .= $track . ';';
     }
     $flush();
     fclose($fp);
