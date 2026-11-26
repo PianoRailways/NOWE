@@ -11,7 +11,7 @@
 //   "days": [ { "date": "...", "sjyid": "...", "kind": "...", "details": { ... } }, ... ],
 //   "window": { "from": "...", "to": "..." }
 // }
-// days enthält alle Tage, an denen die Zugnummer fährt, und je Tag die dort gültige Variante.
+// days enthält alle Tage, an denen die Fahrtfamilie fährt, und je Tag die dort gültige Variante.
 // Bei mehreren Fahrplan-Signaturen einer SJYID dient deren häufigste Signatur als Soll.
 // details listet bei Abweichungen hinzugefügte/entfallene Halte sowie geänderte Zeiten und Gleise.
 // kind: soll = wie die Standardvariante, stops = andere Halte, times = andere Zeiten (gleiche Halte),
@@ -125,16 +125,28 @@ try {
     $win = $pdo->query('SELECT MIN(date) AS a, MAX(date) AS b FROM service_dates')->fetch();
     $window = ['from' => $win['a'] ? fmt((int)$win['a']) : null, 'to' => $win['b'] ? fmt((int)$win['b']) : null];
 
-    $stmt = $pdo->prepare('SELECT trip_short_name FROM trips WHERE sjyid = ? LIMIT 1');
+    $cols = array_column($pdo->query('PRAGMA table_info(trips)')->fetchAll(), 'name');
+    $hasFamily = count(array_diff(['agency_id', 'route_id', 'direction_id'], $cols)) === 0;
+    $lookupFields = $hasFamily ? 'trip_short_name, agency_id, route_id, direction_id' : 'trip_short_name';
+    $stmt = $pdo->prepare("SELECT $lookupFields FROM trips WHERE sjyid = ? LIMIT 1");
     $stmt->execute([$sjyid]);
-    $number = $stmt->fetchColumn();
-    if ($number === false) {
+    $trip = $stmt->fetch();
+    if ($trip === false) {
         echo json_encode(['sjyid' => $sjyid, 'dates' => [], 'days' => [], 'window' => $window], JSON_UNESCAPED_SLASHES);
         exit;
     }
+    $number = $trip['trip_short_name'];
+    $variantWhere = 't.sjyid = ?';
+    $variantParams = [$sjyid];
+    if ($hasFamily
+        && $trip['agency_id'] !== ''
+        && $trip['route_id'] !== ''
+        && $trip['direction_id'] !== '') {
+        $variantWhere = 't.trip_short_name = ? AND t.agency_id = ? AND t.route_id = ? AND t.direction_id = ?';
+        $variantParams = [$number, $trip['agency_id'], $trip['route_id'], $trip['direction_id']];
+    }
 
     // Ältere Datenbanken haben noch keine Abdrücke
-    $cols = array_column($pdo->query('PRAGMA table_info(trips)')->fetchAll(), 'name');
     $sig = in_array('sig_stops', $cols, true)
         ? 't.sig_stops, t.sig_times, t.sig_tracks'
         : 'NULL AS sig_stops, NULL AS sig_times, NULL AS sig_tracks';
@@ -145,9 +157,9 @@ try {
         SELECT t.sjyid, $sig, $detail, d.date
         FROM trips t
         JOIN service_dates d ON d.service_id = t.service_id
-        WHERE t.trip_short_name = ?
+        WHERE $variantWhere
     ");
-    $stmt->execute([$number]);
+    $stmt->execute($variantParams);
 
     $variants = [];   // sjyid => date/signature combinations
     foreach ($stmt->fetchAll() as $row) {

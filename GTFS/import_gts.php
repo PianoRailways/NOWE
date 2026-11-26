@@ -142,7 +142,10 @@ $pdo->exec('CREATE TABLE trips (
     sig_stops TEXT,
     sig_times TEXT,
     sig_tracks TEXT,
-    sig_detail TEXT
+    sig_detail TEXT,
+    agency_id TEXT NOT NULL DEFAULT '',
+    route_id TEXT NOT NULL DEFAULT '',
+    direction_id TEXT NOT NULL DEFAULT ''
 )');
 $pdo->exec('CREATE TABLE agencies (
     agency_id TEXT PRIMARY KEY,
@@ -194,7 +197,7 @@ function storeSignature(PDOStatement $check, PDOStatement $upd, string $key, str
 }
 
 // Abdruck je Fahrt aus stop_times.txt: Halte (Stopp-ID ohne Gleis plus Ein-/Ausstieg), Zeiten, Gleise.
-// Das Gleis steht in der Stopp-ID, z.B. 8503000:0:7 (UIC:0:Gleis).
+// Gleise stehen entweder als UIC:0:Gleis oder als Suffix einer SLOID-Stopp-ID.
 function importStopSignatures(PDO $pdo, ZipArchive $zip, string $key): void {
     if (!COMPARE_STOP_TIMES) return;
     if ($zip->locateName('stop_times.txt') === false) {
@@ -241,7 +244,10 @@ function importStopSignatures(PDO $pdo, ZipArchive $zip, string $key): void {
             $stopDetails = [];
         }
         $stopId = $r[$c['stop_id']];
-        if (preg_match('/^(?:Parent)?([^:]+):0:([^:]+)$/', $stopId, $stopParts)) {
+        if (preg_match('/^(?:Parent)?(ch:1:sloid:[^:]+)(?::(.*))?$/', $stopId, $stopParts)) {
+            $base = $stopParts[1];
+            $track = isset($stopParts[2]) ? ltrim($stopParts[2], ':') : '';
+        } elseif (preg_match('/^(?:Parent)?([^:]+):0:(.+)$/', $stopId, $stopParts)) {
             $base = $stopParts[1];
             $track = $stopParts[2];
         } else {
@@ -275,6 +281,7 @@ $operators = [];
 
 function importFeed(PDO $pdo, string $key, string $source, int $from, int $to): void {
     global $operators;
+    $feedAgencyIds = [];
     writeLog("[$key] Zeitfenster: $from bis $to");
 
     // Tage des Fensters mit Wochentag (0 = Montag)
@@ -301,6 +308,7 @@ function importFeed(PDO $pdo, string $key, string $source, int $from, int $to): 
             if ($aid === '' || $aname === '') continue;
             $insAgency->execute([$aid, $aname]);
             $operators[$aid] = $aname;
+            $feedAgencyIds[$aid] = true;
         }
         fclose($fp);
         $pdo->commit();
@@ -356,11 +364,24 @@ function importFeed(PDO $pdo, string $key, string $source, int $from, int $to): 
 
     // 3. Trips: eine Zeile pro Fahrt, nur wenn sie im Fenster fährt
     writeLog("[$key] Verarbeite trips.txt...");
+    writeLog("[$key] Verarbeite routes.txt für Betreiber und Linien...");
+    [$fp, $routeColumns, $routeCount] = openCsv($zip, 'routes.txt', ['route_id']);
+    $routeAgencyColumn = $routeColumns['agency_id'] ?? null;
+    $defaultAgencyId = count($feedAgencyIds) === 1 ? (string)array_key_first($feedAgencyIds) : '';
+    $routeAgencies = [];
+    while (($r = fgetcsv($fp, 0, ',', '"', '')) !== false) {
+        if (count($r) < $routeCount) continue;
+        $routeId = trim($r[$routeColumns['route_id']]);
+        $agencyId = $routeAgencyColumn !== null ? trim($r[$routeAgencyColumn]) : '';
+        $routeAgencies[$routeId] = $agencyId !== '' ? $agencyId : $defaultAgencyId;
+    }
+    fclose($fp);
+
     [$fp, $c, $n] = openCsv($zip, 'trips.txt', [
-        'service_id', 'trip_id', 'trip_headsign', 'trip_short_name', 'direction_id', 'original_trip_id',
+        'route_id', 'service_id', 'trip_id', 'trip_headsign', 'trip_short_name', 'direction_id', 'original_trip_id',
     ]);
     $iHints = $c['hints'] ?? null;
-    $insTrip = $pdo->prepare('INSERT INTO trips (trip_short_name, service_id, destination, sjyid, hints, trip_id, feed) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    $insTrip = $pdo->prepare('INSERT INTO trips (trip_short_name, service_id, destination, sjyid, hints, trip_id, feed, agency_id, route_id, direction_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $pdo->beginTransaction();
     $count = 0;
     $skipped = 0;
@@ -387,6 +408,9 @@ function importFeed(PDO $pdo, string $key, string $source, int $from, int $to): 
             $iHints !== null ? $r[$iHints] : '',
             $r[$c['trip_id']],
             $key,
+            $routeAgencies[trim($r[$c['route_id']])] ?? $defaultAgencyId,
+            trim($r[$c['route_id']]),
+            trim($r[$c['direction_id']]),
         ]);
         $count++;
     }
@@ -415,6 +439,7 @@ if ($imported === 0) fail('Kein Feed importiert.');
 writeLog('Erstelle Index...');
 $pdo->exec('CREATE INDEX idx_trips_name ON trips(trip_short_name)');
 $pdo->exec('CREATE INDEX idx_trips_sjyid ON trips(sjyid)');
+$pdo->exec('CREATE INDEX idx_trips_family ON trips(trip_short_name, agency_id, route_id, direction_id)');
 $pdo = null;
 
 rename($dbTemp, $dbFinal);
