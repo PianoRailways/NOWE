@@ -51,3 +51,29 @@
     font-size: .85em;
     color: var(--text-via);
 }
+
+/* Abweichungen vom Soll */
+a.vt-day { text-decoration: none; cursor: pointer; }
+.vt-day.vt-dev-stops, .vt-swatch.vt-dev-stops { background: #c62828; color: #fff; }
+.vt-day.vt-dev-times, .vt-swatch.vt-dev-times { background: #ef7d00; color: #1a1a1a; }
+.vt-day.vt-dev-tracks, .vt-swatch.vt-dev-tracks { background: #f3e9a3; color: #1a1a1a; }
+.vt-day.vt-dev-variant, .vt-swatch.vt-dev-variant { background: transparent; color: var(--text-main); box-shadow: inset 0 0 0 1px #9aa; border-style: dashed; }
+/* Tage der geöffneten Fahrt */
+.vt-day.vt-own { border-bottom: 3px solid #fff; line-height: 21px; }
+.vt-swatch.vt-own { background: var(--board-row); border-bottom: 3px solid #fff; }
+.vt-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 12px;
+    font-size: .8em;
+    color: var(--text-via);
+}
+.vt-legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.vt-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    box-sizing: border-box;
+}
