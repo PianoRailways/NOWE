@@ -143,9 +143,9 @@ $pdo->exec('CREATE TABLE trips (
     sig_times TEXT,
     sig_tracks TEXT,
     sig_detail TEXT,
-    agency_id TEXT NOT NULL DEFAULT '',
-    route_id TEXT NOT NULL DEFAULT '',
-    direction_id TEXT NOT NULL DEFAULT ''
+    agency_id TEXT NOT NULL DEFAULT \'\',
+    route_id TEXT NOT NULL DEFAULT \'\',
+    direction_id TEXT NOT NULL DEFAULT \'\'
 )');
 $pdo->exec('CREATE TABLE agencies (
     agency_id TEXT PRIMARY KEY,
