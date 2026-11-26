@@ -33,7 +33,10 @@ function renderTrip(trip, requestedJourneyId = '') {
     renderStopChain(state, { expandable: false, stopLabel: (row) => row.name || row.stopName || 'Unbekannter Halt' });
     updateVehicleMarker(state);
     // Erst die eingegebene ID probieren (passt zur Fahrtensuche), dann die von der API gelieferte
-    showVerkehrstage($('verkehrstage'), [requestedJourneyId, trip.swissJourneyId], { markedDate: trip.operatingDay || '' });
+    showVerkehrstage($('verkehrstage'), [requestedJourneyId, trip.swissJourneyId], {
+        markedDate: trip.operatingDay || '',
+        tripStops: trip.stops
+    });
 }
 
 async function loadTrip(journeyId, date) {

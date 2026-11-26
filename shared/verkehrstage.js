@@ -1,13 +1,9 @@
 // Verkehrstage einer Fahrt aus dem GTFS-Import (GTFS/verkehrstage.php) als Monatskalender.
 // Die Trip-API von opentransportdata liefert die Verkehrstage nicht zuverlässig, GTFS schon.
 
-import { searchStops } from '../script/api-client.js';
-
 const ENDPOINT = new URL('../GTFS/verkehrstage.php', import.meta.url).href;
-const LOCATION_PROXY_URL = new URL('../proxy.php', import.meta.url).href;
 const MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 const WEEKDAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
-const stopNameCache = new Map();
 
 const pad = (n) => String(n).padStart(2, '0');
 const iso = (y, m, d) => `${y}-${pad(m)}-${pad(d)}`;
@@ -25,32 +21,20 @@ function stopReferenceMarkup(stop) {
     return `<span class="vt-stop-reference" data-stop-ref="${escapedRef}">${escapedRef}</span>`;
 }
 
-async function lookupStopName(stopRef) {
-    if (stopNameCache.has(stopRef)) return stopNameCache.get(stopRef);
-    const results = await searchStops(stopRef, LOCATION_PROXY_URL);
-    const result = results.find((candidate) => candidate.ref === stopRef);
-    if (result?.name) stopNameCache.set(stopRef, result.name);
-    return result?.name || '';
+function stopNameKey(ref) {
+    return String(ref || '').match(/^(ch:1:sloid:\d+)(?::|_gen|$)/)?.[1] || String(ref || '');
 }
 
-async function resolveStopNames(container, details) {
-    if (!details) return;
-    const stopRefs = [
-        ...(details.stops?.removed || []),
-        ...(details.stops?.added || []),
-        ...(details.stops?.flags || []).map((change) => change.stop),
-        ...(details.times || []).map((change) => change.stop),
-        ...(details.tracks || []).map((change) => change.stop),
-    ].filter((ref) => typeof ref === 'string' && ref.startsWith('ch:1:sloid:'));
-    const uniqueRefs = [...new Set(stopRefs)];
+function resolveStopNames(container, tripStops) {
     const names = new Map();
-    await Promise.all(uniqueRefs.map(async (ref) => {
-        const name = await lookupStopName(ref);
-        if (name) names.set(ref, name);
-    }));
+    for (const stop of Array.isArray(tripStops) ? tripStops : []) {
+        const ref = String(stop?.stopPointRef || '').trim();
+        const name = String(stop?.name || stop?.stopName || '').trim();
+        if (ref && name) names.set(stopNameKey(ref), name);
+    }
     for (const element of container.querySelectorAll('.vt-stop-reference')) {
         const ref = element.dataset.stopRef;
-        const name = names.get(ref);
+        const name = names.get(stopNameKey(ref));
         if (name) {
             element.textContent = name;
             element.title = ref;
@@ -235,7 +219,7 @@ function setDisclosureContent(container, content) {
 }
 
 // Befüllt einen Container. Fehler zeigen nur einen Hinweis, die Tripansicht bleibt davon unberührt.
-export async function showVerkehrstage(container, sjyids, { markedDate = '' } = {}) {
+export async function showVerkehrstage(container, sjyids, { markedDate = '', tripStops = [] } = {}) {
     if (!container) return;
     setDisclosureContent(container, '<div class="vt-note">Lade Verkehrstage…</div>');
     try {
@@ -243,8 +227,7 @@ export async function showVerkehrstage(container, sjyids, { markedDate = '' } = 
         const now = new Date();
         const today = iso(now.getFullYear(), now.getMonth() + 1, now.getDate());
         setDisclosureContent(container, renderVerkehrstage(data, { markedDate, today }));
-        const details = data.days?.find((day) => day.date === markedDate)?.details;
-        await resolveStopNames(container, details);
+        resolveStopNames(container, tripStops);
     } catch (error) {
         setDisclosureContent(container, '<div class="vt-note">Verkehrstage sind gerade nicht verfügbar.</div>');
         console.warn('Verkehrstage:', error);

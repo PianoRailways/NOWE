@@ -104,7 +104,10 @@ async function loadTripOnly(sjyid, date) {
             <div class="stop-chain" id="stopChain"></div>
             <section class="verkehrstage" id="verkehrstage"></section>`;
         window.formationData = { formations: [], stops, rows, trip, relationships: [] };
-        showVerkehrstage(document.getElementById('verkehrstage'), [sjyid, trip.swissJourneyId], { markedDate: date || '' });
+        showVerkehrstage(document.getElementById('verkehrstage'), [sjyid, trip.swissJourneyId], {
+            markedDate: date || '',
+            tripStops: trip.stops
+        });
         sharedStopChain.renderStopChain(window.formationData, {
             expandable: false,
             stopLabel: (row) => stopLabel(row.uic, row.name)
@@ -263,7 +266,10 @@ async function fetchFormation() {
 
     resultDiv.innerHTML = html;
     if (swissJourneyId || trip?.swissJourneyId) {
-        showVerkehrstage(document.getElementById('verkehrstage'), [swissJourneyId, trip?.swissJourneyId], { markedDate: operationDate || '' });
+        showVerkehrstage(document.getElementById('verkehrstage'), [swissJourneyId, trip?.swissJourneyId], {
+            markedDate: operationDate || '',
+            tripStops: trip?.stops
+        });
     }
 
     window.formationData = {
